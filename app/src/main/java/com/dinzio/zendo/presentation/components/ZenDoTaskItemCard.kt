@@ -26,9 +26,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dinzio.zendo.core.theme.BackgroundGray
-import com.dinzio.zendo.core.theme.BlackText
-import com.dinzio.zendo.core.theme.GrayText
 
 @Composable
 fun ZenDoTaskItemCard(
@@ -37,7 +34,6 @@ fun ZenDoTaskItemCard(
     sessionDone: String,
     categoryIcon: String,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = BackgroundGray,
     onItemClick: () -> Unit,
     onPlayClick: () -> Unit
 ) {
@@ -46,7 +42,7 @@ fun ZenDoTaskItemCard(
             .fillMaxWidth()
             .clickable { onItemClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Row(
             modifier = Modifier
@@ -73,14 +69,14 @@ fun ZenDoTaskItemCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = BlackText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = "\uD83C\uDFAF $sessionCount • \uD83D\uDD25 $sessionDone",
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 

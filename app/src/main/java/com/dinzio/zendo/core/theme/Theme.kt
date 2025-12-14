@@ -17,32 +17,36 @@ import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = GreenPrimary,
-    secondary = GreenAccent,
-    tertiary = OrangeAccent,
-    background = BlackText,
-    surface = BlackText,
     onPrimary = White,
+    secondary = GreenAccent,
     onSecondary = BlackText,
+    tertiary = OrangeAccent,
     onTertiary = White,
+    background = BackgroundBlack,
     onBackground = White,
+    surface = BackgroundBlack,
     onSurface = White,
-    error = RedDelete
+    surfaceVariant = BlackText,
+    onSurfaceVariant = GrayText,
+    error = RedDelete,
+    onError = White
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = GreenPrimary,
-    secondary = GreenSecondary,
-    tertiary = OrangeAccent,
-
-    background = BackgroundGray,
-    surface = White,
-
     onPrimary = White,
+    secondary = GreenSecondary,
     onSecondary = BlackText,
+    tertiary = OrangeAccent,
     onTertiary = White,
+    background = White,
     onBackground = BlackText,
+    surface = White,
     onSurface = BlackText,
-    error = RedDelete
+    surfaceVariant = BackgroundGray,
+    onSurfaceVariant = GrayText,
+    error = RedDelete,
+    onError = White
 )
 
 @Composable
@@ -56,6 +60,7 @@ fun ZendoTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

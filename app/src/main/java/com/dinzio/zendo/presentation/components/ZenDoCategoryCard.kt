@@ -20,9 +20,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dinzio.zendo.core.theme.BackgroundGray
-import com.dinzio.zendo.core.theme.BlackText
-import com.dinzio.zendo.core.theme.GrayText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +37,7 @@ fun ZenDoCategoryCard(
             .height(170.dp),
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
-            containerColor = BackgroundGray
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Box(
@@ -57,14 +54,14 @@ fun ZenDoCategoryCard(
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     ),
-                    color = BlackText,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = "🚀 $taskCount Task",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = GrayText
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -84,7 +81,7 @@ private fun ZenDoCategoryCardPreview() {
         ZenDoCategoryCard(
             title = "Hobbies",
             taskCount = 3,
-            icon = "⛹\uFE0F\u200D♂\uFE0F",
+            icon = "⛹️‍♂️",
             onClick = {}
         )
     }
