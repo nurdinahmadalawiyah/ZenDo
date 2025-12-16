@@ -1,6 +1,7 @@
 package com.dinzio.zendo.presentation.screens.home
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,26 +20,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.presentation.components.ZenDoCurrentTaskBanner
-import com.dinzio.zendo.presentation.components.ZenDoInput
 import com.dinzio.zendo.presentation.components.ZenDoSectionHeader
 import com.dinzio.zendo.presentation.components.ZenDoTaskItemCard
 
@@ -49,8 +44,6 @@ fun HomeScreen(
     onNavigateToDetail: () -> Unit = {},
     onNavigateToTimer: () -> Unit = {}
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -58,8 +51,6 @@ fun HomeScreen(
         HomeTabletLayout(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
-            searchQuery = searchQuery,
-            onSearchChange = { searchQuery = it },
             onNavigateToDetail = onNavigateToDetail,
             onNavigateToTimer = onNavigateToTimer
         )
@@ -67,8 +58,6 @@ fun HomeScreen(
         HomePhoneLayout(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
-            searchQuery = searchQuery,
-            onSearchChange = { searchQuery = it },
             onNavigateToDetail = onNavigateToDetail,
             onNavigateToTimer = onNavigateToTimer
         )
@@ -82,8 +71,6 @@ fun HomeScreen(
 fun HomePhoneLayout(
     isDarkTheme: Boolean,
     onThemeSwitch: (Boolean) -> Unit,
-    searchQuery: String,
-    onSearchChange: (String) -> Unit,
     onNavigateToDetail: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
@@ -93,8 +80,6 @@ fun HomePhoneLayout(
     ) {
         item {
             HeaderSection(
-                searchQuery = searchQuery,
-                onSearchChange = onSearchChange,
                 isDarkTheme = isDarkTheme,
                 onThemeSwitch = onThemeSwitch
             )
@@ -139,8 +124,6 @@ fun HomePhoneLayout(
 fun HomeTabletLayout(
     isDarkTheme: Boolean,
     onThemeSwitch: (Boolean) -> Unit,
-    searchQuery: String,
-    onSearchChange: (String) -> Unit,
     onNavigateToDetail: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
@@ -157,8 +140,6 @@ fun HomeTabletLayout(
                 .verticalScroll(rememberScrollState())
         ) {
             HeaderSection(
-                searchQuery = searchQuery,
-                onSearchChange = onSearchChange,
                 isDarkTheme = isDarkTheme,
                 onThemeSwitch = onThemeSwitch
             )
@@ -204,8 +185,6 @@ fun HomeTabletLayout(
 
 @Composable
 fun HeaderSection(
-    searchQuery: String,
-    onSearchChange: (String) -> Unit,
     isDarkTheme: Boolean,
     onThemeSwitch: (Boolean) -> Unit
 ) {
@@ -215,12 +194,11 @@ fun HeaderSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "ZenDo",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+            Image(
+                painter = painterResource(id = R.drawable.ic_logo_zendo_2),
+                contentDescription = "ZenDo Logo",
+                modifier = Modifier
+                    .height(36.dp)
             )
             IconButton(onClick = { onThemeSwitch(!isDarkTheme) }) {
                 Icon(
@@ -230,13 +208,6 @@ fun HeaderSection(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        ZenDoInput(
-            value = searchQuery,
-            onValueChange = onSearchChange,
-            placeholder = "Search Project...",
-            leadingIcon = Icons.Default.Search
-        )
     }
 }
 

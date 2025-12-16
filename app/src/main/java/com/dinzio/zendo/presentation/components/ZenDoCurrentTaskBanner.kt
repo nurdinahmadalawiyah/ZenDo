@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dinzio.zendo.core.theme.GreenPrimary
 import com.dinzio.zendo.core.theme.OrangeAccent
 import com.dinzio.zendo.core.theme.White
 
@@ -40,7 +41,7 @@ fun ZenDoCurrentTaskBanner(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(GreenPrimary)
+            .background(MaterialTheme.colorScheme.primary)
             .clickable { onClick() }
             .padding(20.dp)
     ) {
