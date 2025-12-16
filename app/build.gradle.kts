@@ -68,6 +68,7 @@ dependencies {
     /// --- DI (HILT) ---
     implementation(libs.hilt.android)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.animation)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 

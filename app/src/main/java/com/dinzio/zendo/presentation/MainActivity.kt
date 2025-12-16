@@ -55,13 +55,15 @@ fun MainScreen(isDarkTheme: Boolean, onThemeSwitch: (Boolean) -> Unit) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    val showBottomNav = currentRoute in listOf("home", "focus", "stats", "profile")
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Scaffold(
             bottomBar = {
-                if (!isLandscape) {
+                if (!isLandscape && showBottomNav) {
                     ZenDoBottomBar(
                         currentRoute = currentRoute,
                         onNavigate = { route -> navController.navigate(route) }
@@ -74,7 +76,7 @@ fun MainScreen(isDarkTheme: Boolean, onThemeSwitch: (Boolean) -> Unit) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                if (isLandscape) {
+                if (isLandscape && showBottomNav) {
                     ZenDoNavigationRail(
                         currentRoute = currentRoute,
                         onNavigate = { route -> navController.navigate(route) }

@@ -1,5 +1,6 @@
 package com.dinzio.zendo.presentation.components
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,17 +26,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.dinzio.zendo.core.theme.BlackText
-import com.dinzio.zendo.core.theme.GreenPrimary
+import com.dinzio.zendo.core.theme.White
 
 @Composable
 fun ZenDoTopBar(
     title: String,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     actionIcon: ImageVector? = null,
-    onActionClick: (() -> Unit)? = null
+    onActionClick: (() -> Unit)? = null,
+    isOnPrimaryBackground: Boolean = false
 ) {
+    val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    val buttonBackgroundColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.primary else White
+    val iconColor = if (isOnPrimaryBackground) White else MaterialTheme.colorScheme.primary
+    val titleColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.onBackground else White
+
     Row(
         modifier = modifier
             .fillMaxWidth(),
@@ -43,17 +48,17 @@ fun ZenDoTopBar(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
-            onClick = { onBackClick() },
+            onClick = { onBackPressedDispatcher?.onBackPressed() },
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(GreenPrimary)
+                .background(buttonBackgroundColor)
                 .height(36.dp)
                 .width(36.dp)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = iconColor,
                 modifier = Modifier.padding(4.dp)
             )
         }
@@ -61,7 +66,7 @@ fun ZenDoTopBar(
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = BlackText,
+            color = titleColor,
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
         )
@@ -71,14 +76,14 @@ fun ZenDoTopBar(
                 onClick = { onActionClick() },
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(GreenPrimary)
+                    .background(buttonBackgroundColor)
                     .height(36.dp)
                     .width(36.dp)
             ) {
                 Icon(
                     imageVector = actionIcon,
                     contentDescription = "Action",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = iconColor,
                     modifier = Modifier.padding(4.dp),
                 )
             }
@@ -93,8 +98,8 @@ fun ZenDoTopBar(
 private fun ZenDoTopBarPreview() {
     ZenDoTopBar(
         title = "Detail Task",
-        onBackClick = {},
         actionIcon = Icons.Default.MoreVert,
-        onActionClick = {}
+        onActionClick = {},
+        isOnPrimaryBackground = true
     )
 }

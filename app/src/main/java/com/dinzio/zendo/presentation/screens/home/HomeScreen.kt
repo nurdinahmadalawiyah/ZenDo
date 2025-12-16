@@ -31,34 +31,41 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.R
 import com.dinzio.zendo.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.presentation.components.ZenDoCurrentTaskBanner
 import com.dinzio.zendo.presentation.components.ZenDoSectionHeader
 import com.dinzio.zendo.presentation.components.ZenDoTaskItemCard
+import com.dinzio.zendo.presentation.navigation.ZenDoRoutes
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     isDarkTheme: Boolean = false,
     onThemeSwitch: (Boolean) -> Unit = {},
-    onNavigateToDetail: () -> Unit = {},
     onNavigateToTimer: () -> Unit = {}
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    val navigateToDetailCategory = {
+        navController.navigate(ZenDoRoutes.DetailCategory.route)
+    }
+
     if (isLandscape) {
         HomeTabletLayout(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
-            onNavigateToDetail = onNavigateToDetail,
+            onNavigateToDetailCategory = navigateToDetailCategory,
             onNavigateToTimer = onNavigateToTimer
         )
     } else {
         HomePhoneLayout(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
-            onNavigateToDetail = onNavigateToDetail,
+            onNavigateToDetailCategory = navigateToDetailCategory,
             onNavigateToTimer = onNavigateToTimer
         )
     }
@@ -71,7 +78,7 @@ fun HomeScreen(
 fun HomePhoneLayout(
     isDarkTheme: Boolean,
     onThemeSwitch: (Boolean) -> Unit,
-    onNavigateToDetail: () -> Unit,
+    onNavigateToDetailCategory: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
     LazyColumn(
@@ -89,7 +96,9 @@ fun HomePhoneLayout(
             BannerSection(onNavigateToTimer)
             Spacer(modifier = Modifier.height(24.dp))
 
-            CategorySection()
+            CategorySection(
+                onCategoryClick = onNavigateToDetailCategory
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -105,7 +114,7 @@ fun HomePhoneLayout(
                 sessionCount = task.sessionCount,
                 sessionDone = task.sessionDone,
                 categoryIcon = task.icon,
-                onItemClick = onNavigateToDetail,
+                onItemClick = { },
                 onPlayClick = onNavigateToTimer
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -124,7 +133,7 @@ fun HomePhoneLayout(
 fun HomeTabletLayout(
     isDarkTheme: Boolean,
     onThemeSwitch: (Boolean) -> Unit,
-    onNavigateToDetail: () -> Unit,
+    onNavigateToDetailCategory: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
     Row(
@@ -149,7 +158,9 @@ fun HomeTabletLayout(
             BannerSection(onNavigateToTimer)
             Spacer(modifier = Modifier.height(24.dp))
 
-            CategorySection()
+            CategorySection(
+                onCategoryClick = onNavigateToDetailCategory
+            )
         }
 
         Column(
@@ -170,7 +181,7 @@ fun HomeTabletLayout(
                         sessionCount = task.sessionCount,
                         sessionDone = task.sessionDone,
                         categoryIcon = task.icon,
-                        onItemClick = onNavigateToDetail,
+                        onItemClick = { },
                         onPlayClick = onNavigateToTimer
                     )
                 }
@@ -225,7 +236,9 @@ fun BannerSection(onNavigateToTimer: () -> Unit) {
 }
 
 @Composable
-fun CategorySection() {
+fun CategorySection(
+    onCategoryClick: () -> Unit
+) {
     Column {
         ZenDoSectionHeader(title = "Categories", onActionClick = {})
         Spacer(modifier = Modifier.height(12.dp))
@@ -238,19 +251,19 @@ fun CategorySection() {
                     title = category.title,
                     taskCount = category.count,
                     icon = category.icon,
-                    onClick = { /* Filter */ }
+                    onClick = onCategoryClick
                 )
             }
         }
     }
 }
 
-// --- PREVIEWS ---
-
 @Preview(name = "Portrait Phone", showBackground = true, device = Devices.PIXEL_4)
 @Composable
 fun PreviewPortrait() {
-    HomeScreen()
+    HomeScreen(
+        navController = rememberNavController()
+    )
 }
 
 @Preview(
@@ -260,5 +273,7 @@ fun PreviewPortrait() {
 )
 @Composable
 fun PreviewLandscape() {
-    HomeScreen()
+    HomeScreen(
+        navController = rememberNavController()
+    )
 }
