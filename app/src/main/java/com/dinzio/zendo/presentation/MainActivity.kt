@@ -23,6 +23,7 @@ import com.dinzio.zendo.core.theme.ZendoTheme
 import com.dinzio.zendo.presentation.components.ZenDoBottomBar
 import com.dinzio.zendo.presentation.components.ZenDoNavigationRail
 import com.dinzio.zendo.presentation.navigation.ZenDoNavGraph
+import com.dinzio.zendo.presentation.navigation.ZenDoRoutes
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -50,12 +51,12 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(isDarkTheme: Boolean, onThemeSwitch: (Boolean) -> Unit) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route ?: "home"
+    val currentRoute = navBackStackEntry?.destination?.route ?: ZenDoRoutes.Home.route
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    val showBottomNav = currentRoute in listOf("home", "focus", "stats", "profile")
+    val showBottomNav = currentRoute in listOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Profile.route)
 
     Surface(
         modifier = Modifier.fillMaxSize(),

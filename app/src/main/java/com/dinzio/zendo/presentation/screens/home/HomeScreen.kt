@@ -50,6 +50,9 @@ fun HomeScreen(
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    val onNavigateToCategories = {
+        navController.navigate(ZenDoRoutes.Categories.route)
+    }
     val navigateToDetailCategory = {
         navController.navigate(ZenDoRoutes.DetailCategory.route)
     }
@@ -58,6 +61,7 @@ fun HomeScreen(
         HomeTabletLayout(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
+            onNavigateToCategories = onNavigateToCategories,
             onNavigateToDetailCategory = navigateToDetailCategory,
             onNavigateToTimer = onNavigateToTimer
         )
@@ -65,6 +69,7 @@ fun HomeScreen(
         HomePhoneLayout(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
+            onNavigateToCategories = onNavigateToCategories,
             onNavigateToDetailCategory = navigateToDetailCategory,
             onNavigateToTimer = onNavigateToTimer
         )
@@ -78,6 +83,7 @@ fun HomeScreen(
 fun HomePhoneLayout(
     isDarkTheme: Boolean,
     onThemeSwitch: (Boolean) -> Unit,
+    onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
@@ -97,7 +103,8 @@ fun HomePhoneLayout(
             Spacer(modifier = Modifier.height(24.dp))
 
             CategorySection(
-                onCategoryClick = onNavigateToDetailCategory
+                onCategoryClick = onNavigateToDetailCategory,
+                onAllCategoriesClick = onNavigateToCategories
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -133,6 +140,7 @@ fun HomePhoneLayout(
 fun HomeTabletLayout(
     isDarkTheme: Boolean,
     onThemeSwitch: (Boolean) -> Unit,
+    onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
@@ -159,7 +167,8 @@ fun HomeTabletLayout(
             Spacer(modifier = Modifier.height(24.dp))
 
             CategorySection(
-                onCategoryClick = onNavigateToDetailCategory
+                onCategoryClick = onNavigateToDetailCategory,
+                onAllCategoriesClick = onNavigateToCategories
             )
         }
 
@@ -237,10 +246,11 @@ fun BannerSection(onNavigateToTimer: () -> Unit) {
 
 @Composable
 fun CategorySection(
-    onCategoryClick: () -> Unit
+    onCategoryClick: () -> Unit,
+    onAllCategoriesClick: () -> Unit
 ) {
     Column {
-        ZenDoSectionHeader(title = "Categories", onActionClick = {})
+        ZenDoSectionHeader(title = "Categories", onActionClick = onAllCategoriesClick)
         Spacer(modifier = Modifier.height(12.dp))
 
         LazyRow(

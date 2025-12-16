@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.dinzio.zendo.presentation.screens.category.CategoryScreen
 import com.dinzio.zendo.presentation.screens.category.DetailCategoryScreen
 import com.dinzio.zendo.presentation.screens.home.HomeScreen
 
@@ -83,6 +84,11 @@ fun ZenDoNavGraph(
             PlaceholderScreen("Profile Screen")
         }
 
+        composable(ZenDoRoutes.Categories.route) {
+            CategoryScreen(
+                navController = navController,
+            )
+        }
         composable(ZenDoRoutes.DetailCategory.route) {
             DetailCategoryScreen(
                 navController = navController,
