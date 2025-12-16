@@ -7,5 +7,6 @@ sealed class ZenDoRoutes(val route: String) {
     object Profile : ZenDoRoutes("profile")
     object Categories : ZenDoRoutes("categories")
     object DetailCategory : ZenDoRoutes("detail_category")
+    object Tasks : ZenDoRoutes("tasks")
     object AddTask : ZenDoRoutes("add_task")
 }

@@ -1,4 +1,4 @@
-package com.dinzio.zendo.presentation.screens.category
+package com.dinzio.zendo.presentation.screens.task
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -31,23 +31,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dinzio.zendo.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.presentation.components.ZenDoInput
+import com.dinzio.zendo.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.presentation.components.ZenDoTopBar
-import com.dinzio.zendo.presentation.screens.home.CategoryUiModel
+import com.dinzio.zendo.presentation.screens.category.dummyCategoriesList
+import com.dinzio.zendo.presentation.screens.home.dummyTasks
 
 @Composable
-fun CategoryScreen() {
+fun TaskScreen() {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     var searchQuery by remember { mutableStateOf("") }
-
+    
     if (isLandscape) {
-        CategoryTabletLayout(
+        TaskTabletLayout(
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
         )
     } else {
-        CategoryPhoneLayout(
+        TaskPhoneLayout(
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
         )
@@ -55,7 +57,7 @@ fun CategoryScreen() {
 }
 
 @Composable
-fun CategoryPhoneLayout(
+fun TaskPhoneLayout(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit
 ) {
@@ -68,7 +70,7 @@ fun CategoryPhoneLayout(
         Spacer(modifier = Modifier.height(16.dp))
 
         ZenDoTopBar(
-            title = "Categories",
+            title = "Tasks",
             actionIcon = Icons.Default.Add,
             onActionClick = { /* Navigate to Add Category */ },
             isOnPrimaryBackground = true
@@ -79,24 +81,26 @@ fun CategoryPhoneLayout(
         ZenDoInput(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            placeholder = "Search Category...",
+            placeholder = "Search Task...",
             leadingIcon = Icons.Default.Search
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(1),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            items(dummyCategoriesList) { category ->
-                ZenDoCategoryCard(
-                    title = category.title,
-                    taskCount = category.count,
-                    icon = category.icon,
-                    onClick = { /* Navigate to Category Detail */ }
+            items(dummyTasks) { task ->
+                ZenDoTaskItemCard(
+                    title = task.title,
+                    sessionCount = task.sessionCount,
+                    sessionDone = task.sessionDone,
+                    categoryIcon = task.icon,
+                    onItemClick = { },
+                    onPlayClick = { }
                 )
             }
         }
@@ -104,7 +108,7 @@ fun CategoryPhoneLayout(
 }
 
 @Composable
-fun CategoryTabletLayout(
+fun TaskTabletLayout(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit
 ) {
@@ -118,7 +122,7 @@ fun CategoryTabletLayout(
         Spacer(modifier = Modifier.height(24.dp))
 
         ZenDoTopBar(
-            title = "Categories",
+            title = "Tasks",
             actionIcon = Icons.Default.Add,
             onActionClick = { /* Navigate to Add Category */ },
             isOnPrimaryBackground = true
@@ -138,47 +142,33 @@ fun CategoryTabletLayout(
         Spacer(modifier = Modifier.height(32.dp))
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(4),
+            columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            items(dummyCategoriesList) { category ->
-                ZenDoCategoryCard(
-                    title = category.title,
-                    taskCount = category.count,
-                    icon = category.icon,
-                    onClick = { /* Navigate to Category Detail */ }
+            items(dummyTasks) { task ->
+                ZenDoTaskItemCard(
+                    title = task.title,
+                    sessionCount = task.sessionCount,
+                    sessionDone = task.sessionDone,
+                    categoryIcon = task.icon,
+                    onItemClick = { },
+                    onPlayClick = { }
                 )
             }
         }
     }
 }
 
-val dummyCategoriesList = listOf(
-    CategoryUiModel("Deep Work", 8, "🧠"),      // Fokus tinggi, tanpa gangguan
-    CategoryUiModel("Study", 12, "📚"),         // Belajar umum
-    CategoryUiModel("Coding", 15, "💻"),        // Programming
-    CategoryUiModel("Writing", 5, "✍️"),        // Menulis artikel/skripsi
-    CategoryUiModel("Design", 6, "🎨"),         // UI/UX, Gambar
-    CategoryUiModel("Languages", 4, "🗣️"),      // Belajar bahasa asing
-    CategoryUiModel("Reading", 7, "📖"),        // Membaca buku non-fiksi
-    CategoryUiModel("Email/Admin", 3, "📧"),    // Balas chat/email, rekap
-    CategoryUiModel("Planning", 2, "🗓️"),       // Review hari/minggu
-    CategoryUiModel("Meditation", 1, "🧘"),     // Mindfulness session
-    CategoryUiModel("Chores", 4, "🧹"),         // Bersih-bersih (banyak yg pakai timer!)
-    CategoryUiModel("Exercise", 2, "💪"),       // Workout rumahan
-)
-
-
 @Preview(name = "Phone", showBackground = true, device = Devices.PIXEL_4)
 @Composable
-fun PreviewCategoryPhone() {
-    CategoryScreen()
+fun PreviewTaskPhoneLayout() {
+    TaskScreen()
 }
 
 @Preview(name = "Tablet", showBackground = true, device = Devices.PIXEL_C)
 @Composable
-fun PreviewCategoryTablet() {
-    CategoryScreen()
+fun PreviewTaskTabletLayout() {
+    TaskScreen()
 }

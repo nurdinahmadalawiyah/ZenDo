@@ -53,8 +53,11 @@ fun HomeScreen(
     val onNavigateToCategories = {
         navController.navigate(ZenDoRoutes.Categories.route)
     }
-    val navigateToDetailCategory = {
+    val onNavigateToDetailCategory = {
         navController.navigate(ZenDoRoutes.DetailCategory.route)
+    }
+    val onNavigateToTasks = {
+        navController.navigate(ZenDoRoutes.Tasks.route)
     }
 
     if (isLandscape) {
@@ -62,7 +65,8 @@ fun HomeScreen(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
             onNavigateToCategories = onNavigateToCategories,
-            onNavigateToDetailCategory = navigateToDetailCategory,
+            onNavigateToDetailCategory = onNavigateToDetailCategory,
+            onNavigateToTasks = onNavigateToTasks,
             onNavigateToTimer = onNavigateToTimer
         )
     } else {
@@ -70,7 +74,8 @@ fun HomeScreen(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,
             onNavigateToCategories = onNavigateToCategories,
-            onNavigateToDetailCategory = navigateToDetailCategory,
+            onNavigateToDetailCategory = onNavigateToDetailCategory,
+            onNavigateToTasks = onNavigateToTasks,
             onNavigateToTimer = onNavigateToTimer
         )
     }
@@ -85,6 +90,7 @@ fun HomePhoneLayout(
     onThemeSwitch: (Boolean) -> Unit,
     onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
+    onNavigateToTasks: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
     LazyColumn(
@@ -111,7 +117,7 @@ fun HomePhoneLayout(
         }
 
         item {
-            ZenDoSectionHeader(title = "Task List", onActionClick = {})
+            ZenDoSectionHeader(title = "Task List", onActionClick = onNavigateToTasks)
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -142,6 +148,7 @@ fun HomeTabletLayout(
     onThemeSwitch: (Boolean) -> Unit,
     onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
+    onNavigateToTasks: () -> Unit,
     onNavigateToTimer: () -> Unit
 ) {
     Row(
@@ -177,7 +184,7 @@ fun HomeTabletLayout(
                 .weight(0.55f)
                 .fillMaxHeight()
         ) {
-            ZenDoSectionHeader(title = "Task List", onActionClick = {})
+            ZenDoSectionHeader(title = "Task List", onActionClick = onNavigateToTasks)
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
