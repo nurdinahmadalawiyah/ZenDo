@@ -19,6 +19,7 @@ import com.dinzio.zendo.presentation.screens.category.CategoryScreen
 import com.dinzio.zendo.presentation.screens.category.DetailCategoryScreen
 import com.dinzio.zendo.presentation.screens.home.HomeScreen
 import com.dinzio.zendo.presentation.screens.task.TaskScreen
+import com.dinzio.zendo.presentation.screens.timer.QuickTimerScreen
 
 @Composable
 fun ZenDoNavGraph(
@@ -76,7 +77,7 @@ fun ZenDoNavGraph(
             )
         }
         composable(ZenDoRoutes.Focus.route) {
-            PlaceholderScreen("Focus Screen")
+            QuickTimerScreen()
         }
         composable(ZenDoRoutes.Stats.route) {
             PlaceholderScreen("Stats Screen")

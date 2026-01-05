@@ -1,6 +1,5 @@
 package com.dinzio.zendo.presentation.screens.category
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,10 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.presentation.components.ZenDoInput
 import com.dinzio.zendo.presentation.components.ZenDoTopBar
@@ -36,12 +35,11 @@ import com.dinzio.zendo.presentation.screens.home.CategoryUiModel
 
 @Composable
 fun CategoryScreen() {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isLandscapeMode = isLandscape()
 
     var searchQuery by remember { mutableStateOf("") }
 
-    if (isLandscape) {
+    if (isLandscapeMode) {
         CategoryTabletLayout(
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }

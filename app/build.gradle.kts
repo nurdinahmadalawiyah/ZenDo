@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
 }
@@ -59,8 +59,11 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.material.icons.extended)
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.core:core-splashscreen:1.2.0")
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     /// --- NAVIGATION ---
     implementation(libs.androidx.navigation.compose)
@@ -69,7 +72,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.animation)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     /// --- FIREBASE ---
@@ -93,8 +96,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-}
-
-kapt {
-    correctErrorTypes = true
 }

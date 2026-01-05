@@ -1,6 +1,5 @@
 package com.dinzio.zendo.presentation.screens.home
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.R
+import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.presentation.components.ZenDoCurrentTaskBanner
 import com.dinzio.zendo.presentation.components.ZenDoSectionHeader
@@ -47,8 +46,7 @@ fun HomeScreen(
     onThemeSwitch: (Boolean) -> Unit = {},
     onNavigateToTimer: () -> Unit = {}
 ) {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isLandscapeMode = isLandscape()
 
     val onNavigateToCategories = {
         navController.navigate(ZenDoRoutes.Categories.route)
@@ -60,7 +58,7 @@ fun HomeScreen(
         navController.navigate(ZenDoRoutes.Tasks.route)
     }
 
-    if (isLandscape) {
+    if (isLandscapeMode) {
         HomeTabletLayout(
             isDarkTheme = isDarkTheme,
             onThemeSwitch = onThemeSwitch,

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.core.theme.White
+import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.presentation.components.ZenDoSectionHeader
 import com.dinzio.zendo.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.presentation.components.ZenDoTopBar
@@ -46,14 +47,13 @@ fun DetailCategoryScreen(
     categoryName: String = "Productivity",
     navController: NavController,
 ) {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isLandscapeMode = isLandscape()
 
     val onAddTaskClick = {
         navController.navigate(ZenDoRoutes.AddTask.route)
     }
 
-    if (isLandscape) {
+    if (isLandscapeMode) {
         DetailCategoryTabletLayout(
             categoryName = categoryName,
             onAddTaskClick = onAddTaskClick

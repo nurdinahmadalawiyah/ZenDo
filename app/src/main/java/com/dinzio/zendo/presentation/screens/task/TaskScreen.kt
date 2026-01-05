@@ -25,25 +25,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.dinzio.zendo.presentation.components.ZenDoCategoryCard
+import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.presentation.components.ZenDoInput
 import com.dinzio.zendo.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.presentation.components.ZenDoTopBar
-import com.dinzio.zendo.presentation.screens.category.dummyCategoriesList
 import com.dinzio.zendo.presentation.screens.home.dummyTasks
 
 @Composable
 fun TaskScreen() {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isLandscapeMode = isLandscape()
 
     var searchQuery by remember { mutableStateOf("") }
     
-    if (isLandscape) {
+    if (isLandscapeMode) {
         TaskTabletLayout(
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
