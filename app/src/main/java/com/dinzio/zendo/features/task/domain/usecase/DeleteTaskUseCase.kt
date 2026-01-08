@@ -1,0 +1,9 @@
+package com.dinzio.zendo.features.task.domain.usecase
+
+import com.dinzio.zendo.features.task.domain.model.TaskModel
+import com.dinzio.zendo.features.task.domain.repository.TaskRepository
+import javax.inject.Inject
+
+class DeleteTaskUseCase @Inject constructor(private val repository: TaskRepository) {
+    suspend operator fun invoke(task: TaskModel) = repository.deleteTask(task)
+}

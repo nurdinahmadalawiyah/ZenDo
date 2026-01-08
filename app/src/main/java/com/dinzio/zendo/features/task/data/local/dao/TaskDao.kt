@@ -11,7 +11,7 @@ import com.dinzio.zendo.features.task.data.local.entity.TaskEntity
 
 @Dao
 interface TaskDao {
-    @Query("SELECT * FROM tasks ORDER BY dateCreated DESC")
+    @Query("SELECT * FROM tasks ORDER BY createdAt DESC")
     fun getAllTasks(): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE id = :id")

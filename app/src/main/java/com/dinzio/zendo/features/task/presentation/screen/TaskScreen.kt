@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,25 +28,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
-import com.dinzio.zendo.features.home.presentation.screen.dummyTasks
+import com.dinzio.zendo.features.task.domain.model.TaskModel
+import com.dinzio.zendo.features.task.presentation.viewModel.TaskListViewModel
 
 @Composable
-fun TaskScreen() {
+fun TaskScreen(
+    viewModel: TaskListViewModel = hiltViewModel(),
+) {
     val isLandscapeMode = isLandscape()
 
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     var searchQuery by remember { mutableStateOf("") }
+
+    val filteredTasks = state.tasks.filter {
+        it.title.contains(searchQuery, ignoreCase = true)
+    }
     
     if (isLandscapeMode) {
         TaskTabletLayout(
+            tasks = filteredTasks,
+            isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
         )
     } else {
         TaskPhoneLayout(
+            tasks = filteredTasks,
+            isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
         )
@@ -54,6 +70,8 @@ fun TaskScreen() {
 
 @Composable
 fun TaskPhoneLayout(
+    tasks: List<TaskModel>,
+    isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit
 ) {
@@ -83,21 +101,25 @@ fun TaskPhoneLayout(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(1),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
-        ) {
-            items(dummyTasks) { task ->
-                ZenDoTaskItemCard(
-                    title = task.title,
-                    sessionCount = task.sessionCount,
-                    sessionDone = task.sessionDone,
-                    categoryIcon = task.icon,
-                    onItemClick = { },
-                    onPlayClick = { }
-                )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                items(tasks) { task ->
+                    ZenDoTaskItemCard(
+                        title = task.title,
+                        sessionCount = task.sessionCount.toString(),
+                        sessionDone = task.sessionDone.toString(),
+                        categoryIcon = task.icon,
+                        onItemClick = { },
+                        onPlayClick = { }
+                    )
+                }
             }
         }
     }
@@ -105,6 +127,8 @@ fun TaskPhoneLayout(
 
 @Composable
 fun TaskTabletLayout(
+    tasks: List<TaskModel>,
+    isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit
 ) {
@@ -137,21 +161,25 @@ fun TaskTabletLayout(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
-        ) {
-            items(dummyTasks) { task ->
-                ZenDoTaskItemCard(
-                    title = task.title,
-                    sessionCount = task.sessionCount,
-                    sessionDone = task.sessionDone,
-                    categoryIcon = task.icon,
-                    onItemClick = { },
-                    onPlayClick = { }
-                )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                items(tasks) { task ->
+                    ZenDoTaskItemCard(
+                        title = task.title,
+                        sessionCount = task.sessionCount.toString(),
+                        sessionDone = task.sessionDone.toString(),
+                        categoryIcon = task.icon,
+                        onItemClick = { },
+                        onPlayClick = { }
+                    )
+                }
             }
         }
     }
