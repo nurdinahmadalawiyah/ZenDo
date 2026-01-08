@@ -11,7 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import com.dinzio.zendo.domain.model.TimerSettings
+import com.dinzio.zendo.features.timer.data.model.TimerSettings
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "zendo_settings")
 

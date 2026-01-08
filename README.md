@@ -30,27 +30,35 @@ This project adheres to **Clean Architecture** principles to ensure scalability,
 
 ```text
 com.dinzio.zendo
-├── app                 # App-level configuration (Hilt Application class)
-├── core                # Common components shared across layers
-│   ├── theme           # Design system (Color, Type, Theme)
-│   └── util            # Helper functions & extensions
+├── app                         # App-level configuration (Hilt Application class)
+├── core                        # Common components shared across layers
+│   ├── data                    # Global data sources (Local & Remote)
+│   ├── di                      # Global Dependency Injection modules
+│   ├── navigation              # NavGraph & Route definitions
+│   ├── presentation            # Global Presentation Layer (Reusable UI widgets, Screen)
+│   ├── theme                   # Design system (Color, Type, Theme)
+│   └── util                    # Helper functions & extensions
 │
-├── data                # DATA LAYER (Repository Implementation & Data Sources)
-│   ├── local           # Room DB (DAO, Entities) - *Optional/Offline Cache*
-│   ├── remote          # Firebase/API integration (DTOs)
-│   └── repository      # Implementation of Domain repositories
-│
-├── domain              # DOMAIN LAYER (Business Logic - Pure Kotlin)
-│   ├── model           # Core business models
-│   ├── repository      # Repository interfaces
-│   └── usecase         # Specific business logic (e.g., CalculateTimerUseCase)
-│
-└── presentation        # PRESENTATION LAYER (UI & State Holders)
-    ├── MainActivity.kt # Entry point
-    ├── navigation      # NavGraph & Route definitions
-    ├── components      # Reusable UI widgets (Buttons, Cards, Inputs)
-    └── screens         # Feature-based screens (ViewModel + Composable)
-        ├── home
-        ├── task
-        ├── timer
-        └── category
+├── features                    # Feature-based architecture
+│   ├── auth                    # Authentication (Login, Register)
+│   ├── home                    # Home screen (Task & Category management)
+│   ├── task                    # Task management (CRUD operations)
+│   │   ├── data                # DATA LAYER (Repository Implementation & Data Sources)
+│   │   │   ├── local           # Room DB (DAO, Entities) - *Optional/Offline Cache*
+│   │   │   ├── remote          # Firebase/API integration (DTOs)
+│   │   │   └── repository      # Implementation of Domain repositories
+│   │   │
+│   │   ├── domain              # DOMAIN LAYER (Business Logic - Pure Kotlin)
+│   │   │   ├── model           # Core business models
+│   │   │   ├── repository      # Repository interfaces
+│   │   │   └── usecase         # Specific business logic (e.g., CalculateTimerUseCase)
+│   │   │
+│   │   └── presentation        # PRESENTATION LAYER (UI & State Holders)
+│   │       ├── component       # Feature-based component (Component)
+│   │       ├── screens         # Feature-based screens (Composable)
+│   │       └── viewModel       # Feature-based ViewModel
+│   │
+│   ├── category                # Category management (CRUD operations)
+│   └── timer                   # Timer management (Pomodoro Technique)
+├── MainActivity.kt             # Entry point
+└── MainViewModel.kt            # Main View Model
