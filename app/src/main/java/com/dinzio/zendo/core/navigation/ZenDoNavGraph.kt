@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
+import com.dinzio.zendo.features.task.presentation.screen.AddTaskScreen
 import com.dinzio.zendo.features.task.presentation.screen.TaskScreen
 import com.dinzio.zendo.features.timer.presentation.QuickTimerScreen
 
@@ -95,7 +96,14 @@ fun ZenDoNavGraph(
             )
         }
         composable(ZenDoRoutes.Tasks.route) {
-            TaskScreen()
+            TaskScreen(
+                navController = navController,
+            )
+        }
+        composable(ZenDoRoutes.AddTask.route) {
+            AddTaskScreen(
+                navController = navController,
+            )
         }
     }
 }

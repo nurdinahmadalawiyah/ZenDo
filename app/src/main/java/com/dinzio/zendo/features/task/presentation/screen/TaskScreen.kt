@@ -30,15 +30,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.task.domain.model.TaskModel
-import com.dinzio.zendo.features.task.presentation.viewModel.TaskListViewModel
+import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListViewModel
 
 @Composable
 fun TaskScreen(
+    navController: NavHostController,
     viewModel: TaskListViewModel = hiltViewModel(),
 ) {
     val isLandscapeMode = isLandscape()
@@ -56,14 +60,16 @@ fun TaskScreen(
             tasks = filteredTasks,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery = it }
+            onSearchQueryChange = { searchQuery = it },
+            onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) }
         )
     } else {
         TaskPhoneLayout(
             tasks = filteredTasks,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery = it }
+            onSearchQueryChange = { searchQuery = it },
+            onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) }
         )
     }
 }
@@ -73,7 +79,8 @@ fun TaskPhoneLayout(
     tasks: List<TaskModel>,
     isLoading: Boolean,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onNavigateToAdd: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -86,7 +93,7 @@ fun TaskPhoneLayout(
         ZenDoTopBar(
             title = "Tasks",
             actionIcon = Icons.Default.Add,
-            onActionClick = { /* Navigate to Add Category */ },
+            onActionClick = onNavigateToAdd,
             isOnPrimaryBackground = true
         )
 
@@ -130,21 +137,22 @@ fun TaskTabletLayout(
     tasks: List<TaskModel>,
     isLoading: Boolean,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onNavigateToAdd: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally // Center content for Tablet
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(24.dp))
 
         ZenDoTopBar(
             title = "Tasks",
             actionIcon = Icons.Default.Add,
-            onActionClick = { /* Navigate to Add Category */ },
+            onActionClick = onNavigateToAdd,
             isOnPrimaryBackground = true
         )
 
@@ -188,11 +196,15 @@ fun TaskTabletLayout(
 @Preview(name = "Phone", showBackground = true, device = Devices.PIXEL_4)
 @Composable
 fun PreviewTaskPhoneLayout() {
-    TaskScreen()
+    TaskScreen(
+        navController = rememberNavController(),
+    )
 }
 
 @Preview(name = "Tablet", showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun PreviewTaskTabletLayout() {
-    TaskScreen()
+    TaskScreen(
+        navController = rememberNavController(),
+    )
 }

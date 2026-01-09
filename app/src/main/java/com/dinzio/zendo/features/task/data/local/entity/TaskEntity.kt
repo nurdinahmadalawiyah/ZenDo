@@ -9,7 +9,7 @@ data class TaskEntity(
     @PrimaryKey(autoGenerate = true)  val id: Int = 0,
     val title: String,
     val icon: String,
-    @ColumnInfo(name = "category_id") val categoryId: Int,
+    @ColumnInfo(name = "category_id") val categoryId: Int?,
     val isCompleted: Boolean = false,
     val sessionsDone: Int,
     val sessionCount: Int,

@@ -1,8 +1,9 @@
-package com.dinzio.zendo.features.task.presentation.viewModel
+package com.dinzio.zendo.features.task.presentation.viewModel.taskList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dinzio.zendo.features.task.domain.usecase.GetTasksUseCase
+import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,7 @@ class TaskListViewModel @Inject constructor(
     private val getTasksUseCase: GetTasksUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(TaskState())
+    private val _state = MutableStateFlow(TaskListState())
     val state = _state.asStateFlow()
 
     init {

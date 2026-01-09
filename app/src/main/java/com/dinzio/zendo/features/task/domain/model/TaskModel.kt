@@ -4,7 +4,7 @@ data class TaskModel(
     val id: Int = 0,
     val title: String,
     val icon: String,
-    val categoryId: Int,
+    val categoryId: Int?,
     val isCompleted: Boolean,
     val sessionCount: Int,
     val sessionDone: Int,
