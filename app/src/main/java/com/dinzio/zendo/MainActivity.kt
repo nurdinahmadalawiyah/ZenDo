@@ -5,6 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,10 +15,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -27,35 +32,58 @@ import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
         super.onCreate(savedInstanceState)
-
+        installSplashScreen()
         setContent {
-            val isDarkTheme by mainViewModel.isDarkMode.collectAsState()
+            val themeMode by mainViewModel.themeMode.collectAsState()
+            val langCode by mainViewModel.languageCode.collectAsState()
 
-            ZendoTheme(
-                darkTheme = isDarkTheme,
-                dynamicColor = false
-            ) {
-                MainScreen(isDarkTheme) { mainViewModel.toggleTheme(it) }
+            LaunchedEffect(langCode) {
+                val appLocale: LocaleListCompat = if (langCode == "system") {
+                    LocaleListCompat.getEmptyLocaleList()
+                } else {
+                    LocaleListCompat.forLanguageTags(langCode)
+                }
+                if (AppCompatDelegate.getApplicationLocales() != appLocale) {
+                    AppCompatDelegate.setApplicationLocales(appLocale)
+                }
+            }
+
+            val useDarkTheme = when (themeMode) {
+                "light" -> false
+                "dark" -> true
+                else -> isSystemInDarkTheme()
+            }
+
+            ZendoTheme(darkTheme = useDarkTheme) {
+                MainScreen(
+                    currentThemeMode = themeMode,
+                    currentLanguage = langCode,
+                    onThemeChange = { mainViewModel.setTheme(it) },
+                    onLanguageChange = { mainViewModel.setLanguage(it) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(isDarkTheme: Boolean, onThemeSwitch: (Boolean) -> Unit) {
+fun MainScreen(
+    currentThemeMode: String,
+    onThemeChange: (String) -> Unit,
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ZenDoRoutes.Home.route
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
     val showBottomNav = currentRoute in listOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Profile.route)
 
     Surface(
@@ -85,8 +113,10 @@ fun MainScreen(isDarkTheme: Boolean, onThemeSwitch: (Boolean) -> Unit) {
                 }
                 ZenDoNavGraph(
                     navController = navController,
-                    isDarkTheme = isDarkTheme,
-                    onThemeSwitch = onThemeSwitch
+                    currentTheme = currentThemeMode,
+                    onThemeChange = onThemeChange,
+                    currentLanguage = currentLanguage,
+                    onLanguageChange = onLanguageChange
                 )
             }
         }

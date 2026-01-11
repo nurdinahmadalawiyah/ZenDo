@@ -22,10 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.theme.White
 
 @Composable
@@ -34,7 +36,8 @@ fun ZenDoTopBar(
     modifier: Modifier = Modifier,
     actionIcon: ImageVector? = null,
     onActionClick: (() -> Unit)? = null,
-    isOnPrimaryBackground: Boolean = false
+    isOnPrimaryBackground: Boolean = false,
+    hideBackButton: Boolean = false,
 ) {
     val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val buttonBackgroundColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.primary else White
@@ -47,20 +50,22 @@ fun ZenDoTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(
-            onClick = { onBackPressedDispatcher?.onBackPressed() },
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(buttonBackgroundColor)
-                .height(36.dp)
-                .width(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = iconColor,
-                modifier = Modifier.padding(4.dp)
-            )
+        if (!hideBackButton) {
+            IconButton(
+                onClick = { onBackPressedDispatcher?.onBackPressed() },
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(buttonBackgroundColor)
+                    .height(36.dp)
+                    .width(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back),
+                    tint = iconColor,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
         }
 
         Text(
@@ -82,7 +87,7 @@ fun ZenDoTopBar(
             ) {
                 Icon(
                     imageVector = actionIcon,
-                    contentDescription = "Action",
+                    contentDescription = stringResource(R.string.action),
                     tint = iconColor,
                     modifier = Modifier.padding(4.dp),
                 )

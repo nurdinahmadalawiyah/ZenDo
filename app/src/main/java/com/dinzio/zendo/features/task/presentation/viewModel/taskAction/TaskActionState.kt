@@ -7,6 +7,7 @@ data class TaskActionState(
     val sessionCountInput: Int = 1,
 
     val isSaving: Boolean = false,
+    val isDeleting: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null
 )

@@ -24,9 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
@@ -66,7 +68,7 @@ fun CategoryPhoneLayout(
         Spacer(modifier = Modifier.height(16.dp))
 
         ZenDoTopBar(
-            title = "Categories",
+            title = stringResource(R.string.categories),
             actionIcon = Icons.Default.Add,
             onActionClick = { /* Navigate to Add Category */ },
             isOnPrimaryBackground = true
@@ -77,7 +79,7 @@ fun CategoryPhoneLayout(
         ZenDoInput(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            placeholder = "Search Category...",
+            placeholder = stringResource(R.string.search_category),
             leadingIcon = Icons.Default.Search
         )
 
@@ -111,12 +113,12 @@ fun CategoryTabletLayout(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally // Center content for Tablet
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(24.dp))
 
         ZenDoTopBar(
-            title = "Categories",
+            title = stringResource(R.string.categories),
             actionIcon = Icons.Default.Add,
             onActionClick = { /* Navigate to Add Category */ },
             isOnPrimaryBackground = true
@@ -128,7 +130,7 @@ fun CategoryTabletLayout(
             ZenDoInput(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                placeholder = "Search Category...",
+                placeholder = stringResource(R.string.search_category),
                 leadingIcon = Icons.Default.Search
             )
         }

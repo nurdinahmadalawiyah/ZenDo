@@ -17,8 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,8 +42,6 @@ import com.dinzio.zendo.core.navigation.ZenDoRoutes
 @Composable
 fun HomeScreen(
     navController: NavController,
-    isDarkTheme: Boolean = false,
-    onThemeSwitch: (Boolean) -> Unit = {},
     onNavigateToTimer: () -> Unit = {}
 ) {
     val isLandscapeMode = isLandscape()
@@ -60,8 +58,7 @@ fun HomeScreen(
 
     if (isLandscapeMode) {
         HomeTabletLayout(
-            isDarkTheme = isDarkTheme,
-            onThemeSwitch = onThemeSwitch,
+            navController = navController,
             onNavigateToCategories = onNavigateToCategories,
             onNavigateToDetailCategory = onNavigateToDetailCategory,
             onNavigateToTasks = onNavigateToTasks,
@@ -69,8 +66,7 @@ fun HomeScreen(
         )
     } else {
         HomePhoneLayout(
-            isDarkTheme = isDarkTheme,
-            onThemeSwitch = onThemeSwitch,
+            navController = navController,
             onNavigateToCategories = onNavigateToCategories,
             onNavigateToDetailCategory = onNavigateToDetailCategory,
             onNavigateToTasks = onNavigateToTasks,
@@ -84,8 +80,7 @@ fun HomeScreen(
 // ==========================================
 @Composable
 fun HomePhoneLayout(
-    isDarkTheme: Boolean,
-    onThemeSwitch: (Boolean) -> Unit,
+    navController: NavController,
     onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
     onNavigateToTasks: () -> Unit,
@@ -96,10 +91,7 @@ fun HomePhoneLayout(
         contentPadding = PaddingValues(16.dp),
     ) {
         item {
-            HeaderSection(
-                isDarkTheme = isDarkTheme,
-                onThemeSwitch = onThemeSwitch
-            )
+            HeaderSection(navController)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -115,7 +107,7 @@ fun HomePhoneLayout(
         }
 
         item {
-            ZenDoSectionHeader(title = "Task List", onActionClick = onNavigateToTasks)
+            ZenDoSectionHeader(title = stringResource(R.string.task_list), onActionClick = onNavigateToTasks)
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -126,6 +118,7 @@ fun HomePhoneLayout(
                 sessionDone = task.sessionDone,
                 categoryIcon = task.icon,
                 onItemClick = { },
+                onLongItemClick = { },
                 onPlayClick = onNavigateToTimer
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -142,8 +135,7 @@ fun HomePhoneLayout(
 // ==========================================
 @Composable
 fun HomeTabletLayout(
-    isDarkTheme: Boolean,
-    onThemeSwitch: (Boolean) -> Unit,
+    navController: NavController,
     onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
     onNavigateToTasks: () -> Unit,
@@ -161,10 +153,7 @@ fun HomeTabletLayout(
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState())
         ) {
-            HeaderSection(
-                isDarkTheme = isDarkTheme,
-                onThemeSwitch = onThemeSwitch
-            )
+            HeaderSection(navController)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -182,7 +171,7 @@ fun HomeTabletLayout(
                 .weight(0.55f)
                 .fillMaxHeight()
         ) {
-            ZenDoSectionHeader(title = "Task List", onActionClick = onNavigateToTasks)
+            ZenDoSectionHeader(title = stringResource(R.string.task_list), onActionClick = onNavigateToTasks)
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
@@ -196,6 +185,7 @@ fun HomeTabletLayout(
                         sessionDone = task.sessionDone,
                         categoryIcon = task.icon,
                         onItemClick = { },
+                        onLongItemClick = { },
                         onPlayClick = onNavigateToTimer
                     )
                 }
@@ -210,8 +200,7 @@ fun HomeTabletLayout(
 
 @Composable
 fun HeaderSection(
-    isDarkTheme: Boolean,
-    onThemeSwitch: (Boolean) -> Unit
+    navController: NavController,
 ) {
     Column {
         Row(
@@ -221,15 +210,17 @@ fun HeaderSection(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_logo_zendo_2),
-                contentDescription = "ZenDo Logo",
+                contentDescription = stringResource(R.string.zendo_logo),
                 modifier = Modifier
                     .height(36.dp)
             )
-            IconButton(onClick = { onThemeSwitch(!isDarkTheme) }) {
+            IconButton(onClick = {
+                navController.navigate(ZenDoRoutes.Settings.route)
+            }) {
                 Icon(
-                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                    contentDescription = "Switch Theme",
-                    tint = MaterialTheme.colorScheme.onBackground
+                    imageVector = Icons.TwoTone.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -255,7 +246,7 @@ fun CategorySection(
     onAllCategoriesClick: () -> Unit
 ) {
     Column {
-        ZenDoSectionHeader(title = "Categories", onActionClick = onAllCategoriesClick)
+        ZenDoSectionHeader(title = stringResource(R.string.categories), onActionClick = onAllCategoriesClick)
         Spacer(modifier = Modifier.height(12.dp))
 
         LazyRow(

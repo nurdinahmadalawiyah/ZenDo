@@ -1,6 +1,7 @@
 package com.dinzio.zendo.core.presentation.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dinzio.zendo.R
 
 @Composable
 fun ZenDoTaskItemCard(
@@ -34,13 +37,17 @@ fun ZenDoTaskItemCard(
     categoryIcon: String,
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
+    onLongItemClick: () -> Unit,
     onPlayClick: () -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .clickable { onItemClick() },
+            .combinedClickable(
+                onClick = onItemClick,
+                onLongClick = onLongItemClick
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
@@ -74,7 +81,7 @@ fun ZenDoTaskItemCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "\uD83C\uDFAF $sessionCount • \uD83D\uDD25 $sessionDone",
+                    text = stringResource(R.string.sessions_done, sessionCount, sessionDone),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -95,10 +102,11 @@ private fun ZenDoTaskItemCardPreview() {
     Box(modifier = Modifier.padding(16.dp)) {
         ZenDoTaskItemCard(
             title = "Learn Jetpack Compose",
-            sessionCount = "2 Sessions",
-            sessionDone = "4 Done",
+            sessionCount = "2",
+            sessionDone = "4",
             categoryIcon = "\uD83E\uDDD1\u200D\uD83D\uDCBB",
             onItemClick = {},
+            onLongItemClick = {},
             onPlayClick = {}
         )
     }

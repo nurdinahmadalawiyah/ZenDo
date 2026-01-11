@@ -16,11 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoCircularTimer
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
@@ -37,8 +39,8 @@ fun QuickTimerScreen(
     val modeColor = if (isFocusMode) MaterialTheme.colorScheme.primary else Color(0xFFFF9800)
     val modeLightColor = modeColor.copy(alpha = 0.2f)
 
-    val headerText = if (isFocusMode) "Let's focus for" else "Take a break"
-    val taskText = if (isFocusMode) "Learn React" else "Relaxing"
+    val headerText = if (isFocusMode) stringResource(R.string.let_s_focus_for) else stringResource(R.string.take_a_break)
+    val taskText = if (isFocusMode) "Learn React" else stringResource(R.string.relaxing)
     val taskEmoji = if (isFocusMode) "🔥" else "☕"
 
     val uiData = TimerUiData(
@@ -95,7 +97,9 @@ fun TimerPhoneLayout(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ZenDoTopBar(
-            title = if (state.mode == TimerMode.FOCUS) "Pomodoro Timer" else "Break Timer",
+            title = if (state.mode == TimerMode.FOCUS) stringResource(R.string.pomodoro_timer) else stringResource(
+                R.string.break_timer
+            ),
             actionIcon = Icons.Default.MoreVert,
             onActionClick = { /* Menu */ },
             isOnPrimaryBackground = true
@@ -122,7 +126,7 @@ fun TimerPhoneLayout(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "🎯 ${state.currentSession} of ${state.totalSessions} sessions",
+            text = stringResource(R.string.of_sessions, state.currentSession, state.totalSessions),
             color = Color.Gray
         )
 
@@ -164,7 +168,7 @@ fun TimerTabletLayout(
             verticalArrangement = Arrangement.SpaceAround
         ) {
             ZenDoTopBar(
-                title = if (state.mode == TimerMode.FOCUS) "Pomodoro Timer" else "Break Timer",
+                title = if (state.mode == TimerMode.FOCUS) stringResource(R.string.pomodoro_timer) else stringResource(R.string.break_timer),
                 actionIcon = Icons.Default.MoreVert,
                 onActionClick = { /* Menu */ },
                 isOnPrimaryBackground = true,
@@ -179,7 +183,7 @@ fun TimerTabletLayout(
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "🎯 ${state.currentSession} of ${state.totalSessions} sessions",
+                    text = stringResource(R.string.of_sessions, state.currentSession, state.totalSessions),
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Gray
                 )

@@ -67,4 +67,16 @@ class TaskActionViewModel @Inject constructor(
             }
         }
     }
+
+    private fun deleteTask(task: TaskModel) {
+        viewModelScope.launch {
+            _state.update { it.copy(isDeleting = true) }
+            try {
+                deleteTaskUseCase(task)
+                _state.update { it.copy(isSuccess = true, isDeleting = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isDeleting = false, errorMessage = e.message) }
+            }
+        }
+    }
 }

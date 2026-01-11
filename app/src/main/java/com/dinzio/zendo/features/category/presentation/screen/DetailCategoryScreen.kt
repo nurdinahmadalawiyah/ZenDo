@@ -163,6 +163,7 @@ fun TaskList(onItemClick: () -> Unit) {
                 sessionDone = task.sessionDone,
                 categoryIcon = task.icon,
                 onItemClick = onItemClick,
+                onLongItemClick = { },
                 onPlayClick = onItemClick
             )
         }
