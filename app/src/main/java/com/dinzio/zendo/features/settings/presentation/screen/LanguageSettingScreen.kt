@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 
 @Composable
@@ -25,7 +28,11 @@ fun LanguageSettingScreen(
     currentLocale: String,
     onLanguageSelected: (String) -> Unit
 ) {
-    val languages = listOf("English" to "en", "Bahasa Indonesia" to "in")
+    val languages = listOf(
+        stringResource(R.string.english) to "en",
+        stringResource(R.string.bahasa_indonesia) to "in",
+        stringResource(R.string.system_default) to "system"
+    )
 
     Column(
         modifier = Modifier
@@ -36,7 +43,7 @@ fun LanguageSettingScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         ZenDoTopBar(
-            title = "Select Language",
+            title = stringResource(R.string.select_language),
             isOnPrimaryBackground = true
         )
 
@@ -64,7 +71,7 @@ fun LanguageSettingScreen(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                     ),
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .clip(shape)
                         .clickable { onLanguageSelected(code) }
                 )

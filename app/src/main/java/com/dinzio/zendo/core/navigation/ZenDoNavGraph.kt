@@ -29,7 +29,9 @@ import com.dinzio.zendo.features.timer.presentation.QuickTimerScreen
 fun ZenDoNavGraph(
     navController: NavHostController,
     currentTheme: String,
-    onThemeChange: (String) -> Unit
+    onThemeChange: (String) -> Unit,
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit
 ) {
     val bottomNavRoutes = setOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Profile.route)
 
@@ -110,6 +112,7 @@ fun ZenDoNavGraph(
             SettingsScreen(
                 navController = navController,
                 currentThemeMode = currentTheme,
+                currentLanguageCode = currentLanguage
             )
         }
         composable(ZenDoRoutes.ThemeSetting.route) {
@@ -122,8 +125,10 @@ fun ZenDoNavGraph(
         }
         composable(ZenDoRoutes.LanguageSetting.route) {
             LanguageSettingScreen(
-                currentLocale = "en",
-                onLanguageSelected = { /* TODO */ },
+                currentLocale = currentLanguage,
+                onLanguageSelected = { newLanguage ->
+                    onLanguageChange(newLanguage)
+                },
             )
         }
     }

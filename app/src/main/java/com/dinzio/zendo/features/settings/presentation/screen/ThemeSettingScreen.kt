@@ -18,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 
 @Composable
@@ -27,9 +29,9 @@ fun ThemeSettingScreen(
     onThemeSelected: (String) -> Unit
 ) {
     val options = listOf(
-        "Light Mode" to "light",
-        "Dark Mode" to "dark",
-        "System Default" to "system"
+        stringResource(R.string.light_mode) to "light",
+        stringResource(R.string.dark_mode) to "dark",
+        stringResource(R.string.system_default) to "system"
     )
 
     Column(
@@ -41,7 +43,7 @@ fun ThemeSettingScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         ZenDoTopBar(
-            title = "Select Theme",
+            title = stringResource(R.string.select_theme),
             isOnPrimaryBackground = true
         )
 

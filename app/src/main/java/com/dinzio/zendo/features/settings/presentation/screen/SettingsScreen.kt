@@ -18,11 +18,13 @@ import androidx.compose.material.icons.twotone.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.core.util.isLandscape
@@ -33,7 +35,7 @@ import com.dinzio.zendo.features.settings.presentation.component.SettingsItem
 fun SettingsScreen(
     navController: NavController,
     currentThemeMode: String,
-    onLanguageClick: () -> Unit = {},
+    currentLanguageCode: String,
 ) {
     val isLandscapeMode = isLandscape()
 
@@ -43,6 +45,7 @@ fun SettingsScreen(
         SettingsPhoneLayout(
             navController = navController,
             currentThemeMode = currentThemeMode,
+            currentLanguageCode = currentLanguageCode,
         )
     }
 
@@ -52,6 +55,7 @@ fun SettingsScreen(
 fun SettingsPhoneLayout(
     navController: NavController,
     currentThemeMode: String,
+    currentLanguageCode: String,
 ) {
     Column(
         modifier = Modifier
@@ -62,17 +66,19 @@ fun SettingsPhoneLayout(
         Spacer(modifier = Modifier.height(16.dp))
 
         ZenDoTopBar(
-            title = "Settings",
+            title = stringResource(R.string.settings),
             isOnPrimaryBackground = true
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        SettingsCategoryTitle(title = "General")
+        SettingsCategoryTitle(title = stringResource(R.string.general))
 
         SettingsItem(
-            title = "Language",
-            subtitle = "English",
+            title = stringResource(R.string.language),
+            subtitle = if (currentLanguageCode == "en") stringResource(R.string.english) else if (currentLanguageCode == "in") stringResource(
+                R.string.bahasa_indonesia
+            ) else stringResource(R.string.system_default),
             icon = Icons.TwoTone.Language,
             roundedCornerShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             onClick = { navController.navigate(ZenDoRoutes.LanguageSetting.route) }
@@ -81,8 +87,10 @@ fun SettingsPhoneLayout(
         Spacer(modifier = Modifier.height(2.dp))
 
         SettingsItem(
-            title = "Theme",
-            subtitle = if (currentThemeMode == "dark") "Dark" else if (currentThemeMode == "light") "Light" else "System Default",
+            title = stringResource(R.string.theme),
+            subtitle = if (currentThemeMode == "dark") stringResource(R.string.dark_mode) else if (currentThemeMode == "light") stringResource(
+                R.string.light_mode
+            ) else stringResource(R.string.system_default),
             icon = if (currentThemeMode == "dark") Icons.TwoTone.DarkMode else if (currentThemeMode == "light") Icons.TwoTone.LightMode else Icons.TwoTone.BrightnessAuto,
             roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
             onClick = { navController.navigate(ZenDoRoutes.ThemeSetting.route) }
@@ -90,10 +98,10 @@ fun SettingsPhoneLayout(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        SettingsCategoryTitle(title = "Timer Settings")
+        SettingsCategoryTitle(title = stringResource(R.string.timer_settings))
 
         SettingsItem(
-            title = "Focus Duration",
+            title = stringResource(R.string.focus_duration),
             subtitle = "25 Minutes",
             icon = Icons.TwoTone.Timer,
             roundedCornerShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
@@ -103,8 +111,8 @@ fun SettingsPhoneLayout(
         Spacer(modifier = Modifier.height(2.dp))
 
         SettingsItem(
-            title = "Auto-start Break",
-            subtitle = "Enabled",
+            title = stringResource(R.string.break_duration),
+            subtitle = "5 Minutes",
             icon = Icons.TwoTone.AutoMode,
             roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
             onClick = { /* Show auto-start break settings */ }
@@ -112,7 +120,7 @@ fun SettingsPhoneLayout(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        SettingsCategoryTitle(title = "About")
+        SettingsCategoryTitle(title = stringResource(R.string.about))
 
         SettingsItem(
             title = "Version",
@@ -136,6 +144,7 @@ fun PreviewPortrait() {
     SettingsScreen(
         navController = rememberNavController(),
         currentThemeMode = "dark",
+        currentLanguageCode = "en",
     )
 }
 
@@ -149,5 +158,6 @@ fun PreviewLandscape() {
     SettingsScreen(
         navController = rememberNavController(),
         currentThemeMode = "dark",
+        currentLanguageCode = "en",
     )
 }

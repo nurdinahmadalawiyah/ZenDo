@@ -25,17 +25,17 @@ val dummyCategories = listOf(
 )
 
 val dummyTasks = listOf(
-    TaskUiModel("Refactor Auth Module", "4 Sessions", "2 Done", "💻"),
-    TaskUiModel("Fix NullPointer in Login", "2 Sessions", "0 Done", "🐛"),
-    TaskUiModel("Setup CI/CD Pipeline", "5 Sessions", "3 Done", "⚙️"),
-    TaskUiModel("Learn Jetpack Compose", "6 Sessions", "4 Done", "📚"),
-    TaskUiModel("Read 'Clean Code' Ch.3", "2 Sessions", "2 Done", "📖"),
-    TaskUiModel("Spanish Vocab Drill", "1 Sessions", "0 Done", "🗣️"),
-    TaskUiModel("Write Blog Post Draft", "3 Sessions", "1 Done", "✍️"),
-    TaskUiModel("Design Home Screen UI", "4 Sessions", "2 Done", "🎨"),
-    TaskUiModel("Clear Inbox (Zero Inbox)", "1 Sessions", "0 Done", "📧"),
-    TaskUiModel("Weekly Review", "1 Sessions", "1 Done", "🗓️"),
-    TaskUiModel("Morning Meditation", "1 Sessions", "1 Done", "🧘"),
-    TaskUiModel("HIIT Workout", "2 Sessions", "0 Done", "💪"),
-    TaskUiModel("Drink Water Tracking", "8 Sessions", "3 Done", "💧")
+    TaskUiModel("Refactor Auth Module", "4", "2", "💻"),
+    TaskUiModel("Fix NullPointer in Login", "2", "0", "🐛"),
+    TaskUiModel("Setup CI/CD Pipeline", "5", "3", "⚙️"),
+    TaskUiModel("Learn Jetpack Compose", "6", "4", "📚"),
+    TaskUiModel("Read 'Clean Code' Ch.3", "2", "2", "📖"),
+    TaskUiModel("Spanish Vocab Drill", "1", "0", "🗣️"),
+    TaskUiModel("Write Blog Post Draft", "3", "1", "✍️"),
+    TaskUiModel("Design Home Screen UI", "4", "2", "🎨"),
+    TaskUiModel("Clear Inbox (Zero Inbox)", "1", "0", "📧"),
+    TaskUiModel("Weekly Review", "1", "1", "🗓️"),
+    TaskUiModel("Morning Meditation", "1", "1", "🧘"),
+    TaskUiModel("HIIT Workout", "2", "0", "💪"),
+    TaskUiModel("Drink Water Tracking", "8", "3", "💧")
 )

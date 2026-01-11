@@ -36,4 +36,20 @@
     <string name="back">Kembali</string>
     <string name="action">Aksi</string>
     <string name="search_emoji">Cari Emoji...</string>
+    <string name="settings">Pengaturan</string>
+    <string name="general">Umum</string>
+    <string name="language">Bahasa</string>
+    <string name="english">English</string>
+    <string name="bahasa_indonesia">Bahasa Indonesia</string>
+    <string name="system_default">Sistem Default</string>
+    <string name="theme">Tema</string>
+    <string name="dark_mode">Mode Gelap</string>
+    <string name="light_mode">Mode Terang</string>
+    <string name="timer_settings">Pengaturan Timer</string>
+    <string name="focus_duration">Durasi Fokus</string>
+    <string name="break_duration">Durasi Istirahat</string>
+    <string name="about">Tentang</string>
+    <string name="select_language">Pilih Bahasa</string>
+    <string name="select_theme">Pilih Tema</string>
+    <string name="sessions_done">🎯 %1$s Sesi • 🔥 %2$s Selesai</string>
 </resources>

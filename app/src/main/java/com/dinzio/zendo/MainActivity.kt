@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,10 +15,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -28,7 +32,7 @@ import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +40,19 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             val themeMode by mainViewModel.themeMode.collectAsState()
+            val langCode by mainViewModel.languageCode.collectAsState()
+
+            LaunchedEffect(langCode) {
+                val appLocale: LocaleListCompat = if (langCode == "system") {
+                    LocaleListCompat.getEmptyLocaleList()
+                } else {
+                    LocaleListCompat.forLanguageTags(langCode)
+                }
+                if (AppCompatDelegate.getApplicationLocales() != appLocale) {
+                    AppCompatDelegate.setApplicationLocales(appLocale)
+                }
+            }
+
             val useDarkTheme = when (themeMode) {
                 "light" -> false
                 "dark" -> true
@@ -45,7 +62,9 @@ class MainActivity : ComponentActivity() {
             ZendoTheme(darkTheme = useDarkTheme) {
                 MainScreen(
                     currentThemeMode = themeMode,
-                    onThemeChange = { mainViewModel.setTheme(it) }
+                    currentLanguage = langCode,
+                    onThemeChange = { mainViewModel.setTheme(it) },
+                    onLanguageChange = { mainViewModel.setLanguage(it) }
                 )
             }
         }
@@ -55,7 +74,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(
     currentThemeMode: String,
-    onThemeChange: (String) -> Unit
+    onThemeChange: (String) -> Unit,
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -93,7 +114,9 @@ fun MainScreen(
                 ZenDoNavGraph(
                     navController = navController,
                     currentTheme = currentThemeMode,
-                    onThemeChange = onThemeChange
+                    onThemeChange = onThemeChange,
+                    currentLanguage = currentLanguage,
+                    onLanguageChange = onLanguageChange
                 )
             }
         }
