@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 /// Primary Colors ZenDo
 val GreenPrimary = Color(0xFF035956)
-val GreenSecondary = Color(0xFFCAFBDF)
+val GreenSecondary = Color(0xFFEAFFF3)
 val GreenAccent = Color(0xFF00C989)
 val OrangeAccent = Color(0xFFFBB301)
 
