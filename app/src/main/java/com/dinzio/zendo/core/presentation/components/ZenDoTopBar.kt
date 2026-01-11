@@ -36,7 +36,8 @@ fun ZenDoTopBar(
     modifier: Modifier = Modifier,
     actionIcon: ImageVector? = null,
     onActionClick: (() -> Unit)? = null,
-    isOnPrimaryBackground: Boolean = false
+    isOnPrimaryBackground: Boolean = false,
+    hideBackButton: Boolean = false,
 ) {
     val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val buttonBackgroundColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.primary else White
@@ -49,20 +50,22 @@ fun ZenDoTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(
-            onClick = { onBackPressedDispatcher?.onBackPressed() },
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(buttonBackgroundColor)
-                .height(36.dp)
-                .width(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back),
-                tint = iconColor,
-                modifier = Modifier.padding(4.dp)
-            )
+        if (!hideBackButton) {
+            IconButton(
+                onClick = { onBackPressedDispatcher?.onBackPressed() },
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(buttonBackgroundColor)
+                    .height(36.dp)
+                    .width(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back),
+                    tint = iconColor,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
         }
 
         Text(

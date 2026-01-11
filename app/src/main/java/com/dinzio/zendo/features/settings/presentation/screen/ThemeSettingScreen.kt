@@ -26,7 +26,8 @@ import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 @Composable
 fun ThemeSettingScreen(
     currentTheme: String,
-    onThemeSelected: (String) -> Unit
+    onThemeSelected: (String) -> Unit,
+    hideBackButton: Boolean = false
 ) {
     val options = listOf(
         stringResource(R.string.light_mode) to "light",
@@ -44,7 +45,8 @@ fun ThemeSettingScreen(
 
         ZenDoTopBar(
             title = stringResource(R.string.select_theme),
-            isOnPrimaryBackground = true
+            isOnPrimaryBackground = true,
+            hideBackButton = hideBackButton
         )
 
         Spacer(modifier = Modifier.height(24.dp))

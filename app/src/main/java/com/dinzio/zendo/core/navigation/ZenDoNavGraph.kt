@@ -112,7 +112,9 @@ fun ZenDoNavGraph(
             SettingsScreen(
                 navController = navController,
                 currentThemeMode = currentTheme,
-                currentLanguageCode = currentLanguage
+                currentLanguageCode = currentLanguage,
+                onThemeChange = onThemeChange,
+                onLanguageChange = onLanguageChange
             )
         }
         composable(ZenDoRoutes.ThemeSetting.route) {

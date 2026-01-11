@@ -26,7 +26,8 @@ import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 @Composable
 fun LanguageSettingScreen(
     currentLocale: String,
-    onLanguageSelected: (String) -> Unit
+    onLanguageSelected: (String) -> Unit,
+    hideBackButton: Boolean = false
 ) {
     val languages = listOf(
         stringResource(R.string.english) to "en",
@@ -44,7 +45,8 @@ fun LanguageSettingScreen(
 
         ZenDoTopBar(
             title = stringResource(R.string.select_language),
-            isOnPrimaryBackground = true
+            isOnPrimaryBackground = true,
+            hideBackButton = hideBackButton
         )
 
         Spacer(modifier = Modifier.height(24.dp))
