@@ -1,6 +1,7 @@
 package com.dinzio.zendo.core.presentation.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,13 +35,17 @@ fun ZenDoTaskItemCard(
     categoryIcon: String,
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
+    onLongItemClick: () -> Unit,
     onPlayClick: () -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .clickable { onItemClick() },
+            .combinedClickable(
+                onClick = onItemClick,
+                onLongClick = onLongItemClick
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
@@ -99,6 +104,7 @@ private fun ZenDoTaskItemCardPreview() {
             sessionDone = "4 Done",
             categoryIcon = "\uD83E\uDDD1\u200D\uD83D\uDCBB",
             onItemClick = {},
+            onLongItemClick = {},
             onPlayClick = {}
         )
     }

@@ -126,6 +126,7 @@ fun HomePhoneLayout(
                 sessionDone = task.sessionDone,
                 categoryIcon = task.icon,
                 onItemClick = { },
+                onLongItemClick = { },
                 onPlayClick = onNavigateToTimer
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -196,6 +197,7 @@ fun HomeTabletLayout(
                         sessionDone = task.sessionDone,
                         categoryIcon = task.icon,
                         onItemClick = { },
+                        onLongItemClick = { },
                         onPlayClick = onNavigateToTimer
                     )
                 }

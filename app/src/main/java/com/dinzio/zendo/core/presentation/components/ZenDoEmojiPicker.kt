@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dinzio.zendo.core.data.local.EmojiDataSource
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,15 +29,17 @@ fun ZenDoEmojiPicker(
     modifier: Modifier = Modifier
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
     val categories = EmojiDataSource.allEmojis.keys.toList()
 
-    val displayEmojis = remember(searchQuery, selectedTabIndex) {
-        if (searchQuery.isEmpty()) {
-            EmojiDataSource.allEmojis[categories[selectedTabIndex]] ?: emptyList()
-        } else {
+    val pagerState = androidx.compose.foundation.pager.rememberPagerState { categories.size }
+    val scope = rememberCoroutineScope()
+
+    val searchResults = remember(searchQuery) {
+        if (searchQuery.isEmpty()) emptyList()
+        else {
+            val queryKeywords = searchQuery.lowercase().split(" ")
             EmojiDataSource.allEmojis.values.flatten().filter { emoji ->
-                emoji.label.contains(searchQuery, ignoreCase = true)
+                queryKeywords.all { it in emoji.label.lowercase() }
             }.distinctBy { it.char }
         }
     }
@@ -46,9 +49,7 @@ fun ZenDoEmojiPicker(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             placeholder = { Text("Search emoji...") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
@@ -60,7 +61,6 @@ fun ZenDoEmojiPicker(
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = Color.Transparent,
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -69,39 +69,60 @@ fun ZenDoEmojiPicker(
 
         if (searchQuery.isEmpty()) {
             PrimaryScrollableTabRow(
-                selectedTabIndex = selectedTabIndex,
+                selectedTabIndex = pagerState.currentPage,
                 edgePadding = 16.dp,
                 containerColor = Color.Transparent,
                 divider = {}
             ) {
                 categories.forEachIndexed { index, title ->
                     Tab(
-                        selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch { pagerState.animateScrollToPage(index) }
+                        },
                         text = { Text(title) }
                     )
                 }
             }
-        }
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 56.dp),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            items(displayEmojis) { emoji ->
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .clip(CircleShape)
-                        .clickable { onEmojiSelected(emoji.char) }
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = emoji.char, fontSize = 28.sp)
-                }
+            androidx.compose.foundation.pager.HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.Top
+            ) { pageIndex ->
+                val categoryEmojis = EmojiDataSource.allEmojis[categories[pageIndex]] ?: emptyList()
+                EmojiGrid(emojis = categoryEmojis, onEmojiSelected = onEmojiSelected)
+            }
+        } else {
+            Box(modifier = Modifier.weight(1f)) {
+                EmojiGrid(emojis = searchResults, onEmojiSelected = onEmojiSelected)
+            }
+        }
+    }
+}
+
+@Composable
+fun EmojiGrid(
+    emojis: List<com.dinzio.zendo.core.data.local.EmojiModel>,
+    onEmojiSelected: (String) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 56.dp),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(emojis) { emoji ->
+            Box(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+                    .clickable { onEmojiSelected(emoji.char) }
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = emoji.char, fontSize = 28.sp)
             }
         }
     }

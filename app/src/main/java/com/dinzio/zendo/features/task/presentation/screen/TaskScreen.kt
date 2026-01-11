@@ -17,8 +17,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,34 +36,84 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
+import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
+import com.dinzio.zendo.core.presentation.components.ZenDoTaskActionSheet
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.task.domain.model.TaskModel
+import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
+import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionViewModel
 import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskScreen(
     navController: NavHostController,
     viewModel: TaskListViewModel = hiltViewModel(),
+    actionViewModel: TaskActionViewModel = hiltViewModel()
 ) {
     val isLandscapeMode = isLandscape()
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val actionState by actionViewModel.state.collectAsStateWithLifecycle()
+
+    var selectedTask by remember { mutableStateOf<TaskModel?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showActionSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
     var searchQuery by remember { mutableStateOf("") }
 
     val filteredTasks = state.tasks.filter {
         it.title.contains(searchQuery, ignoreCase = true)
     }
-    
+
+    LaunchedEffect(actionState.isSuccess) {
+        if (actionState.isSuccess) {
+            showActionSheet = false
+            showDeleteDialog = false
+        }
+    }
+
+    if (showActionSheet && selectedTask != null) {
+        ZenDoTaskActionSheet(
+            title = selectedTask?.title ?: "",
+            icon = selectedTask?.icon ?: "",
+            sheetState = sheetState,
+            onDismiss = { showActionSheet = false },
+            onEditClick = { },
+            onDeleteClick = { showDeleteDialog = true }
+        )
+    }
+
+    if (showDeleteDialog && selectedTask != null) {
+        ZenDoConfirmDialog(
+            title = "Delete Task",
+            message = "Are you sure you want to delete \"${selectedTask?.title}\"? This action cannot be undone.",
+            confirmText = "Delete",
+            dismissText = "Cancel",
+            onConfirm = {
+                actionViewModel.onEvent(TaskActionEvent.OnDeleteTask(selectedTask!!))
+                showDeleteDialog = false
+            },
+            onDismiss = {
+                showDeleteDialog = false
+            }
+        )
+    }
+
     if (isLandscapeMode) {
         TaskTabletLayout(
             tasks = filteredTasks,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
+            onLongItemClick = { task ->
+                selectedTask = task
+                showActionSheet = true
+            },
             onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) }
         )
     } else {
@@ -69,6 +122,10 @@ fun TaskScreen(
             isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
+            onLongItemClick = { task ->
+                selectedTask = task
+                showActionSheet = true
+            },
             onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) }
         )
     }
@@ -80,6 +137,7 @@ fun TaskPhoneLayout(
     isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onLongItemClick: (TaskModel) -> Unit,
     onNavigateToAdd: () -> Unit
 ) {
     Column(
@@ -124,6 +182,7 @@ fun TaskPhoneLayout(
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
                         onItemClick = { },
+                        onLongItemClick = { onLongItemClick(task) },
                         onPlayClick = { }
                     )
                 }
@@ -138,6 +197,7 @@ fun TaskTabletLayout(
     isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onLongItemClick: (TaskModel) -> Unit,
     onNavigateToAdd: () -> Unit
 ) {
     Column(
@@ -185,6 +245,7 @@ fun TaskTabletLayout(
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
                         onItemClick = { },
+                        onLongItemClick = { onLongItemClick(task) },
                         onPlayClick = { }
                     )
                 }
