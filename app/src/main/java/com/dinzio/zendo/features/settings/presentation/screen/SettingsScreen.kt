@@ -153,7 +153,11 @@ fun SettingsPhoneLayout(
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        ZenDoTopBar(title = stringResource(R.string.settings), isOnPrimaryBackground = true)
+        ZenDoTopBar(
+            title = stringResource(R.string.settings),
+            isOnPrimaryBackground = true,
+            hideBackButton = true
+        )
         Spacer(modifier = Modifier.height(24.dp))
 
         SettingsListContent(
@@ -189,7 +193,11 @@ fun SettingsTabletLayout(
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            ZenDoTopBar(title = stringResource(R.string.settings), isOnPrimaryBackground = true)
+            ZenDoTopBar(
+                title = stringResource(R.string.settings),
+                isOnPrimaryBackground = true,
+                hideBackButton = true
+            )
             Spacer(modifier = Modifier.height(24.dp))
 
             SettingsListContent(
@@ -200,7 +208,12 @@ fun SettingsTabletLayout(
             )
         }
 
-        Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(MaterialTheme.colorScheme.surfaceVariant))
+        Box(
+            modifier = Modifier
+                .width(1.dp)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+        )
 
         Box(
             modifier = Modifier
@@ -210,7 +223,9 @@ fun SettingsTabletLayout(
             when (activePane) {
                 SettingsPane.DEFAULT -> {
                     Column(
-                        modifier = Modifier.fillMaxSize().padding(32.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
                         verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
                         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
                     ) {
@@ -222,12 +237,13 @@ fun SettingsTabletLayout(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         androidx.compose.material3.Text(
-                            text = "Pilih menu di kiri untuk mengatur aplikasi",
+                            text = stringResource(R.string.select_menu_on_the_left_to_configure_the_app),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
+
                 SettingsPane.LANGUAGE -> {
                     LanguageSettingScreen(
                         currentLocale = currentLanguageCode,
@@ -235,6 +251,7 @@ fun SettingsTabletLayout(
                         hideBackButton = true
                     )
                 }
+
                 SettingsPane.THEME -> {
                     ThemeSettingScreen(
                         currentTheme = currentThemeMode,

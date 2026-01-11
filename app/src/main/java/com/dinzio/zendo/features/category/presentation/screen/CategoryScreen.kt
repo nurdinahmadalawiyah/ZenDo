@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,26 +29,42 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dinzio.zendo.R
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
+import com.dinzio.zendo.features.category.domain.model.CategoryModel
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
 import com.dinzio.zendo.features.home.presentation.screen.CategoryUiModel
 
 @Composable
-fun CategoryScreen() {
+fun CategoryScreen(
+    viewModel: CategoryListViewModel = hiltViewModel()
+) {
     val isLandscapeMode = isLandscape()
+
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     var searchQuery by remember { mutableStateOf("") }
 
+    val filteredCategory = state.categories.filter {
+        it.name.contains(searchQuery, ignoreCase = true)
+    }
+
     if (isLandscapeMode) {
         CategoryTabletLayout(
+            categories = filteredCategory,
+            isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
         )
     } else {
         CategoryPhoneLayout(
+            categories = filteredCategory,
+            isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
         )
@@ -56,6 +73,8 @@ fun CategoryScreen() {
 
 @Composable
 fun CategoryPhoneLayout(
+    categories: List<CategoryModel>,
+    isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit
 ) {
@@ -85,19 +104,23 @@ fun CategoryPhoneLayout(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
-        ) {
-            items(dummyCategoriesList) { category ->
-                ZenDoCategoryCard(
-                    title = category.title,
-                    taskCount = category.count,
-                    icon = category.icon,
-                    onClick = { /* Navigate to Category Detail */ }
-                )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                items(categories) { category ->
+                    ZenDoCategoryCard(
+                        title = category.name,
+                        taskCount = category.taskCount,
+                        icon = category.icon,
+                        onClick = { /* Navigate to Category Detail */ }
+                    )
+                }
             }
         }
     }
@@ -105,6 +128,8 @@ fun CategoryPhoneLayout(
 
 @Composable
 fun CategoryTabletLayout(
+    categories: List<CategoryModel>,
+    isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit
 ) {
@@ -137,19 +162,23 @@ fun CategoryTabletLayout(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(4),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
-        ) {
-            items(dummyCategoriesList) { category ->
-                ZenDoCategoryCard(
-                    title = category.title,
-                    taskCount = category.count,
-                    icon = category.icon,
-                    onClick = { /* Navigate to Category Detail */ }
-                )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                items(categories) { category ->
+                    ZenDoCategoryCard(
+                        title = category.name,
+                        taskCount = category.taskCount,
+                        icon = category.icon,
+                        onClick = { /* Navigate to Category Detail */ }
+                    )
+                }
             }
         }
     }
