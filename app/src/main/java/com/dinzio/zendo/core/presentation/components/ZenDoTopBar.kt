@@ -22,10 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.theme.White
 
 @Composable
@@ -57,7 +59,7 @@ fun ZenDoTopBar(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = stringResource(R.string.back),
                 tint = iconColor,
                 modifier = Modifier.padding(4.dp)
             )
@@ -82,7 +84,7 @@ fun ZenDoTopBar(
             ) {
                 Icon(
                     imageVector = actionIcon,
-                    contentDescription = "Action",
+                    contentDescription = stringResource(R.string.action),
                     tint = iconColor,
                     modifier = Modifier.padding(4.dp),
                 )

@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.util.isLandscape
@@ -89,19 +91,24 @@ fun TaskScreen(
     }
 
     if (showDeleteDialog && selectedTask != null) {
-        ZenDoConfirmDialog(
-            title = "Delete Task",
-            message = "Are you sure you want to delete \"${selectedTask?.title}\"? This action cannot be undone.",
-            confirmText = "Delete",
-            dismissText = "Cancel",
-            onConfirm = {
-                actionViewModel.onEvent(TaskActionEvent.OnDeleteTask(selectedTask!!))
-                showDeleteDialog = false
-            },
-            onDismiss = {
-                showDeleteDialog = false
-            }
-        )
+        selectedTask?.title?.let {
+            ZenDoConfirmDialog(
+                title = stringResource(R.string.delete_task),
+                message = stringResource(
+                    R.string.are_you_sure_you_want_to_delete_this_action_cannot_be_undone,
+                    it
+                ),
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
+                    actionViewModel.onEvent(TaskActionEvent.OnDeleteTask(selectedTask!!))
+                    showDeleteDialog = false
+                },
+                onDismiss = {
+                    showDeleteDialog = false
+                }
+            )
+        }
     }
 
     if (isLandscapeMode) {
@@ -149,7 +156,7 @@ fun TaskPhoneLayout(
         Spacer(modifier = Modifier.height(16.dp))
 
         ZenDoTopBar(
-            title = "Tasks",
+            title = stringResource(R.string.tasks),
             actionIcon = Icons.Default.Add,
             onActionClick = onNavigateToAdd,
             isOnPrimaryBackground = true
@@ -160,7 +167,7 @@ fun TaskPhoneLayout(
         ZenDoInput(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            placeholder = "Search Task...",
+            placeholder = stringResource(R.string.search_task),
             leadingIcon = Icons.Default.Search
         )
 
@@ -210,7 +217,7 @@ fun TaskTabletLayout(
         Spacer(modifier = Modifier.height(24.dp))
 
         ZenDoTopBar(
-            title = "Tasks",
+            title = stringResource(R.string.tasks),
             actionIcon = Icons.Default.Add,
             onActionClick = onNavigateToAdd,
             isOnPrimaryBackground = true
@@ -222,7 +229,7 @@ fun TaskTabletLayout(
             ZenDoInput(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                placeholder = "Search Category...",
+                placeholder = stringResource(R.string.search_task),
                 leadingIcon = Icons.Default.Search
             )
         }

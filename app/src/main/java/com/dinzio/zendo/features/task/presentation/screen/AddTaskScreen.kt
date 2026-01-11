@@ -20,10 +20,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoButton
 import com.dinzio.zendo.core.presentation.components.ZenDoChip
 import com.dinzio.zendo.core.presentation.components.ZenDoDropDown
@@ -77,7 +79,7 @@ fun AddTaskPhoneLayout(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         ZenDoTopBar(
-            title = "Add Task",
+            title = stringResource(R.string.add_task),
             actionIcon = Icons.Default.MoreVert,
             isOnPrimaryBackground = true
         )
@@ -92,7 +94,7 @@ fun AddTaskPhoneLayout(
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Title",
+            text = stringResource(R.string.title),
             style = MaterialTheme.typography.labelMedium,
             color = Color.Gray,
             modifier = Modifier
@@ -102,19 +104,19 @@ fun AddTaskPhoneLayout(
         ZenDoInput(
             value = state.titleInput,
             onValueChange = { onEvent(TaskActionEvent.OnTitleChange(it)) },
-            placeholder = "Task Title"
+            placeholder = stringResource(R.string.task_title)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ZenDoDropDown(
-                label = "Focus",
+                label = stringResource(R.string.focus_time),
                 value = "25 minutes", // Statis dulu sementara
                 onClick = { },
                 modifier = Modifier.weight(1f)
             )
             ZenDoDropDown(
-                label = "Break",
+                label = stringResource(R.string.break_time),
                 value = "5 minutes", // Statis dulu sementara
                 onClick = { },
                 modifier = Modifier.weight(1f)
@@ -129,7 +131,7 @@ fun AddTaskPhoneLayout(
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Category",
+            text = stringResource(R.string.category),
             style = MaterialTheme.typography.labelMedium,
             color = Color.Gray,
             modifier = Modifier
@@ -156,7 +158,7 @@ fun AddTaskPhoneLayout(
 
         Spacer(modifier = Modifier.height(32.dp))
         ZenDoButton(
-            text = if (state.isSaving) "Saving..." else "Save Task",
+            text = if (state.isSaving) "Saving..." else stringResource(R.string.save_task),
             onClick = { onEvent(TaskActionEvent.OnSaveTask) },
             enabled = !state.isSaving
         )
@@ -177,7 +179,7 @@ fun AddTaskTabletLayout(
         horizontalArrangement = Arrangement.spacedBy(48.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            ZenDoTopBar(title = "Add Task", isOnPrimaryBackground = true)
+            ZenDoTopBar(title = stringResource(R.string.add_task), isOnPrimaryBackground = true)
             Spacer(modifier = Modifier.height(32.dp))
             ZenDoThumbnailPicker(
                 currentIcon = state.iconInput,
@@ -187,7 +189,7 @@ fun AddTaskTabletLayout(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Category",
+                text = stringResource(R.string.category),
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.Gray,
                 modifier = Modifier
@@ -214,7 +216,7 @@ fun AddTaskTabletLayout(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = "Title",
+                text = stringResource(R.string.title),
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.Gray,
                 modifier = Modifier
@@ -224,18 +226,18 @@ fun AddTaskTabletLayout(
             ZenDoInput(
                 value = state.titleInput,
                 onValueChange = { onEvent(TaskActionEvent.OnTitleChange(it)) },
-                placeholder = "Task Title"
+                placeholder = stringResource(R.string.task_title)
             )
             Spacer(modifier = Modifier.height(20.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 ZenDoDropDown(
-                    label = "Focus",
+                    label = stringResource(R.string.focus_time),
                     value = "25 minutes",
                     onClick = { },
                     modifier = Modifier.weight(1f)
                 )
                 ZenDoDropDown(
-                    label = "Break",
+                    label = stringResource(R.string.break_time),
                     value = "5 minutes",
                     onClick = { },
                     modifier = Modifier.weight(1f)
@@ -248,7 +250,7 @@ fun AddTaskTabletLayout(
             )
             Spacer(modifier = Modifier.height(48.dp))
             ZenDoButton(
-                text = if (state.isSaving) "Saving..." else "Save Task",
+                text = if (state.isSaving) "Saving..." else stringResource(R.string.save_task),
                 onClick = { onEvent(TaskActionEvent.OnSaveTask) },
                 enabled = !state.isSaving
             )

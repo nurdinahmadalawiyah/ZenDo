@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.dinzio.zendo.R
 
 @Composable
 fun SessionIntervalPicker(
@@ -25,7 +27,7 @@ fun SessionIntervalPicker(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Session Interval",
+                text = stringResource(R.string.session_interval),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

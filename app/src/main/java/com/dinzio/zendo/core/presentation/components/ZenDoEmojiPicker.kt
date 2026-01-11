@@ -17,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.data.local.EmojiDataSource
 import kotlinx.coroutines.launch
 
@@ -48,8 +50,10 @@ fun ZenDoEmojiPicker(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Search emoji...") },
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            placeholder = { Text(stringResource(R.string.search_emoji)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {

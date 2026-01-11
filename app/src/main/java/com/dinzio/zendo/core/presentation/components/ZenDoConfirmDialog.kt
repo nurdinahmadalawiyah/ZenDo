@@ -6,14 +6,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.dinzio.zendo.R
 
 @Composable
 fun ZenDoConfirmDialog(
     title: String,
     message: String,
-    confirmText: String = "Delete",
-    dismissText: String = "Cancel",
+    confirmText: String = stringResource(R.string.delete),
+    dismissText: String = stringResource(R.string.cancel),
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     isDestructive: Boolean = true
