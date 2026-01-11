@@ -17,8 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,8 +42,6 @@ import com.dinzio.zendo.core.navigation.ZenDoRoutes
 @Composable
 fun HomeScreen(
     navController: NavController,
-    isDarkTheme: Boolean = false,
-    onThemeSwitch: (Boolean) -> Unit = {},
     onNavigateToTimer: () -> Unit = {}
 ) {
     val isLandscapeMode = isLandscape()
@@ -61,8 +58,7 @@ fun HomeScreen(
 
     if (isLandscapeMode) {
         HomeTabletLayout(
-            isDarkTheme = isDarkTheme,
-            onThemeSwitch = onThemeSwitch,
+            navController = navController,
             onNavigateToCategories = onNavigateToCategories,
             onNavigateToDetailCategory = onNavigateToDetailCategory,
             onNavigateToTasks = onNavigateToTasks,
@@ -70,8 +66,7 @@ fun HomeScreen(
         )
     } else {
         HomePhoneLayout(
-            isDarkTheme = isDarkTheme,
-            onThemeSwitch = onThemeSwitch,
+            navController = navController,
             onNavigateToCategories = onNavigateToCategories,
             onNavigateToDetailCategory = onNavigateToDetailCategory,
             onNavigateToTasks = onNavigateToTasks,
@@ -85,8 +80,7 @@ fun HomeScreen(
 // ==========================================
 @Composable
 fun HomePhoneLayout(
-    isDarkTheme: Boolean,
-    onThemeSwitch: (Boolean) -> Unit,
+    navController: NavController,
     onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
     onNavigateToTasks: () -> Unit,
@@ -97,10 +91,7 @@ fun HomePhoneLayout(
         contentPadding = PaddingValues(16.dp),
     ) {
         item {
-            HeaderSection(
-                isDarkTheme = isDarkTheme,
-                onThemeSwitch = onThemeSwitch
-            )
+            HeaderSection(navController)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -144,8 +135,7 @@ fun HomePhoneLayout(
 // ==========================================
 @Composable
 fun HomeTabletLayout(
-    isDarkTheme: Boolean,
-    onThemeSwitch: (Boolean) -> Unit,
+    navController: NavController,
     onNavigateToCategories: () -> Unit,
     onNavigateToDetailCategory: () -> Unit,
     onNavigateToTasks: () -> Unit,
@@ -163,10 +153,7 @@ fun HomeTabletLayout(
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState())
         ) {
-            HeaderSection(
-                isDarkTheme = isDarkTheme,
-                onThemeSwitch = onThemeSwitch
-            )
+            HeaderSection(navController)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -213,8 +200,7 @@ fun HomeTabletLayout(
 
 @Composable
 fun HeaderSection(
-    isDarkTheme: Boolean,
-    onThemeSwitch: (Boolean) -> Unit
+    navController: NavController,
 ) {
     Column {
         Row(
@@ -228,11 +214,13 @@ fun HeaderSection(
                 modifier = Modifier
                     .height(36.dp)
             )
-            IconButton(onClick = { onThemeSwitch(!isDarkTheme) }) {
+            IconButton(onClick = {
+                navController.navigate(ZenDoRoutes.Settings.route)
+            }) {
                 Icon(
-                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                    contentDescription = stringResource(R.string.switch_theme),
-                    tint = MaterialTheme.colorScheme.onBackground
+                    imageVector = Icons.TwoTone.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

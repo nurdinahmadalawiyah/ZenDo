@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,31 +32,37 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
         super.onCreate(savedInstanceState)
-
+        installSplashScreen()
         setContent {
-            val isDarkTheme by mainViewModel.isDarkMode.collectAsState()
+            val themeMode by mainViewModel.themeMode.collectAsState()
+            val useDarkTheme = when (themeMode) {
+                "light" -> false
+                "dark" -> true
+                else -> isSystemInDarkTheme()
+            }
 
-            ZendoTheme(
-                darkTheme = isDarkTheme,
-                dynamicColor = false
-            ) {
-                MainScreen(isDarkTheme) { mainViewModel.toggleTheme(it) }
+            ZendoTheme(darkTheme = useDarkTheme) {
+                MainScreen(
+                    currentThemeMode = themeMode,
+                    onThemeChange = { mainViewModel.setTheme(it) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(isDarkTheme: Boolean, onThemeSwitch: (Boolean) -> Unit) {
+fun MainScreen(
+    currentThemeMode: String,
+    onThemeChange: (String) -> Unit
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ZenDoRoutes.Home.route
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
     val showBottomNav = currentRoute in listOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Profile.route)
 
     Surface(
@@ -85,8 +92,8 @@ fun MainScreen(isDarkTheme: Boolean, onThemeSwitch: (Boolean) -> Unit) {
                 }
                 ZenDoNavGraph(
                     navController = navController,
-                    isDarkTheme = isDarkTheme,
-                    onThemeSwitch = onThemeSwitch
+                    currentTheme = currentThemeMode,
+                    onThemeChange = onThemeChange
                 )
             }
         }

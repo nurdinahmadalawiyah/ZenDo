@@ -18,6 +18,9 @@ import androidx.navigation.compose.composable
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
+import com.dinzio.zendo.features.settings.presentation.screen.LanguageSettingScreen
+import com.dinzio.zendo.features.settings.presentation.screen.SettingsScreen
+import com.dinzio.zendo.features.settings.presentation.screen.ThemeSettingScreen
 import com.dinzio.zendo.features.task.presentation.screen.AddTaskScreen
 import com.dinzio.zendo.features.task.presentation.screen.TaskScreen
 import com.dinzio.zendo.features.timer.presentation.QuickTimerScreen
@@ -25,8 +28,8 @@ import com.dinzio.zendo.features.timer.presentation.QuickTimerScreen
 @Composable
 fun ZenDoNavGraph(
     navController: NavHostController,
-    isDarkTheme: Boolean,
-    onThemeSwitch: (Boolean) -> Unit
+    currentTheme: String,
+    onThemeChange: (String) -> Unit
 ) {
     val bottomNavRoutes = setOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Profile.route)
 
@@ -73,8 +76,6 @@ fun ZenDoNavGraph(
         composable(ZenDoRoutes.Home.route) {
             HomeScreen(
                 navController = navController,
-                isDarkTheme = isDarkTheme,
-                onThemeSwitch = onThemeSwitch,
             )
         }
         composable(ZenDoRoutes.Focus.route) {
@@ -103,6 +104,26 @@ fun ZenDoNavGraph(
         composable(ZenDoRoutes.AddTask.route) {
             AddTaskScreen(
                 navController = navController,
+            )
+        }
+        composable(ZenDoRoutes.Settings.route) {
+            SettingsScreen(
+                navController = navController,
+                currentThemeMode = currentTheme,
+            )
+        }
+        composable(ZenDoRoutes.ThemeSetting.route) {
+            ThemeSettingScreen(
+                currentTheme = currentTheme,
+                onThemeSelected = { newTheme ->
+                    onThemeChange(newTheme)
+                }
+            )
+        }
+        composable(ZenDoRoutes.LanguageSetting.route) {
+            LanguageSettingScreen(
+                currentLocale = "en",
+                onLanguageSelected = { /* TODO */ },
             )
         }
     }

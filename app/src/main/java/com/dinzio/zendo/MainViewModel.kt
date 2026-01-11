@@ -15,16 +15,16 @@ class MainViewModel @Inject constructor(
     private val themeManager: ThemeManager
 ) : ViewModel() {
 
-    val isDarkMode: StateFlow<Boolean> = themeManager.isDarkMode
+    val themeMode: StateFlow<String> = themeManager.themeMode
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
+            initialValue = "system"
         )
 
-    fun toggleTheme(isDark: Boolean) {
+    fun setTheme(mode: String) {
         viewModelScope.launch {
-            themeManager.toggleTheme(isDark)
+            themeManager.setThemeMode(mode)
         }
     }
 }
