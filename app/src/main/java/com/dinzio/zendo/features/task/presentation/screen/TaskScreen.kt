@@ -64,7 +64,7 @@ fun TaskScreen(
     var selectedTask by remember { mutableStateOf<TaskModel?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showActionSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var searchQuery by remember { mutableStateOf("") }
 

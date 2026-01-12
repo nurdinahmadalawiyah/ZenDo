@@ -92,8 +92,6 @@ fun ZenDoTopBar(
                     modifier = Modifier.padding(4.dp),
                 )
             }
-        } else {
-            Box(modifier = Modifier.padding(12.dp))
         }
     }
 }

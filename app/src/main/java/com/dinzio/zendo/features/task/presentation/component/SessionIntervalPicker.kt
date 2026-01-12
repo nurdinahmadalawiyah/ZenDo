@@ -51,7 +51,7 @@ fun SessionIntervalPicker(
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.primary,
                 activeTrackColor = MaterialTheme.colorScheme.primary,
-                inactiveTrackColor = MaterialTheme.colorScheme.secondary
+                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )
     }

@@ -14,7 +14,7 @@
     <string name="category">Kategori</string>
     <string name="save_task">Simpan Tugas</string>
     <string name="delete_task">Hapus Tugas</string>
-    <string name="are_you_sure_you_want_to_delete_this_action_cannot_be_undone">Apakah Anda yakin ingin menghapus \"%1$s\"? Tindakan ini tidak dapat dibatalkan.Apakah Anda yakin ingin menghapus \"%1$s\"? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="are_you_sure_you_want_to_delete_this_action_cannot_be_undone">Apakah Anda yakin ingin menghapus \"%1$s\"? Tindakan ini tidak dapat dibatalkan.</string>
     <string name="delete">Hapus</string>
     <string name="cancel">Batal</string>
     <string name="tasks">Tugas</string>

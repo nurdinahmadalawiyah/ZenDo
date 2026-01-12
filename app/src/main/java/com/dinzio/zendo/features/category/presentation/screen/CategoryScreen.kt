@@ -17,7 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,16 +39,23 @@ import com.dinzio.zendo.core.presentation.components.ZenDoCategoryCard
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.category.domain.model.CategoryModel
+import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
 import com.dinzio.zendo.features.home.presentation.screen.CategoryUiModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
-    viewModel: CategoryListViewModel = hiltViewModel()
+    viewModel: CategoryListViewModel = hiltViewModel(),
+    actionViewModel: CategoryActionViewModel = hiltViewModel(),
 ) {
     val isLandscapeMode = isLandscape()
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    var showAddCategorySheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var searchQuery by remember { mutableStateOf("") }
 
@@ -54,19 +63,29 @@ fun CategoryScreen(
         it.name.contains(searchQuery, ignoreCase = true)
     }
 
+    if (showAddCategorySheet) {
+        AddCategoryBottomSheet(
+            viewModel = actionViewModel,
+            onDismiss = { showAddCategorySheet = false },
+            sheetState = sheetState
+        )
+    }
+
     if (isLandscapeMode) {
         CategoryTabletLayout(
             categories = filteredCategory,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery = it }
+            onSearchQueryChange = { searchQuery = it },
+            onAddCategoryClick = { showAddCategorySheet = true }
         )
     } else {
         CategoryPhoneLayout(
             categories = filteredCategory,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery = it }
+            onSearchQueryChange = { searchQuery = it },
+            onAddCategoryClick = { showAddCategorySheet = true }
         )
     }
 }
@@ -76,7 +95,8 @@ fun CategoryPhoneLayout(
     categories: List<CategoryModel>,
     isLoading: Boolean,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onAddCategoryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -89,7 +109,7 @@ fun CategoryPhoneLayout(
         ZenDoTopBar(
             title = stringResource(R.string.categories),
             actionIcon = Icons.Default.Add,
-            onActionClick = { /* Navigate to Add Category */ },
+            onActionClick = onAddCategoryClick,
             isOnPrimaryBackground = true
         )
 
@@ -131,7 +151,8 @@ fun CategoryTabletLayout(
     categories: List<CategoryModel>,
     isLoading: Boolean,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onAddCategoryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -145,7 +166,7 @@ fun CategoryTabletLayout(
         ZenDoTopBar(
             title = stringResource(R.string.categories),
             actionIcon = Icons.Default.Add,
-            onActionClick = { /* Navigate to Add Category */ },
+            onActionClick = onAddCategoryClick,
             isOnPrimaryBackground = true
         )
 
