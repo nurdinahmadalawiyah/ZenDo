@@ -54,4 +54,7 @@
     <string name="sessions_done">🎯 %1$s Sesi • 🔥 %2$s Selesai</string>
     <string name="profile">Profil</string>
     <string name="select_menu_on_the_left_to_configure_the_app">Pilih menu di kiri untuk mengatur aplikasi</string>
+    <string name="save_category">Simpan Kategori</string>
+    <string name="category_name">Nama Ketegori</string>
+    <string name="add_category">Tambah Kategori</string>
 </resources>
