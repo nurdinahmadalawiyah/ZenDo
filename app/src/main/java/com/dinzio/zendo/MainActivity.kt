@@ -95,6 +95,7 @@ fun MainScreen(
                 if (!isLandscape && showBottomNav) {
                     ZenDoBottomBar(
                         currentRoute = currentRoute,
+                        onPlusClick = { navController.navigate(ZenDoRoutes.AddTask.route) },
                         onNavigate = { route -> navController.navigate(route) }
                     )
                 }
@@ -108,6 +109,7 @@ fun MainScreen(
                 if (isLandscape && showBottomNav) {
                     ZenDoNavigationRail(
                         currentRoute = currentRoute,
+                        onPlusClick = { navController.navigate(ZenDoRoutes.AddTask.route) },
                         onNavigate = { route -> navController.navigate(route) }
                     )
                 }

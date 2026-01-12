@@ -1,5 +1,6 @@
 package com.dinzio.zendo.features.category.presentation.screen
 
+import ZenDoEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.twotone.Category
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -75,6 +77,8 @@ fun CategoryScreen(
         if (actionState.isSuccess) {
             showActionSheet = false
             showDeleteDialog = false
+            selectedCategory = null
+            actionViewModel.onEvent(CategoryActionEvent.OnResetSuccess)
         }
     }
 
@@ -182,6 +186,12 @@ fun CategoryPhoneLayout(
 
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else if (categories.isEmpty()) {
+            ZenDoEmptyState(
+                text = stringResource(R.string.no_categories_yet_tap_to_add_one),
+                icon = Icons.TwoTone.Category,
+                onActionClick = onAddCategoryClick
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -243,6 +253,12 @@ fun CategoryTabletLayout(
 
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else if (categories.isEmpty()) {
+            ZenDoEmptyState(
+                text = stringResource(R.string.no_categories_yet_tap_to_add_one),
+                icon = Icons.TwoTone.Category,
+                onActionClick = onAddCategoryClick
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),

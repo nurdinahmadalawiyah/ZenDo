@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.material3)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.compose.runtime)
     ksp(libs.androidx.room.compiler)
 
     /// --- NAVIGATION ---
