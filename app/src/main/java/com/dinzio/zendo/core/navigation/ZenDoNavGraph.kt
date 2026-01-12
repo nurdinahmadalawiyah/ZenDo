@@ -33,7 +33,7 @@ fun ZenDoNavGraph(
     currentLanguage: String,
     onLanguageChange: (String) -> Unit
 ) {
-    val bottomNavRoutes = setOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Profile.route)
+    val bottomNavRoutes = setOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Settings.route)
 
     NavHost(
         navController = navController,

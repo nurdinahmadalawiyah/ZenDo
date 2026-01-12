@@ -14,12 +14,12 @@
     <string name="category">Kategori</string>
     <string name="save_task">Simpan Tugas</string>
     <string name="delete_task">Hapus Tugas</string>
-    <string name="are_you_sure_you_want_to_delete_this_action_cannot_be_undone">Apakah Anda yakin ingin menghapus \"%1$s\"? Tindakan ini tidak dapat dibatalkan.Apakah Anda yakin ingin menghapus \"%1$s\"? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="are_you_sure_you_want_to_delete_this_action_cannot_be_undone">Apakah Anda yakin ingin menghapus \"%1$s\"? Tindakan ini tidak dapat dibatalkan.</string>
     <string name="delete">Hapus</string>
     <string name="cancel">Batal</string>
     <string name="tasks">Tugas</string>
     <string name="search_task">Cari Tugas...</string>
-    <string name="let_s_focus_for">Mari kita fokus padaMari kita fokus pada</string>
+    <string name="let_s_focus_for">Mari kita fokus untuk</string>
     <string name="relaxing">Santai</string>
     <string name="take_a_break">Beristirahatlah</string>
     <string name="pomodoro_timer">Pomodoro Timer</string>
@@ -52,4 +52,6 @@
     <string name="select_language">Pilih Bahasa</string>
     <string name="select_theme">Pilih Tema</string>
     <string name="sessions_done">🎯 %1$s Sesi • 🔥 %2$s Selesai</string>
+    <string name="profile">Profil</string>
+    <string name="select_menu_on_the_left_to_configure_the_app">Pilih menu di kiri untuk mengatur aplikasi</string>
 </resources>

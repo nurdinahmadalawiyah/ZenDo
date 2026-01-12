@@ -16,8 +16,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,36 +32,129 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dinzio.zendo.R
+import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoCategoryCard
+import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
+import com.dinzio.zendo.features.category.domain.model.CategoryModel
+import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionEvent
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
 import com.dinzio.zendo.features.home.presentation.screen.CategoryUiModel
+import com.dinzio.zendo.features.task.domain.model.TaskModel
+import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryScreen() {
+fun CategoryScreen(
+    viewModel: CategoryListViewModel = hiltViewModel(),
+    actionViewModel: CategoryActionViewModel = hiltViewModel(),
+) {
     val isLandscapeMode = isLandscape()
+
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val actionState by actionViewModel.state.collectAsStateWithLifecycle()
+
+    var selectedCategory by remember { mutableStateOf<CategoryModel?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showActionSheet by remember { mutableStateOf(false) }
+    var showAddCategorySheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var searchQuery by remember { mutableStateOf("") }
 
+    val filteredCategory = state.categories.filter {
+        it.name.contains(searchQuery, ignoreCase = true)
+    }
+
+    LaunchedEffect(actionState.isSuccess) {
+        if (actionState.isSuccess) {
+            showActionSheet = false
+            showDeleteDialog = false
+        }
+    }
+
+    if (showActionSheet && selectedCategory != null) {
+        ZenDoActionSheet(
+            title = selectedCategory?.name ?: "",
+            icon = selectedCategory?.icon ?: "",
+            sheetState = sheetState,
+            onDismiss = { showActionSheet = false },
+            onEditClick = { },
+            onDeleteClick = { showDeleteDialog = true }
+        )
+    }
+
+    if (showDeleteDialog && selectedCategory != null) {
+        selectedCategory?.name?.let {
+            ZenDoConfirmDialog(
+                title = "Delete Category",
+                message = stringResource(
+                    R.string.are_you_sure_you_want_to_delete_this_action_cannot_be_undone,
+                    it
+                ),
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
+                    actionViewModel.onEvent(CategoryActionEvent.OnDeleteCategory(selectedCategory!!))
+                    showDeleteDialog = false
+                },
+                onDismiss = {
+                    showDeleteDialog = false
+                }
+            )
+        }
+    }
+
+    if (showAddCategorySheet) {
+        AddCategoryBottomSheet(
+            viewModel = actionViewModel,
+            onDismiss = { showAddCategorySheet = false },
+            sheetState = sheetState
+        )
+    }
+
     if (isLandscapeMode) {
         CategoryTabletLayout(
+            categories = filteredCategory,
+            isLoading = state.isLoading,
             searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery = it }
+            onSearchQueryChange = { searchQuery = it },
+            onLongItemClick = { category ->
+                selectedCategory = category
+                showActionSheet = true
+            },
+            onAddCategoryClick = { showAddCategorySheet = true }
         )
     } else {
         CategoryPhoneLayout(
+            categories = filteredCategory,
+            isLoading = state.isLoading,
             searchQuery = searchQuery,
-            onSearchQueryChange = { searchQuery = it }
+            onSearchQueryChange = { searchQuery = it },
+            onLongItemClick = { category ->
+                selectedCategory = category
+                showActionSheet = true
+            },
+            onAddCategoryClick = { showAddCategorySheet = true }
         )
     }
 }
 
 @Composable
 fun CategoryPhoneLayout(
+    categories: List<CategoryModel>,
+    isLoading: Boolean,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onLongItemClick: (CategoryModel) -> Unit,
+    onAddCategoryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -70,7 +167,7 @@ fun CategoryPhoneLayout(
         ZenDoTopBar(
             title = stringResource(R.string.categories),
             actionIcon = Icons.Default.Add,
-            onActionClick = { /* Navigate to Add Category */ },
+            onActionClick = onAddCategoryClick,
             isOnPrimaryBackground = true
         )
 
@@ -85,19 +182,24 @@ fun CategoryPhoneLayout(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
-        ) {
-            items(dummyCategoriesList) { category ->
-                ZenDoCategoryCard(
-                    title = category.title,
-                    taskCount = category.count,
-                    icon = category.icon,
-                    onClick = { /* Navigate to Category Detail */ }
-                )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                items(categories) { category ->
+                    ZenDoCategoryCard(
+                        title = category.name,
+                        taskCount = category.taskCount,
+                        icon = category.icon,
+                        onLongItemClick = { onLongItemClick(category) },
+                        onClick = { /* Navigate to Category Detail */ }
+                    )
+                }
             }
         }
     }
@@ -105,8 +207,12 @@ fun CategoryPhoneLayout(
 
 @Composable
 fun CategoryTabletLayout(
+    categories: List<CategoryModel>,
+    isLoading: Boolean,
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    onLongItemClick: (CategoryModel) -> Unit,
+    onAddCategoryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -120,7 +226,7 @@ fun CategoryTabletLayout(
         ZenDoTopBar(
             title = stringResource(R.string.categories),
             actionIcon = Icons.Default.Add,
-            onActionClick = { /* Navigate to Add Category */ },
+            onActionClick = onAddCategoryClick,
             isOnPrimaryBackground = true
         )
 
@@ -137,19 +243,24 @@ fun CategoryTabletLayout(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(4),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
-        ) {
-            items(dummyCategoriesList) { category ->
-                ZenDoCategoryCard(
-                    title = category.title,
-                    taskCount = category.count,
-                    icon = category.icon,
-                    onClick = { /* Navigate to Category Detail */ }
-                )
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                items(categories) { category ->
+                    ZenDoCategoryCard(
+                        title = category.name,
+                        taskCount = category.taskCount,
+                        icon = category.icon,
+                        onLongItemClick = { onLongItemClick(category) },
+                        onClick = { /* Navigate to Category Detail */ }
+                    )
+                }
             }
         }
     }

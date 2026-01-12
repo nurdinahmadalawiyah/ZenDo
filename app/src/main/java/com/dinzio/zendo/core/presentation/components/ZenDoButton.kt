@@ -67,7 +67,7 @@ fun ZenDoButton(
         enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(46.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,
@@ -76,6 +76,6 @@ fun ZenDoButton(
         ),
         shape = RoundedCornerShape(28.dp)
     ) {
-        Text(text = text, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(text = text, fontSize = 16.sp)
     }
 }

@@ -38,10 +38,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.R
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
+import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
-import com.dinzio.zendo.core.presentation.components.ZenDoTaskActionSheet
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.task.domain.model.TaskModel
@@ -64,7 +64,7 @@ fun TaskScreen(
     var selectedTask by remember { mutableStateOf<TaskModel?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showActionSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var searchQuery by remember { mutableStateOf("") }
 
@@ -80,7 +80,7 @@ fun TaskScreen(
     }
 
     if (showActionSheet && selectedTask != null) {
-        ZenDoTaskActionSheet(
+        ZenDoActionSheet(
             title = selectedTask?.title ?: "",
             icon = selectedTask?.icon ?: "",
             sheetState = sheetState,

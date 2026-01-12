@@ -30,7 +30,7 @@ import com.dinzio.zendo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ZenDoTaskActionSheet(
+fun ZenDoActionSheet(
     title: String,
     icon: String,
     onDismiss: () -> Unit,
@@ -56,14 +56,14 @@ fun ZenDoTaskActionSheet(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 20.dp)
                 )
 
                 Text(
                     text = icon,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 20.dp)
                 )

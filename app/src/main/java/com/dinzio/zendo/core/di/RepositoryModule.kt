@@ -1,5 +1,7 @@
 package com.dinzio.zendo.core.di
 
+import com.dinzio.zendo.features.category.data.repository.CategoryRepositoryImpl
+import com.dinzio.zendo.features.category.domain.repository.CategoryRepository
 import com.dinzio.zendo.features.task.data.repository.TaskRepositoryImpl
 import com.dinzio.zendo.features.task.domain.repository.TaskRepository
 import com.dinzio.zendo.features.timer.data.repository.QuickTimerRepositoryImpl
@@ -13,6 +15,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoryRepository(
+        impl: CategoryRepositoryImpl
+    ): CategoryRepository
 
     @Binds
     @Singleton

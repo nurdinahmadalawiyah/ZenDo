@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.twotone.Home
+import androidx.compose.material.icons.twotone.InsertChart
+import androidx.compose.material.icons.twotone.Settings
+import androidx.compose.material.icons.twotone.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.core.navigation.ZenDoRoutes
 
 data class BottomNavItem(
     val label: String,
@@ -38,10 +39,10 @@ data class BottomNavItem(
 )
 
 val navItems = listOf(
-    BottomNavItem("Home", Icons.Default.Home, "home"),
-    BottomNavItem("Focus", Icons.Default.Timer, "focus"),
-    BottomNavItem("Stats", Icons.Default.BarChart, "stats"),
-    BottomNavItem("Profile", Icons.Default.Person, "profile")
+    BottomNavItem("Home", Icons.TwoTone.Home, ZenDoRoutes.Home.route),
+    BottomNavItem("Focus", Icons.TwoTone.Timer, ZenDoRoutes.Focus.route),
+    BottomNavItem("Stats", Icons.TwoTone.InsertChart, ZenDoRoutes.Stats.route),
+    BottomNavItem("Settings", Icons.TwoTone.Settings, ZenDoRoutes.Settings.route)
 )
 
 @Composable

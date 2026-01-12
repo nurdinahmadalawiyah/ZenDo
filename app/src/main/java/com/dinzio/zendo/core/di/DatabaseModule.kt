@@ -3,6 +3,7 @@ package com.dinzio.zendo.core.di
 import android.content.Context
 import androidx.room.Room
 import com.dinzio.zendo.core.data.local.ZenDoDatabase
+import com.dinzio.zendo.features.category.data.local.dao.CategoryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +28,12 @@ object DatabaseModule {
         )
             .fallbackToDestructiveMigration()
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(db: ZenDoDatabase): CategoryDao {
+        return db.categoryDao()
     }
 
     @Provides

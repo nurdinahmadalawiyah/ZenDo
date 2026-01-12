@@ -51,4 +51,6 @@
     <string name="select_language">Select Language</string>
     <string name="select_theme">Select Theme</string>
     <string name="sessions_done">🎯 %1$s Sessions • 🔥 %2$s Done</string>
+    <string name="profile">Profile</string>
+    <string name="select_menu_on_the_left_to_configure_the_app">Select menu on the left to configure the app</string>
 </resources>

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Person
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -215,11 +216,11 @@ fun HeaderSection(
                     .height(36.dp)
             )
             IconButton(onClick = {
-                navController.navigate(ZenDoRoutes.Settings.route)
+                navController.navigate(ZenDoRoutes.Profile.route)
             }) {
                 Icon(
-                    imageVector = Icons.TwoTone.Settings,
-                    contentDescription = "Settings",
+                    imageVector = Icons.TwoTone.Person,
+                    contentDescription = stringResource(R.string.profile),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -257,6 +258,7 @@ fun CategorySection(
                     title = category.title,
                     taskCount = category.count,
                     icon = category.icon,
+                    onLongItemClick = { },
                     onClick = onCategoryClick
                 )
             }
