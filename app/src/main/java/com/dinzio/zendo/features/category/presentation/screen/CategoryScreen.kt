@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,15 +35,20 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dinzio.zendo.R
+import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoCategoryCard
+import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.category.domain.model.CategoryModel
 import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionEvent
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
 import com.dinzio.zendo.features.home.presentation.screen.CategoryUiModel
+import com.dinzio.zendo.features.task.domain.model.TaskModel
+import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +59,11 @@ fun CategoryScreen(
     val isLandscapeMode = isLandscape()
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val actionState by actionViewModel.state.collectAsStateWithLifecycle()
 
+    var selectedCategory by remember { mutableStateOf<CategoryModel?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showActionSheet by remember { mutableStateOf(false) }
     var showAddCategorySheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -61,6 +71,45 @@ fun CategoryScreen(
 
     val filteredCategory = state.categories.filter {
         it.name.contains(searchQuery, ignoreCase = true)
+    }
+
+    LaunchedEffect(actionState.isSuccess) {
+        if (actionState.isSuccess) {
+            showActionSheet = false
+            showDeleteDialog = false
+        }
+    }
+
+    if (showActionSheet && selectedCategory != null) {
+        ZenDoActionSheet(
+            title = selectedCategory?.name ?: "",
+            icon = selectedCategory?.icon ?: "",
+            sheetState = sheetState,
+            onDismiss = { showActionSheet = false },
+            onEditClick = { },
+            onDeleteClick = { showDeleteDialog = true }
+        )
+    }
+
+    if (showDeleteDialog && selectedCategory != null) {
+        selectedCategory?.name?.let {
+            ZenDoConfirmDialog(
+                title = "Delete Category",
+                message = stringResource(
+                    R.string.are_you_sure_you_want_to_delete_this_action_cannot_be_undone,
+                    it
+                ),
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
+                    actionViewModel.onEvent(CategoryActionEvent.OnDeleteCategory(selectedCategory!!))
+                    showDeleteDialog = false
+                },
+                onDismiss = {
+                    showDeleteDialog = false
+                }
+            )
+        }
     }
 
     if (showAddCategorySheet) {
@@ -77,6 +126,10 @@ fun CategoryScreen(
             isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
+            onLongItemClick = { category ->
+                selectedCategory = category
+                showActionSheet = true
+            },
             onAddCategoryClick = { showAddCategorySheet = true }
         )
     } else {
@@ -85,6 +138,10 @@ fun CategoryScreen(
             isLoading = state.isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
+            onLongItemClick = { category ->
+                selectedCategory = category
+                showActionSheet = true
+            },
             onAddCategoryClick = { showAddCategorySheet = true }
         )
     }
@@ -96,6 +153,7 @@ fun CategoryPhoneLayout(
     isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onLongItemClick: (CategoryModel) -> Unit,
     onAddCategoryClick: () -> Unit
 ) {
     Column(
@@ -138,6 +196,7 @@ fun CategoryPhoneLayout(
                         title = category.name,
                         taskCount = category.taskCount,
                         icon = category.icon,
+                        onLongItemClick = { onLongItemClick(category) },
                         onClick = { /* Navigate to Category Detail */ }
                     )
                 }
@@ -152,6 +211,7 @@ fun CategoryTabletLayout(
     isLoading: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onLongItemClick: (CategoryModel) -> Unit,
     onAddCategoryClick: () -> Unit
 ) {
     Column(
@@ -197,6 +257,7 @@ fun CategoryTabletLayout(
                         title = category.name,
                         taskCount = category.taskCount,
                         icon = category.icon,
+                        onLongItemClick = { onLongItemClick(category) },
                         onClick = { /* Navigate to Category Detail */ }
                     )
                 }

@@ -30,7 +30,7 @@ import com.dinzio.zendo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ZenDoTaskActionSheet(
+fun ZenDoActionSheet(
     title: String,
     icon: String,
     onDismiss: () -> Unit,

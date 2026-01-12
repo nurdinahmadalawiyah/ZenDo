@@ -258,6 +258,7 @@ fun CategorySection(
                     title = category.title,
                     taskCount = category.count,
                     icon = category.icon,
+                    onLongItemClick = { },
                     onClick = onCategoryClick
                 )
             }

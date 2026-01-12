@@ -40,8 +40,8 @@ fun ZenDoTopBar(
     hideBackButton: Boolean = false,
 ) {
     val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    val buttonBackgroundColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.primary else White
-    val iconColor = if (isOnPrimaryBackground) White else MaterialTheme.colorScheme.primary
+    val buttonBackgroundColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.primary else White.copy(alpha = 0.2f)
+    val iconColor = White
     val titleColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.onBackground else White
 
     Row(
