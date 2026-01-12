@@ -1,13 +1,17 @@
 package com.dinzio.zendo.core.presentation.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.dinzio.zendo.R
 
 @Composable
@@ -18,10 +22,11 @@ fun ZenDoConfirmDialog(
     dismissText: String = stringResource(R.string.cancel),
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    isDestructive: Boolean = true
+    isDestructive: Boolean = true,
+    isLoading: Boolean = false
 ) {
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (!isLoading) onDismiss() },
         containerColor = MaterialTheme.colorScheme.surface,
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -41,6 +46,7 @@ fun ZenDoConfirmDialog(
         confirmButton = {
             TextButton(
                 onClick = onConfirm,
+                enabled = !isLoading,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = if (isDestructive) {
                         MaterialTheme.colorScheme.error
@@ -49,20 +55,28 @@ fun ZenDoConfirmDialog(
                     }
                 )
             ) {
-                Text(
-                    text = confirmText,
-                    fontWeight = FontWeight.Bold
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = if (isDestructive) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.primary
+                    )
+                } else {
+                    Text(text = confirmText, fontWeight = FontWeight.Bold)
+                }
             }
         },
         dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text(text = dismissText)
+            if (!isLoading) {
+                TextButton(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(text = dismissText)
+                }
             }
         }
     )

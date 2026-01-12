@@ -102,11 +102,11 @@ fun TaskScreen(
                 dismissText = stringResource(R.string.cancel),
                 onConfirm = {
                     actionViewModel.onEvent(TaskActionEvent.OnDeleteTask(selectedTask!!))
-                    showDeleteDialog = false
                 },
                 onDismiss = {
                     showDeleteDialog = false
-                }
+                },
+                isLoading = actionState.isDeleting
             )
         }
     }
