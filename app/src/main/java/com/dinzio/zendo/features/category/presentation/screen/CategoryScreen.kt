@@ -47,8 +47,6 @@ import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
 import com.dinzio.zendo.features.home.presentation.screen.CategoryUiModel
-import com.dinzio.zendo.features.task.domain.model.TaskModel
-import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +92,7 @@ fun CategoryScreen(
     if (showDeleteDialog && selectedCategory != null) {
         selectedCategory?.name?.let {
             ZenDoConfirmDialog(
-                title = "Delete Category",
+                title = stringResource(R.string.delete_category),
                 message = stringResource(
                     R.string.are_you_sure_you_want_to_delete_this_action_cannot_be_undone,
                     it
@@ -103,11 +101,11 @@ fun CategoryScreen(
                 dismissText = stringResource(R.string.cancel),
                 onConfirm = {
                     actionViewModel.onEvent(CategoryActionEvent.OnDeleteCategory(selectedCategory!!))
-                    showDeleteDialog = false
                 },
                 onDismiss = {
                     showDeleteDialog = false
-                }
+                },
+                isLoading = actionState.isDeleting
             )
         }
     }
