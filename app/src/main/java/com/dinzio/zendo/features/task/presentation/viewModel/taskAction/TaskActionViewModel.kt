@@ -53,7 +53,7 @@ class TaskActionViewModel @Inject constructor(
 
             TaskActionEvent.OnSaveTask -> saveTask()
 
-            is TaskActionEvent.OnDeleteTask -> viewModelScope.launch { deleteTaskUseCase(event.task) }
+            is TaskActionEvent.OnDeleteTask -> deleteTask(event.task)
             is TaskActionEvent.OnToggleTask -> viewModelScope.launch {
                 updateTaskUseCase(event.task.copy(isCompleted = !event.task.isCompleted))
             }

@@ -30,7 +30,7 @@ class CategoryActionViewModel @Inject constructor(
 
             CategoryActionEvent.OnSaveCategory -> saveCategory()
 
-            is CategoryActionEvent.OnDeleteCategory -> viewModelScope.launch { deleteCategoryUseCase(event.category) }
+            is CategoryActionEvent.OnDeleteCategory -> deleteCategory(event.category)
             is CategoryActionEvent.OnResetSuccess -> {
                 _state.update { it.copy(isSuccess = false, nameInput = "", errorMessage = null) }
             }
@@ -59,6 +59,18 @@ class CategoryActionViewModel @Inject constructor(
                 _state.update { it.copy(isSaving = false, isSuccess = true) }
             } catch (e: Exception) {
                 _state.update { it.copy(isSaving = false, errorMessage = e.message) }
+            }
+        }
+    }
+
+    private fun deleteCategory(category: CategoryModel) {
+        viewModelScope.launch {
+            _state.update { it.copy(isDeleting = true) }
+            try {
+                deleteCategoryUseCase(category)
+                _state.update { it.copy(isDeleting = false, isSuccess = true) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isDeleting = false, errorMessage = e.message) }
             }
         }
     }

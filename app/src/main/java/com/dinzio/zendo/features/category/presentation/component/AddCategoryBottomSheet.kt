@@ -1,6 +1,8 @@
 package com.dinzio.zendo.features.category.presentation.component
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,8 +11,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoButton
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoThumbnailPicker
@@ -43,10 +47,11 @@ fun AddCategoryBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(start = 24.dp, end = 24.dp, bottom = 40.dp),
         ) {
             Text(
-                text = "Add Category",
+                text = stringResource(R.string.add_category),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 20.dp)
@@ -61,7 +66,7 @@ fun AddCategoryBottomSheet(
 
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Category Name",
+                text = stringResource(R.string.category_name),
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.Gray,
                 modifier = Modifier
@@ -71,12 +76,13 @@ fun AddCategoryBottomSheet(
             ZenDoInput(
                 value = state.nameInput,
                 onValueChange = { viewModel.onEvent(CategoryActionEvent.OnNameChange(it)) },
-                placeholder = "Category Name"
+                placeholder = stringResource(R.string.category_name)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
             ZenDoButton(
-                text = if (state.isSaving) "Saving..." else "Save Category",
+                text = stringResource(R.string.save_category),
+                isLoading = state.isSaving,
                 onClick = { viewModel.onEvent(CategoryActionEvent.OnSaveCategory) },
                 enabled = !state.isSaving
             )

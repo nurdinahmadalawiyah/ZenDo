@@ -34,8 +34,12 @@ object EmojiDataSource {
             EmojiModel("🗂️", "card index categorize"),
             EmojiModel("🔁", "repeat recurring task"),
             EmojiModel("🏁", "finish line done"),
-            EmojiModel("🛑", "stop break time")
-
+            EmojiModel("🛑", "stop break time"),
+            EmojiModel("🐛", "bug error issue debugging"),
+            EmojiModel("🗣️", "speaking language practice"),
+            EmojiModel("🧪", "testing experiment QA"),
+            EmojiModel("📧", "email inbox communication"),
+            EmojiModel("🗓️", "calendar date planning"),
         ),
 
         "Activities" to listOf(
@@ -59,8 +63,9 @@ object EmojiDataSource {
             EmojiModel("🧹", "cleaning reset space"),
             EmojiModel("🛀", "bath relax"),
             EmojiModel("🧠", "mental exercise"),
-            EmojiModel("🎥", "watching movie break")
-
+            EmojiModel("🎥", "watching movie break"),
+            EmojiModel("💪", "muscle strength workout"),
+            EmojiModel("💧", "water hydration health"),
         ),
 
         "Food & Drink" to listOf(
@@ -85,7 +90,6 @@ object EmojiDataSource {
             EmojiModel("🍎", "apple healthy snack"),
             EmojiModel("🥪", "sandwich lunch"),
             EmojiModel("🍱", "bento meal")
-
         ),
 
         "Nature" to listOf(
@@ -110,7 +114,6 @@ object EmojiDataSource {
             EmojiModel("☀️", "sun energy"),
             EmojiModel("🌾", "growth long term"),
             EmojiModel("🍂", "autumn tired season")
-
         ),
 
         "Objects" to listOf(
@@ -183,7 +186,6 @@ object EmojiDataSource {
             EmojiModel("🫤", "face with diagonal mouth unsure"),
             EmojiModel("🤝", "handshake agreement deal"),
             EmojiModel("🙏", "folded hands hope please")
-
         ),
 
         "Urban Meme" to listOf(

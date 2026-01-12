@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,12 +60,13 @@ fun ZenDoButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = Color.White
 ) {
     Button(
         onClick = onClick,
-        enabled = enabled,
+        enabled = enabled && !isLoading,
         modifier = modifier
             .fillMaxWidth()
             .height(46.dp),
@@ -76,6 +78,14 @@ fun ZenDoButton(
         ),
         shape = RoundedCornerShape(28.dp)
     ) {
-        Text(text = text, fontSize = 16.sp)
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = contentColor,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(text = text, fontSize = 16.sp)
+        }
     }
 }

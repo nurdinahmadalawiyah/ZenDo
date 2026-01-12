@@ -9,11 +9,18 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.InsertChart
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Timer
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -22,6 +29,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,26 +57,62 @@ val navItems = listOf(
 fun ZenDoBottomBar(
     currentRoute: String,
     onNavigate: (String) -> Unit,
+    onPlusClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        navItems.forEach { item ->
+        navItems.take(2).forEach { item ->
             val isSelected = currentRoute == item.route
             NavigationBarItem(
                 selected = isSelected,
                 onClick = { onNavigate(item.route) },
                 icon = { Icon(item.icon, contentDescription = item.label) },
                 label = { Text(text = item.label) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                colors = navigationBarItemColors()
+            )
+        }
+
+        NavigationBarItem(
+            selected = false,
+            onClick = { },
+            enabled = false,
+            icon = {
+                Surface(
+                    onClick = onPlusClick,
+                    modifier = Modifier.size(52.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    shadowElevation = 4.dp
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.TwoTone.Add,
+                            contentDescription = "Add",
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+            },
+            label = null,
+            alwaysShowLabel = false,
+            colors = NavigationBarItemDefaults.colors(
+                disabledIconColor = MaterialTheme.colorScheme.onSurface,
+                indicatorColor = Color.Transparent
+            )
+        )
+
+        navItems.takeLast(2).forEach { item ->
+            val isSelected = currentRoute == item.route
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = { onNavigate(item.route) },
+                icon = { Icon(item.icon, contentDescription = item.label) },
+                label = { Text(text = item.label) },
+                colors = navigationBarItemColors()
             )
         }
     }
@@ -78,18 +122,28 @@ fun ZenDoBottomBar(
 fun ZenDoNavigationRail(
     currentRoute: String,
     onNavigate: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPlusClick: () -> Unit
 ) {
     NavigationRail(
         modifier = modifier.padding(end = 8.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         header = {
-            // Opsional: Bisa taruh Logo ZenDo atau FAB (+) di sini
-            // Icon(Icons.Default.Menu, contentDescription = null)
+            FloatingActionButton(
+                onClick = onPlusClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                Icon(Icons.TwoTone.Add, contentDescription = "Add")
+            }
         }
     ) {
         Column(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -114,18 +168,27 @@ fun ZenDoNavigationRail(
     }
 }
 
+@Composable
+private fun navigationBarItemColors() = NavigationBarItemDefaults.colors(
+    selectedIconColor = MaterialTheme.colorScheme.primary,
+    selectedTextColor = MaterialTheme.colorScheme.primary,
+    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+)
+
 @Preview(name = "Bottom Bar - Light Mode", showBackground = true)
 @Composable
 fun PreviewZenDoBottomBar() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Gray)
-            .height(100.dp),
+            .background(Color.Gray),
         contentAlignment = Alignment.BottomCenter
     ) {
         ZenDoBottomBar(
             currentRoute = "home",
+            onPlusClick = {},
             onNavigate = {}
         )
     }
@@ -137,6 +200,7 @@ fun PreviewZenDoNavigationRail() {
     ZenDoNavigationRail(
         currentRoute = "focus",
         onNavigate = {},
+        onPlusClick = {},
         modifier = Modifier.fillMaxHeight()
     )
 }

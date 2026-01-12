@@ -1,5 +1,6 @@
 package com.dinzio.zendo.features.task.presentation.screen
 
+import ZenDoEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.twotone.Category
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -76,6 +78,7 @@ fun TaskScreen(
         if (actionState.isSuccess) {
             showActionSheet = false
             showDeleteDialog = false
+            selectedTask = null
         }
     }
 
@@ -102,11 +105,11 @@ fun TaskScreen(
                 dismissText = stringResource(R.string.cancel),
                 onConfirm = {
                     actionViewModel.onEvent(TaskActionEvent.OnDeleteTask(selectedTask!!))
-                    showDeleteDialog = false
                 },
                 onDismiss = {
                     showDeleteDialog = false
-                }
+                },
+                isLoading = actionState.isDeleting
             )
         }
     }
@@ -175,6 +178,12 @@ fun TaskPhoneLayout(
 
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else if (tasks.isEmpty()) {
+            ZenDoEmptyState(
+                text = stringResource(R.string.no_tasks_yet_tap_to_add_one),
+                icon = Icons.TwoTone.Category,
+                onActionClick = { onNavigateToAdd() }
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
@@ -238,6 +247,12 @@ fun TaskTabletLayout(
 
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else if (tasks.isEmpty()) {
+            ZenDoEmptyState(
+                text = stringResource(R.string.no_tasks_yet_tap_to_add_one),
+                icon = Icons.TwoTone.Category,
+                onActionClick = { onNavigateToAdd() }
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),

@@ -1,5 +1,6 @@
 package com.dinzio.zendo.features.category.presentation.screen
 
+import ZenDoEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.twotone.Category
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -47,8 +49,6 @@ import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
 import com.dinzio.zendo.features.home.presentation.screen.CategoryUiModel
-import com.dinzio.zendo.features.task.domain.model.TaskModel
-import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +77,8 @@ fun CategoryScreen(
         if (actionState.isSuccess) {
             showActionSheet = false
             showDeleteDialog = false
+            selectedCategory = null
+            actionViewModel.onEvent(CategoryActionEvent.OnResetSuccess)
         }
     }
 
@@ -94,7 +96,7 @@ fun CategoryScreen(
     if (showDeleteDialog && selectedCategory != null) {
         selectedCategory?.name?.let {
             ZenDoConfirmDialog(
-                title = "Delete Category",
+                title = stringResource(R.string.delete_category),
                 message = stringResource(
                     R.string.are_you_sure_you_want_to_delete_this_action_cannot_be_undone,
                     it
@@ -103,11 +105,11 @@ fun CategoryScreen(
                 dismissText = stringResource(R.string.cancel),
                 onConfirm = {
                     actionViewModel.onEvent(CategoryActionEvent.OnDeleteCategory(selectedCategory!!))
-                    showDeleteDialog = false
                 },
                 onDismiss = {
                     showDeleteDialog = false
-                }
+                },
+                isLoading = actionState.isDeleting
             )
         }
     }
@@ -184,6 +186,12 @@ fun CategoryPhoneLayout(
 
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else if (categories.isEmpty()) {
+            ZenDoEmptyState(
+                text = stringResource(R.string.no_categories_yet_tap_to_add_one),
+                icon = Icons.TwoTone.Category,
+                onActionClick = onAddCategoryClick
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -245,6 +253,12 @@ fun CategoryTabletLayout(
 
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else if (categories.isEmpty()) {
+            ZenDoEmptyState(
+                text = stringResource(R.string.no_categories_yet_tap_to_add_one),
+                icon = Icons.TwoTone.Category,
+                onActionClick = onAddCategoryClick
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
