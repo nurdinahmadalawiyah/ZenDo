@@ -2,6 +2,8 @@ package com.dinzio.zendo.features.task.presentation.viewModel.taskAction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dinzio.zendo.features.category.domain.model.CategoryModel
+import com.dinzio.zendo.features.category.domain.usecase.GetCategoriesUseCase
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.domain.usecase.AddTaskUseCase
 import com.dinzio.zendo.features.task.domain.usecase.DeleteTaskUseCase
@@ -17,11 +19,30 @@ import javax.inject.Inject
 class TaskActionViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskActionState())
     val state = _state.asStateFlow()
+
+    private val _categories = MutableStateFlow<List<CategoryModel>>(emptyList())
+    val categories = _categories.asStateFlow()
+
+    init {
+        observeCategories()
+    }
+
+    private fun observeCategories() {
+        viewModelScope.launch {
+            getCategoriesUseCase().collect { list ->
+                _categories.value = list
+                if (_state.value.categoryIdInput == null && list.isNotEmpty()) {
+                    _state.update { it.copy(categoryIdInput = list.first().id) }
+                }
+            }
+        }
+    }
 
     fun onEvent(event: TaskActionEvent) {
         when (event) {

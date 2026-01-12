@@ -30,6 +30,7 @@ fun AddCategoryBottomSheet(
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             onDismiss()
+            viewModel.onEvent(CategoryActionEvent.OnResetSuccess)
         }
     }
 
@@ -54,7 +55,7 @@ fun AddCategoryBottomSheet(
             ZenDoThumbnailPicker(
                 currentIcon = state.iconInput,
                 onIconSelected = { emoji ->
-                    viewModel.onEvent(CategoryActionEvent.onIconChange(emoji))
+                    viewModel.onEvent(CategoryActionEvent.OnIconChange(emoji))
                 }
             )
 
@@ -69,14 +70,14 @@ fun AddCategoryBottomSheet(
             )
             ZenDoInput(
                 value = state.nameInput,
-                onValueChange = { viewModel.onEvent(CategoryActionEvent.onNameChange(it)) },
+                onValueChange = { viewModel.onEvent(CategoryActionEvent.OnNameChange(it)) },
                 placeholder = "Category Name"
             )
 
             Spacer(modifier = Modifier.height(32.dp))
             ZenDoButton(
                 text = if (state.isSaving) "Saving..." else "Save Category",
-                onClick = { viewModel.onEvent(CategoryActionEvent.onSaveCategory) },
+                onClick = { viewModel.onEvent(CategoryActionEvent.OnSaveCategory) },
                 enabled = !state.isSaving
             )
         }

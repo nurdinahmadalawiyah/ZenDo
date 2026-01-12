@@ -25,7 +25,6 @@ fun ZenDoChip(
             color = if (isSelected) Color.Transparent else MaterialTheme.colorScheme.outline
         ),
         color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-        modifier = Modifier.padding(vertical = 4.dp)
     ) {
         Text(
             text = label,

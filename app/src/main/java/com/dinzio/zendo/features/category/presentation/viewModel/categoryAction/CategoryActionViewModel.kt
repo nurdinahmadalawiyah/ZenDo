@@ -25,12 +25,15 @@ class CategoryActionViewModel @Inject constructor(
 
     fun onEvent(event: CategoryActionEvent) {
         when (event) {
-            is CategoryActionEvent.onNameChange -> _state.update { it.copy(nameInput = event.name) }
-            is CategoryActionEvent.onIconChange -> _state.update { it.copy(iconInput = event.icon) }
+            is CategoryActionEvent.OnNameChange -> _state.update { it.copy(nameInput = event.name) }
+            is CategoryActionEvent.OnIconChange -> _state.update { it.copy(iconInput = event.icon) }
 
-            CategoryActionEvent.onSaveCategory -> saveCategory()
+            CategoryActionEvent.OnSaveCategory -> saveCategory()
 
-            is CategoryActionEvent.onDeleteCategory -> viewModelScope.launch { deleteCategoryUseCase(event.category) }
+            is CategoryActionEvent.OnDeleteCategory -> viewModelScope.launch { deleteCategoryUseCase(event.category) }
+            is CategoryActionEvent.OnResetSuccess -> {
+                _state.update { it.copy(isSuccess = false, nameInput = "", errorMessage = null) }
+            }
             else -> Unit
         }
     }
