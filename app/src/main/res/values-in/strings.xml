@@ -69,4 +69,7 @@
     <string name="_60_minutes">60 menit</string>
     <string name="_5_minutes">5 menit</string>
     <string name="_10_minutes">10 menit</string>
+    <string name="edit_category">Edit Kategori</string>
+    <string name="update_category">Perbarui Kategori</string>
+    <string name="update_task">Perbarui Tugas</string>
 </resources>

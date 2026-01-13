@@ -1,9 +1,17 @@
 package com.dinzio.zendo.features.category.presentation.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,7 +28,7 @@ import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddCategoryBottomSheet(
+fun EditCategoryBottomSheet(
     viewModel: CategoryActionViewModel,
     onDismiss: () -> Unit,
     sheetState: SheetState,
@@ -48,7 +56,7 @@ fun AddCategoryBottomSheet(
                 .padding(start = 24.dp, end = 24.dp, bottom = 40.dp),
         ) {
             Text(
-                text = stringResource(R.string.add_category),
+                text = stringResource(R.string.edit_category),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 20.dp)
@@ -71,7 +79,7 @@ fun AddCategoryBottomSheet(
             Spacer(modifier = Modifier.height(32.dp))
 
             ZenDoButton(
-                text = stringResource(R.string.save_category),
+                text = stringResource(R.string.update_category),
                 isLoading = state.isSaving,
                 onClick = { viewModel.onEvent(CategoryActionEvent.OnSaveCategory) },
                 enabled = !state.isSaving

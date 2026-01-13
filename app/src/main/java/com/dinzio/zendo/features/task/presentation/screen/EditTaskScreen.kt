@@ -108,7 +108,7 @@ fun EditTaskPhoneLayout(
         topBar = {
             Box(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
                 ZenDoTopBar(
-                    title = "Edit Task",
+                    title = stringResource(R.string.edit_task),
                     actionIcon = Icons.Default.MoreVert,
                     isOnPrimaryBackground = true
                 )
@@ -117,7 +117,7 @@ fun EditTaskPhoneLayout(
         bottomBar = {
             Box(modifier = Modifier.padding(24.dp)) {
                 ZenDoButton(
-                    text = "Update Task",
+                    text = stringResource(R.string.update_task),
                     isLoading = state.isSaving,
                     onClick = { onEvent(TaskActionEvent.OnSaveTask) },
                     enabled = !state.isSaving,

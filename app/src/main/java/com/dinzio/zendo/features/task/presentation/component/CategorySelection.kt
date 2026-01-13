@@ -29,7 +29,7 @@ fun CategorySelection(
     Text(
         text = stringResource(R.string.category),
         style = MaterialTheme.typography.labelMedium,
-        color = Color.Gray,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier
             .padding(bottom = 8.dp)
     )

@@ -68,4 +68,7 @@
     <string name="_60_minutes">60 minutes</string>
     <string name="_5_minutes">5 minutes</string>
     <string name="_10_minutes">10 minutes</string>
+    <string name="edit_category">Edit Category</string>
+    <string name="update_category">Update Category</string>
+    <string name="update_task">Update Task</string>
 </resources>
