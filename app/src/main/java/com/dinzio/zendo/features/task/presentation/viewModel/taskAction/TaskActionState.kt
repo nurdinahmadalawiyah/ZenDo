@@ -5,6 +5,8 @@ data class TaskActionState(
     val iconInput: String = "🔭",
     val categoryIdInput: Int? = null,
     val sessionCountInput: Int = 1,
+    val focusTimeInput: Int = 25,
+    val breakTimeInput: Int = 5,
 
     val isSaving: Boolean = false,
     val isDeleting: Boolean = false,

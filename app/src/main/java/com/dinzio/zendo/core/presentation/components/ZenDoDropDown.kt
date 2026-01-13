@@ -1,31 +1,37 @@
 package com.dinzio.zendo.core.presentation.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Icon
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ZenDoDropDown(
     label: String,
-    value: String,
-    onClick: () -> Unit,
+    selectedValue: String,
+    options: List<String>,
+    onOptionSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var expanded by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(12.dp)
 
     Column(modifier = modifier.fillMaxWidth()) {
@@ -36,25 +42,19 @@ fun ZenDoDropDown(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape)
-                .clickable { onClick() }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = value,
-                onValueChange = {},
-                modifier = Modifier.fillMaxWidth(),
+                value = selectedValue,
+                onValueChange = { },
+                modifier = Modifier.fillMaxWidth().menuAnchor(),
                 shape = shape,
                 readOnly = true,
-                enabled = false,
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
                 colors = OutlinedTextFieldDefaults.colors(
                     disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -63,6 +63,25 @@ fun ZenDoDropDown(
                     disabledTrailingIconColor = MaterialTheme.colorScheme.primary
                 ),
             )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+            ) {
+                options.forEach { selectionOption ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = selectionOption)
+                        },
+                        onClick = {
+                            onOptionSelected(selectionOption)
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                }
+            }
         }
     }
 }

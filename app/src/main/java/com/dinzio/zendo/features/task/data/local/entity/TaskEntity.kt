@@ -27,6 +27,8 @@ data class TaskEntity(
     val isCompleted: Boolean = false,
     val sessionsDone: Int,
     val sessionCount: Int,
+    val focusTime: Int,
+    val breakTime: Int,
     val createdAt: String,
     val updatedAt: String
 )

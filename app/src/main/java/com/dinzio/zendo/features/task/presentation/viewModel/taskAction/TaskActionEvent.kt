@@ -8,6 +8,8 @@ sealed class TaskActionEvent {
     data class OnIconChange(val icon: String) : TaskActionEvent()
     data class OnCategoryChange(val categoryId: Int?) : TaskActionEvent()
     data class OnSessionCountChange(val count: Int) : TaskActionEvent()
+    data class OnFocusTimeChange(val time: Int) : TaskActionEvent()
+    data class OnBreakTimeChange(val time: Int) : TaskActionEvent()
 
     // Actions
     object OnSaveTask : TaskActionEvent()

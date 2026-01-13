@@ -63,4 +63,10 @@
     <string name="create_new">Buat Baru</string>
     <string name="new_task">Tugas Baru</string>
     <string name="new_category">Kategori Baru</string>
+    <string name="_15_minutes">15 menit</string>
+    <string name="_25_minutes">25 menit</string>
+    <string name="_45_minutes">45 menit</string>
+    <string name="_60_minutes">60 menit</string>
+    <string name="_5_minutes">5 menit</string>
+    <string name="_10_minutes">10 menit</string>
 </resources>

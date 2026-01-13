@@ -11,6 +11,8 @@ fun TaskEntity.toDomain() = TaskModel(
     isCompleted = isCompleted,
     sessionCount = sessionCount,
     sessionDone = sessionsDone,
+    focusTime = focusTime,
+    breakTime = breakTime,
     createdAt = createdAt,
     updatedAt = updatedAt
 )
@@ -23,6 +25,8 @@ fun TaskModel.toEntity() = TaskEntity(
     isCompleted = isCompleted,
     sessionCount = sessionCount,
     sessionsDone = sessionDone,
+    focusTime = focusTime,
+    breakTime = breakTime,
     createdAt = createdAt,
     updatedAt = updatedAt
 )

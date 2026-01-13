@@ -33,20 +33,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoButton
 import com.dinzio.zendo.core.presentation.components.ZenDoChip
-import com.dinzio.zendo.core.presentation.components.ZenDoDropDown
-import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoThumbnailPicker
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
+import com.dinzio.zendo.core.util.TaskConstants
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.features.category.domain.model.CategoryModel
 import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
+import com.dinzio.zendo.features.task.presentation.component.CategorySelection
 import com.dinzio.zendo.features.task.presentation.component.SessionIntervalPicker
+import com.dinzio.zendo.features.task.presentation.component.TaskFormFields
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionState
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionViewModel
@@ -116,7 +116,8 @@ fun AddTaskPhoneLayout(
         bottomBar = {
             Box(modifier = Modifier.padding(24.dp)) {
                 ZenDoButton(
-                    text = if (state.isSaving) "Saving..." else stringResource(R.string.save_task),
+                    text = stringResource(R.string.save_task),
+                    isLoading = state.isSaving,
                     onClick = { onEvent(TaskActionEvent.OnSaveTask) },
                     enabled = !state.isSaving,
                     modifier = Modifier.fillMaxWidth()
@@ -138,75 +139,15 @@ fun AddTaskPhoneLayout(
                     onEvent(TaskActionEvent.OnIconChange(emoji))
                 }
             )
-
             Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = stringResource(R.string.title),
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray,
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(bottom = 8.dp)
-            )
-            ZenDoInput(
-                value = state.titleInput,
-                onValueChange = { onEvent(TaskActionEvent.OnTitleChange(it)) },
-                placeholder = stringResource(R.string.task_title)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ZenDoDropDown(
-                    label = stringResource(R.string.focus_time),
-                    value = "25 minutes", // Statis dulu sementara
-                    onClick = { },
-                    modifier = Modifier.weight(1f)
-                )
-                ZenDoDropDown(
-                    label = stringResource(R.string.break_time),
-                    value = "5 minutes", // Statis dulu sementara
-                    onClick = { },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
+            TaskFormFields(state, onEvent)
             Spacer(modifier = Modifier.height(24.dp))
             SessionIntervalPicker(
                 currentValue = state.sessionCountInput,
                 onValueChange = { onEvent(TaskActionEvent.OnSessionCountChange(it)) }
             )
-
             Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = stringResource(R.string.category),
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray,
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(bottom = 8.dp)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ZenDoChip(
-                    label = "+",
-                    isSelected = false,
-                    onClick = onAddCategoryClick
-                )
-
-                categories.forEach { category ->
-                    ZenDoChip(
-                        label = category.name,
-                        isSelected = state.categoryIdInput == category.id,
-                        onClick = {
-                            onEvent(TaskActionEvent.OnCategoryChange(category.id))
-                        }
-                    )
-                }
-            }
+            CategorySelection(state, categories, onEvent, onAddCategoryClick)
         }
     }
 }
@@ -235,36 +176,7 @@ fun AddTaskTabletLayout(
                 }
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = stringResource(R.string.category),
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray,
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(bottom = 8.dp)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ZenDoChip(
-                    label = "+",
-                    isSelected = false,
-                    onClick = onAddCategoryClick
-                )
-
-                categories.forEach { category ->
-                    ZenDoChip(
-                        label = category.name,
-                        isSelected = state.categoryIdInput == category.id,
-                        onClick = {
-                            onEvent(TaskActionEvent.OnCategoryChange(category.id))
-                        }
-                    )
-                }
-            }
+            CategorySelection(state, categories, onEvent, onAddCategoryClick)
         }
 
         Column(modifier = Modifier.weight(1f)) {
@@ -273,38 +185,11 @@ fun AddTaskTabletLayout(
                     .weight(1.2f)
                     .verticalScroll(rememberScrollState())
             ) {
-                Text(
-                    text = stringResource(R.string.title),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .padding(bottom = 8.dp)
-                )
-                ZenDoInput(
-                    value = state.titleInput,
-                    onValueChange = { onEvent(TaskActionEvent.OnTitleChange(it)) },
-                    placeholder = stringResource(R.string.task_title)
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    ZenDoDropDown(
-                        label = stringResource(R.string.focus_time),
-                        value = "25 minutes",
-                        onClick = { },
-                        modifier = Modifier.weight(1f)
-                    )
-                    ZenDoDropDown(
-                        label = stringResource(R.string.break_time),
-                        value = "5 minutes",
-                        onClick = { },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+                TaskFormFields(state, onEvent)
                 Spacer(modifier = Modifier.height(24.dp))
                 SessionIntervalPicker(
                     currentValue = state.sessionCountInput,
-                    onValueChange = { onEvent(TaskActionEvent.OnSessionCountChange(it) ) }
+                    onValueChange = { onEvent(TaskActionEvent.OnSessionCountChange(it)) }
                 )
                 Spacer(modifier = Modifier.height(48.dp))
             }

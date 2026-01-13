@@ -50,6 +50,8 @@ class TaskActionViewModel @Inject constructor(
             is TaskActionEvent.OnIconChange -> _state.update { it.copy(iconInput = event.icon) }
             is TaskActionEvent.OnCategoryChange -> _state.update { it.copy(categoryIdInput = event.categoryId) }
             is TaskActionEvent.OnSessionCountChange -> _state.update { it.copy(sessionCountInput = event.count) }
+            is TaskActionEvent.OnFocusTimeChange -> _state.update { it.copy(focusTimeInput = event.time) }
+            is TaskActionEvent.OnBreakTimeChange -> _state.update { it.copy(breakTimeInput = event.time) }
 
             TaskActionEvent.OnSaveTask -> saveTask()
 
@@ -78,6 +80,8 @@ class TaskActionViewModel @Inject constructor(
                     isCompleted = false,
                     sessionCount = currentState.sessionCountInput,
                     sessionDone = 0,
+                    focusTime = currentState.focusTimeInput,
+                    breakTime = currentState.breakTimeInput,
                     createdAt = System.currentTimeMillis().toString(),
                     updatedAt = System.currentTimeMillis().toString()
                 )
