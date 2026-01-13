@@ -13,6 +13,8 @@ sealed class TaskActionEvent {
 
     // Actions
     object OnSaveTask : TaskActionEvent()
+    object OnResetTask : TaskActionEvent()
+    data class OnLoadTask(val id: Int) : TaskActionEvent()
     data class OnDeleteTask(val task: TaskModel) : TaskActionEvent()
     data class OnToggleTask(val task: TaskModel) : TaskActionEvent()
 }

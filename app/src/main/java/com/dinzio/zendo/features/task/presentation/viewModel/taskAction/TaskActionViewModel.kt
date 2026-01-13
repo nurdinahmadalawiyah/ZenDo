@@ -7,6 +7,7 @@ import com.dinzio.zendo.features.category.domain.usecase.GetCategoriesUseCase
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.domain.usecase.AddTaskUseCase
 import com.dinzio.zendo.features.task.domain.usecase.DeleteTaskUseCase
+import com.dinzio.zendo.features.task.domain.usecase.GetTaskByIdUseCase
 import com.dinzio.zendo.features.task.domain.usecase.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskActionViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
+    private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase
@@ -55,6 +57,10 @@ class TaskActionViewModel @Inject constructor(
 
             TaskActionEvent.OnSaveTask -> saveTask()
 
+            is TaskActionEvent.OnResetTask -> {
+                _state.update { it.copy(isSuccess = false, errorMessage = null) }
+            }
+            is TaskActionEvent.OnLoadTask -> loadTask(event.id)
             is TaskActionEvent.OnDeleteTask -> deleteTask(event.task)
             is TaskActionEvent.OnToggleTask -> viewModelScope.launch {
                 updateTaskUseCase(event.task.copy(isCompleted = !event.task.isCompleted))
@@ -74,6 +80,7 @@ class TaskActionViewModel @Inject constructor(
             _state.update { it.copy(isSaving = true) }
             try {
                 val newTask = TaskModel(
+                    id = currentState.id ?: 0,
                     title = currentState.titleInput,
                     icon = currentState.iconInput,
                     categoryId = currentState.categoryIdInput,
@@ -85,10 +92,33 @@ class TaskActionViewModel @Inject constructor(
                     createdAt = System.currentTimeMillis().toString(),
                     updatedAt = System.currentTimeMillis().toString()
                 )
-                addTaskUseCase(newTask)
+                if (currentState.id == null) {
+                    addTaskUseCase(newTask)
+                } else {
+                    updateTaskUseCase(newTask)
+                }
                 _state.update { it.copy(isSuccess = true, isSaving = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(isSaving = false, errorMessage = e.message) }
+            }
+        }
+    }
+
+    private fun loadTask(id: Int) {
+        viewModelScope.launch {
+            val task = getTaskByIdUseCase(id)
+            task?.let {
+                _state.update { s ->
+                    s.copy(
+                        id = it.id,
+                        titleInput = it.title,
+                        iconInput = it.icon,
+                        categoryIdInput = it.categoryId,
+                        sessionCountInput = it.sessionCount,
+                        focusTimeInput = it.focusTime,
+                        breakTimeInput = it.breakTime
+                    )
+                }
             }
         }
     }

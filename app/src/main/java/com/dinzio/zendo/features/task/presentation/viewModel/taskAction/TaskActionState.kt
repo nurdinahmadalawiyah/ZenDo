@@ -1,6 +1,7 @@
 package com.dinzio.zendo.features.task.presentation.viewModel.taskAction
 
 data class TaskActionState(
+    val id: Int? = null,
     val titleInput: String = "",
     val iconInput: String = "🔭",
     val categoryIdInput: Int? = null,

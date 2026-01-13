@@ -79,6 +79,7 @@ fun TaskScreen(
             showActionSheet = false
             showDeleteDialog = false
             selectedTask = null
+            actionViewModel.onEvent(TaskActionEvent.OnResetTask)
         }
     }
 
@@ -88,7 +89,10 @@ fun TaskScreen(
             icon = selectedTask?.icon ?: "",
             sheetState = sheetState,
             onDismiss = { showActionSheet = false },
-            onEditClick = { },
+            onEditClick = {
+                showActionSheet = false
+                navController.navigate(ZenDoRoutes.EditTask.passId(selectedTask!!.id))
+            },
             onDeleteClick = { showDeleteDialog = true }
         )
     }
