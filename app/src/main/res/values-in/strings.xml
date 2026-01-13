@@ -60,4 +60,7 @@
     <string name="delete_category">Hapus Kategori</string>
     <string name="no_categories_yet_tap_to_add_one">Belum ada kategori. Tap untuk menambahkan kategori.</string>
     <string name="no_tasks_yet_tap_to_add_one">Belum ada tugas. Tap untuk menambahkan tugas.</string>
+    <string name="create_new">Buat Baru</string>
+    <string name="new_task">Tugas Baru</string>
+    <string name="new_category">Kategori Baru</string>
 </resources>
