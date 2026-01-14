@@ -60,4 +60,16 @@
     <string name="delete_category">Hapus Kategori</string>
     <string name="no_categories_yet_tap_to_add_one">Belum ada kategori. Tap untuk menambahkan kategori.</string>
     <string name="no_tasks_yet_tap_to_add_one">Belum ada tugas. Tap untuk menambahkan tugas.</string>
+    <string name="create_new">Buat Baru</string>
+    <string name="new_task">Tugas Baru</string>
+    <string name="new_category">Kategori Baru</string>
+    <string name="_15_minutes">15 menit</string>
+    <string name="_25_minutes">25 menit</string>
+    <string name="_45_minutes">45 menit</string>
+    <string name="_60_minutes">60 menit</string>
+    <string name="_5_minutes">5 menit</string>
+    <string name="_10_minutes">10 menit</string>
+    <string name="edit_category">Edit Kategori</string>
+    <string name="update_category">Perbarui Kategori</string>
+    <string name="update_task">Perbarui Tugas</string>
 </resources>

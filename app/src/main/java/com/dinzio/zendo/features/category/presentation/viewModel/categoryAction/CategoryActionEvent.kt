@@ -10,5 +10,6 @@ sealed class CategoryActionEvent {
     // Actions
     object OnSaveCategory : CategoryActionEvent()
     object OnResetSuccess : CategoryActionEvent()
+    data class OnLoadCategory(val id: Int) : CategoryActionEvent()
     data class OnDeleteCategory(val category: CategoryModel) : CategoryActionEvent()
 }

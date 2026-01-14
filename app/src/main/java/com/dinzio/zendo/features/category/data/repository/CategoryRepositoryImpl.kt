@@ -16,6 +16,10 @@ class CategoryRepositoryImpl @Inject constructor(
         entities.map { it.toDomain() }
     }
 
+    override suspend fun getCategoryById(id: Int): CategoryModel? {
+        return categoryDao.getCategoryById(id)?.toDomain()
+    }
+
     override suspend fun insertCategory(category: CategoryModel) {
         categoryDao.insertCategory(category.toEntity())
     }

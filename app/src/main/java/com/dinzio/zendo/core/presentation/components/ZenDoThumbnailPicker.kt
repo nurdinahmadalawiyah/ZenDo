@@ -52,7 +52,7 @@ fun ZenDoThumbnailPicker(
         Text(
             text = stringResource(R.string.icon_thumbnail),
             style = MaterialTheme.typography.labelMedium,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 8.dp)

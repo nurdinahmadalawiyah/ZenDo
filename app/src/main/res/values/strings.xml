@@ -59,4 +59,16 @@
     <string name="delete_category">Delete Category</string>
     <string name="no_categories_yet_tap_to_add_one">No categories yet. Tap to add one.</string>
     <string name="no_tasks_yet_tap_to_add_one">No tasks yet. Tap to add one</string>
+    <string name="create_new">Create New</string>
+    <string name="new_task">New Task</string>
+    <string name="new_category">New Category</string>
+    <string name="_15_minutes">15 minutes</string>
+    <string name="_25_minutes">25 minutes</string>
+    <string name="_45_minutes">45 minutes</string>
+    <string name="_60_minutes">60 minutes</string>
+    <string name="_5_minutes">5 minutes</string>
+    <string name="_10_minutes">10 minutes</string>
+    <string name="edit_category">Edit Category</string>
+    <string name="update_category">Update Category</string>
+    <string name="update_task">Update Task</string>
 </resources>

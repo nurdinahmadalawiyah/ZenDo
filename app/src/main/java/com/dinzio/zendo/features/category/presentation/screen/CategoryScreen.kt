@@ -45,6 +45,7 @@ import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.category.domain.model.CategoryModel
 import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
+import com.dinzio.zendo.features.category.presentation.component.EditCategoryBottomSheet
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionEvent
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
@@ -65,6 +66,7 @@ fun CategoryScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showActionSheet by remember { mutableStateOf(false) }
     var showAddCategorySheet by remember { mutableStateOf(false) }
+    var showEditCategorySheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var searchQuery by remember { mutableStateOf("") }
@@ -88,7 +90,13 @@ fun CategoryScreen(
             icon = selectedCategory?.icon ?: "",
             sheetState = sheetState,
             onDismiss = { showActionSheet = false },
-            onEditClick = { },
+            onEditClick = {
+                selectedCategory?.let {
+                    actionViewModel.onEvent(CategoryActionEvent.OnLoadCategory(it.id))
+                    showEditCategorySheet = true
+                }
+                showActionSheet = false
+            },
             onDeleteClick = { showDeleteDialog = true }
         )
     }
@@ -118,6 +126,14 @@ fun CategoryScreen(
         AddCategoryBottomSheet(
             viewModel = actionViewModel,
             onDismiss = { showAddCategorySheet = false },
+            sheetState = sheetState
+        )
+    }
+
+    if (showEditCategorySheet) {
+        EditCategoryBottomSheet(
+            viewModel = actionViewModel,
+            onDismiss = { showEditCategorySheet = false },
             sheetState = sheetState
         )
     }

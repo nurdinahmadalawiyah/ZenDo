@@ -13,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
@@ -22,6 +24,7 @@ import com.dinzio.zendo.features.settings.presentation.screen.LanguageSettingScr
 import com.dinzio.zendo.features.settings.presentation.screen.SettingsScreen
 import com.dinzio.zendo.features.settings.presentation.screen.ThemeSettingScreen
 import com.dinzio.zendo.features.task.presentation.screen.AddTaskScreen
+import com.dinzio.zendo.features.task.presentation.screen.EditTaskScreen
 import com.dinzio.zendo.features.task.presentation.screen.TaskScreen
 import com.dinzio.zendo.features.timer.presentation.QuickTimerScreen
 
@@ -105,6 +108,14 @@ fun ZenDoNavGraph(
         }
         composable(ZenDoRoutes.AddTask.route) {
             AddTaskScreen(
+                navController = navController,
+            )
+        }
+        composable(
+            route = ZenDoRoutes.EditTask.route,
+            arguments = listOf(navArgument("taskId") { type = NavType.IntType })
+        ) {
+            EditTaskScreen(
                 navController = navController,
             )
         }

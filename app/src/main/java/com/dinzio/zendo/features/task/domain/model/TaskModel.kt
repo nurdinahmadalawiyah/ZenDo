@@ -8,6 +8,8 @@ data class TaskModel(
     val isCompleted: Boolean,
     val sessionCount: Int,
     val sessionDone: Int,
+    val focusTime: Int,
+    val breakTime: Int,
     val createdAt: String,
     val updatedAt: String
 )

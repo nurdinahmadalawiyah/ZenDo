@@ -1,7 +1,6 @@
 package com.dinzio.zendo.features.task.presentation.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,9 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -36,10 +32,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoButton
-import com.dinzio.zendo.core.presentation.components.ZenDoChip
 import com.dinzio.zendo.core.presentation.components.ZenDoThumbnailPicker
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
-import com.dinzio.zendo.core.util.TaskConstants
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.features.category.domain.model.CategoryModel
 import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
@@ -53,17 +47,24 @@ import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskScreen(
+fun EditTaskScreen(
     navController: NavHostController,
     viewModel: TaskActionViewModel = hiltViewModel(),
     categoryActionViewModel: CategoryActionViewModel = hiltViewModel()
 ) {
+    val taskId = navController.currentBackStackEntry?.arguments?.getInt("taskId") ?: -1
     val state by viewModel.state.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
 
     val isLandscapeMode = isLandscape()
 
     var showAddCategorySheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(taskId) {
+        if (taskId != -1) {
+            viewModel.onEvent(TaskActionEvent.OnLoadTask(taskId))
+        }
+    }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
@@ -80,14 +81,14 @@ fun AddTaskScreen(
     }
 
     if (isLandscapeMode) {
-        AddTaskTabletLayout(
+        EditTaskTabletLayout(
             state = state,
             categories = categories,
             onEvent = viewModel::onEvent,
             onAddCategoryClick = { showAddCategorySheet = true }
         )
     } else {
-        AddTaskPhoneLayout(
+        EditTaskPhoneLayout(
             state = state,
             categories = categories,
             onEvent = viewModel::onEvent,
@@ -97,7 +98,7 @@ fun AddTaskScreen(
 }
 
 @Composable
-fun AddTaskPhoneLayout(
+fun EditTaskPhoneLayout(
     state: TaskActionState,
     categories: List<CategoryModel>,
     onEvent: (TaskActionEvent) -> Unit,
@@ -107,7 +108,7 @@ fun AddTaskPhoneLayout(
         topBar = {
             Box(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
                 ZenDoTopBar(
-                    title = stringResource(R.string.add_task),
+                    title = stringResource(R.string.edit_task),
                     actionIcon = Icons.Default.MoreVert,
                     isOnPrimaryBackground = true
                 )
@@ -116,7 +117,7 @@ fun AddTaskPhoneLayout(
         bottomBar = {
             Box(modifier = Modifier.padding(24.dp)) {
                 ZenDoButton(
-                    text = stringResource(R.string.save_task),
+                    text = stringResource(R.string.update_task),
                     isLoading = state.isSaving,
                     onClick = { onEvent(TaskActionEvent.OnSaveTask) },
                     enabled = !state.isSaving,
@@ -153,7 +154,7 @@ fun AddTaskPhoneLayout(
 }
 
 @Composable
-fun AddTaskTabletLayout(
+fun EditTaskTabletLayout(
     state: TaskActionState,
     categories: List<CategoryModel>,
     onEvent: (TaskActionEvent) -> Unit,

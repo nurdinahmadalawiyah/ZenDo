@@ -16,6 +16,10 @@ class TaskRepositoryImpl @Inject constructor(
         entities.map { it.toDomain() }
     }
 
+    override suspend fun getTaskById(id: Int): TaskModel? {
+        return taskDao.getTaskById(id)?.toDomain()
+    }
+
     override suspend fun insertTask(task: TaskModel) {
         taskDao.insertTask(task.toEntity())
     }
