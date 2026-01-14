@@ -2,6 +2,8 @@ package com.dinzio.zendo.features.task.presentation.viewModel.taskAction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dinzio.zendo.core.data.local.BreakTimerManager
+import com.dinzio.zendo.core.data.local.FocusTimerManager
 import com.dinzio.zendo.features.category.domain.model.CategoryModel
 import com.dinzio.zendo.features.category.domain.usecase.GetCategoriesUseCase
 import com.dinzio.zendo.features.task.domain.model.TaskModel
@@ -22,7 +24,9 @@ class TaskActionViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    private val getCategoriesUseCase: GetCategoriesUseCase
+    private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val focusTimerManager: FocusTimerManager,
+    private val breakTimerManager: BreakTimerManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskActionState())
@@ -33,6 +37,7 @@ class TaskActionViewModel @Inject constructor(
 
     init {
         observeCategories()
+        loadDefaultSettings()
     }
 
     private fun observeCategories() {
@@ -41,6 +46,23 @@ class TaskActionViewModel @Inject constructor(
                 _categories.value = list
                 if (_state.value.categoryIdInput == null && list.isNotEmpty()) {
                     _state.update { it.copy(categoryIdInput = list.first().id) }
+                }
+            }
+        }
+    }
+
+    private fun loadDefaultSettings() {
+        viewModelScope.launch {
+            focusTimerManager.focusTime.collect { defaultFocusTime ->
+                if (_state.value.id == null) {
+                    _state.update { it.copy(focusTimeInput = defaultFocusTime) }
+                }
+            }
+        }
+        viewModelScope.launch {
+            breakTimerManager.breakTime.collect { defaultBreakTime ->
+                if (_state.value.id == null) {
+                    _state.update { it.copy(breakTimeInput = defaultBreakTime) }
                 }
             }
         }

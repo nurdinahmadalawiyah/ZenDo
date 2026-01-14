@@ -63,13 +63,20 @@
     <string name="create_new">Buat Baru</string>
     <string name="new_task">Tugas Baru</string>
     <string name="new_category">Kategori Baru</string>
-    <string name="_15_minutes">15 menit</string>
-    <string name="_25_minutes">25 menit</string>
-    <string name="_45_minutes">45 menit</string>
-    <string name="_60_minutes">60 menit</string>
     <string name="_5_minutes">5 menit</string>
     <string name="_10_minutes">10 menit</string>
+    <string name="_15_minutes">15 menit</string>
+    <string name="_20_minutes">20 menit</string>
+    <string name="_25_minutes">25 menit</string>
+    <string name="_30_minutes">30 menit</string>
+    <string name="_45_minutes">45 menit</string>
+    <string name="_60_minutes">60 menit</string>
+    <string name="_90_minutes">90 menit</string>
     <string name="edit_category">Edit Kategori</string>
     <string name="update_category">Perbarui Kategori</string>
     <string name="update_task">Perbarui Tugas</string>
+    <string name="select_focus_time">Pilih Waktu Fokus</string>
+    <string name="minutes">%1$d Menit</string>
+    <string name="this_setting_determines_the_duration_for_the_quick_timer_feature_and_will_serve_as_the_default_value_when_you_create_a_new_task">Pengaturan ini digunakan untuk menentukan durasi pada fitur Quick Timer dan akan menjadi nilai default saat kamu membuat tugas baru.</string>
+    <string name="select_break_time">Pilih Waktu Istirahat</string>
 </resources>

@@ -43,7 +43,7 @@ import com.dinzio.zendo.features.settings.presentation.component.SettingsCategor
 import com.dinzio.zendo.features.settings.presentation.component.SettingsItem
 
 enum class SettingsPane {
-    DEFAULT, LANGUAGE, THEME
+    DEFAULT, LANGUAGE, THEME, FOCUS_TIMER, BREAK_TIMER
 }
 
 @Composable
@@ -53,6 +53,10 @@ fun SettingsScreen(
     currentLanguageCode: String,
     onThemeChange: (String) -> Unit,
     onLanguageChange: (String) -> Unit,
+    currentFocusTime: Int,
+    onFocusTimeChange: (Int) -> Unit,
+    currentBreakTime: Int,
+    onBreakTimeChange: (Int) -> Unit,
 ) {
     val isLandscapeMode = isLandscape()
 
@@ -60,14 +64,20 @@ fun SettingsScreen(
         SettingsTabletLayout(
             currentThemeMode = currentThemeMode,
             currentLanguageCode = currentLanguageCode,
+            currentFocusTime = currentFocusTime,
+            currentBreakTime = currentBreakTime,
             onThemeChange = onThemeChange,
-            onLanguageChange = onLanguageChange
+            onLanguageChange = onLanguageChange,
+            onFocusTimeChange = onFocusTimeChange,
+            onBreakTimeChange = onBreakTimeChange
         )
     } else {
         SettingsPhoneLayout(
             navController = navController,
             currentThemeMode = currentThemeMode,
             currentLanguageCode = currentLanguageCode,
+            currentFocusTime = currentFocusTime,
+            currentBreakTime = currentBreakTime
         )
     }
 }
@@ -76,8 +86,12 @@ fun SettingsScreen(
 private fun SettingsListContent(
     currentThemeMode: String,
     currentLanguageCode: String,
+    currentFocusTime: Int,
+    currentBreakTime: Int,
     onLanguageClick: () -> Unit,
     onThemeClick: () -> Unit,
+    onFocusTimerClick: () -> Unit,
+    onBreakTimerClick: () -> Unit,
 ) {
     SettingsCategoryTitle(title = stringResource(R.string.general))
 
@@ -111,20 +125,20 @@ private fun SettingsListContent(
 
     SettingsItem(
         title = stringResource(R.string.focus_duration),
-        subtitle = "25 Minutes",
+        subtitle = stringResource(R.string.minutes, currentFocusTime),
         icon = Icons.TwoTone.Timer,
         roundedCornerShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        onClick = { /* Show duration picker */ }
+        onClick = onFocusTimerClick
     )
 
     Spacer(modifier = Modifier.height(2.dp))
 
     SettingsItem(
         title = stringResource(R.string.break_duration),
-        subtitle = "5 Minutes",
+        subtitle = stringResource(R.string.minutes, currentBreakTime),
         icon = Icons.TwoTone.AutoMode,
         roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
-        onClick = { /* Show auto-start break settings */ }
+        onClick = onBreakTimerClick
     )
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -144,6 +158,8 @@ fun SettingsPhoneLayout(
     navController: NavController,
     currentThemeMode: String,
     currentLanguageCode: String,
+    currentFocusTime: Int,
+    currentBreakTime: Int
 ) {
     Column(
         modifier = Modifier
@@ -163,8 +179,12 @@ fun SettingsPhoneLayout(
         SettingsListContent(
             currentThemeMode = currentThemeMode,
             currentLanguageCode = currentLanguageCode,
+            currentFocusTime = currentFocusTime,
+            currentBreakTime = currentBreakTime,
             onLanguageClick = { navController.navigate(ZenDoRoutes.LanguageSetting.route) },
-            onThemeClick = { navController.navigate(ZenDoRoutes.ThemeSetting.route) }
+            onThemeClick = { navController.navigate(ZenDoRoutes.ThemeSetting.route) },
+            onFocusTimerClick = { navController.navigate(ZenDoRoutes.FocusTimerSetting.route) },
+            onBreakTimerClick = { navController.navigate(ZenDoRoutes.BreakTimerSetting.route) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -175,8 +195,12 @@ fun SettingsPhoneLayout(
 fun SettingsTabletLayout(
     currentThemeMode: String,
     currentLanguageCode: String,
+    currentFocusTime: Int,
     onThemeChange: (String) -> Unit,
-    onLanguageChange: (String) -> Unit
+    onLanguageChange: (String) -> Unit,
+    currentBreakTime: Int,
+    onBreakTimeChange: (Int) -> Unit,
+    onFocusTimeChange: (Int) -> Unit,
 ) {
     var activePane by remember { mutableStateOf(SettingsPane.DEFAULT) }
 
@@ -203,8 +227,12 @@ fun SettingsTabletLayout(
             SettingsListContent(
                 currentThemeMode = currentThemeMode,
                 currentLanguageCode = currentLanguageCode,
+                currentFocusTime = currentFocusTime,
+                currentBreakTime = currentBreakTime,
                 onLanguageClick = { activePane = SettingsPane.LANGUAGE },
-                onThemeClick = { activePane = SettingsPane.THEME }
+                onThemeClick = { activePane = SettingsPane.THEME },
+                onFocusTimerClick = { activePane = SettingsPane.FOCUS_TIMER },
+                onBreakTimerClick = { activePane = SettingsPane.BREAK_TIMER }
             )
         }
 
@@ -259,6 +287,22 @@ fun SettingsTabletLayout(
                         hideBackButton = true
                     )
                 }
+
+                SettingsPane.FOCUS_TIMER -> {
+                    FocusTimerSettingScreen(
+                        currentFocusTime = currentFocusTime,
+                        onFocusTimeSelected = onFocusTimeChange,
+                        hideBackButton = true
+                    )
+                }
+
+                SettingsPane.BREAK_TIMER -> {
+                    BreakTimerSettingScreen(
+                        currentBreakTime = currentBreakTime,
+                        onBreakTimeSelected = onBreakTimeChange,
+                        hideBackButton = true
+                    )
+                }
             }
         }
     }
@@ -271,8 +315,12 @@ fun PreviewPortrait() {
         navController = rememberNavController(),
         currentThemeMode = "dark",
         currentLanguageCode = "en",
+        currentFocusTime = 25,
+        currentBreakTime = 5,
         onThemeChange = {},
-        onLanguageChange = {}
+        onLanguageChange = {},
+        onFocusTimeChange = {},
+        onBreakTimeChange = {}
     )
 }
 
@@ -287,7 +335,11 @@ fun PreviewLandscape() {
         navController = rememberNavController(),
         currentThemeMode = "dark",
         currentLanguageCode = "en",
+        currentFocusTime = 25,
+        currentBreakTime = 5,
         onThemeChange = {},
-        onLanguageChange = {}
+        onLanguageChange = {},
+        onFocusTimeChange = {},
+        onBreakTimeChange = {}
     )
 }
