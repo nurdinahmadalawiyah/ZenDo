@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -109,7 +107,6 @@ fun EditTaskPhoneLayout(
             Box(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
                 ZenDoTopBar(
                     title = stringResource(R.string.edit_task),
-                    actionIcon = Icons.Default.MoreVert,
                     isOnPrimaryBackground = true
                 )
             }
@@ -168,7 +165,7 @@ fun EditTaskTabletLayout(
         horizontalArrangement = Arrangement.spacedBy(48.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            ZenDoTopBar(title = stringResource(R.string.add_task), isOnPrimaryBackground = true)
+            ZenDoTopBar(title = stringResource(R.string.edit_task), isOnPrimaryBackground = true)
             Spacer(modifier = Modifier.height(32.dp))
             ZenDoThumbnailPicker(
                 currentIcon = state.iconInput,

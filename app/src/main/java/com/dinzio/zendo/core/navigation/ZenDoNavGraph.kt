@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
+import com.dinzio.zendo.features.settings.presentation.screen.FocusTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.LanguageSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.SettingsScreen
 import com.dinzio.zendo.features.settings.presentation.screen.ThemeSettingScreen
@@ -34,7 +35,11 @@ fun ZenDoNavGraph(
     currentTheme: String,
     onThemeChange: (String) -> Unit,
     currentLanguage: String,
-    onLanguageChange: (String) -> Unit
+    onLanguageChange: (String) -> Unit,
+    currentFocusTime: Int,
+    onFocusTimeChange: (Int) -> Unit,
+    currentBreakTime: Int,
+    onBreakTimeChange: (Int) -> Unit,
 ) {
     val bottomNavRoutes = setOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Settings.route)
 
@@ -125,7 +130,11 @@ fun ZenDoNavGraph(
                 currentThemeMode = currentTheme,
                 currentLanguageCode = currentLanguage,
                 onThemeChange = onThemeChange,
-                onLanguageChange = onLanguageChange
+                onLanguageChange = onLanguageChange,
+                currentFocusTime = currentFocusTime,
+                onFocusTimeChange = onFocusTimeChange,
+                currentBreakTime = currentBreakTime,
+                onBreakTimeChange = onBreakTimeChange,
             )
         }
         composable(ZenDoRoutes.ThemeSetting.route) {
@@ -142,6 +151,14 @@ fun ZenDoNavGraph(
                 onLanguageSelected = { newLanguage ->
                     onLanguageChange(newLanguage)
                 },
+            )
+        }
+        composable(ZenDoRoutes.FocusTimerSetting.route) {
+            FocusTimerSettingScreen(
+                currentFocusTime = currentFocusTime,
+                onFocusTimeSelected = { newFocusTime ->
+                    onFocusTimeChange(newFocusTime)
+                }
             )
         }
     }

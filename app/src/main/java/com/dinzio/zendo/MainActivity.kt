@@ -51,6 +51,8 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val themeMode by mainViewModel.themeMode.collectAsState()
             val langCode by mainViewModel.languageCode.collectAsState()
+            val focusTime by mainViewModel.focusTime.collectAsState()
+            val breakTime by mainViewModel.breakTime.collectAsState()
 
             LaunchedEffect(langCode) {
                 val appLocale: LocaleListCompat = if (langCode == "system") {
@@ -72,9 +74,13 @@ class MainActivity : AppCompatActivity() {
             ZendoTheme(darkTheme = useDarkTheme) {
                 MainScreen(
                     currentThemeMode = themeMode,
-                    currentLanguage = langCode,
                     onThemeChange = { mainViewModel.setTheme(it) },
-                    onLanguageChange = { mainViewModel.setLanguage(it) }
+                    currentLanguage = langCode,
+                    onLanguageChange = { mainViewModel.setLanguage(it) },
+                    currentFocusTime = focusTime,
+                    onFocusTimeChange = { mainViewModel.setFocusTime(it) },
+                    currentBreakTime = breakTime,
+                    onBreakTimeChange = { mainViewModel.setBreakTime(it) },
                 )
             }
         }
@@ -88,6 +94,10 @@ fun MainScreen(
     onThemeChange: (String) -> Unit,
     currentLanguage: String,
     onLanguageChange: (String) -> Unit,
+    currentFocusTime: Int,
+    onFocusTimeChange: (Int) -> Unit,
+    currentBreakTime: Int,
+    onBreakTimeChange: (Int) -> Unit,
     actionViewModel: CategoryActionViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
@@ -152,7 +162,11 @@ fun MainScreen(
                     currentTheme = currentThemeMode,
                     onThemeChange = onThemeChange,
                     currentLanguage = currentLanguage,
-                    onLanguageChange = onLanguageChange
+                    onLanguageChange = onLanguageChange,
+                    currentFocusTime = currentFocusTime,
+                    onFocusTimeChange = onFocusTimeChange,
+                    currentBreakTime = currentBreakTime,
+                    onBreakTimeChange = onBreakTimeChange
                 )
             }
         }
