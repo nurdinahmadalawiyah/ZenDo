@@ -1,5 +1,6 @@
 package com.dinzio.zendo.features.settings.presentation.screen
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +45,7 @@ import com.dinzio.zendo.features.settings.presentation.component.SettingsCategor
 import com.dinzio.zendo.features.settings.presentation.component.SettingsItem
 
 enum class SettingsPane {
-    DEFAULT, LANGUAGE, THEME, FOCUS_TIMER, BREAK_TIMER
+    DEFAULT, LANGUAGE, THEME, FOCUS_TIMER, BREAK_TIMER, VERSION
 }
 
 @Composable
@@ -92,7 +94,21 @@ private fun SettingsListContent(
     onThemeClick: () -> Unit,
     onFocusTimerClick: () -> Unit,
     onBreakTimerClick: () -> Unit,
+    onVersionClick: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val packageInfo = remember(context) {
+        context.packageManager.getPackageInfo(context.packageName, 0)
+    }
+    val versionName = remember(context) {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName
+    }
+    val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        packageInfo.longVersionCode
+    } else {
+        packageInfo.versionCode.toLong()
+    }
+
     SettingsCategoryTitle(title = stringResource(R.string.general))
 
     SettingsItem(
@@ -146,10 +162,10 @@ private fun SettingsListContent(
     SettingsCategoryTitle(title = stringResource(R.string.about))
 
     SettingsItem(
-        title = "Version",
-        subtitle = "1.0.0 (Build 2026)",
+        title = stringResource(R.string.version),
+        subtitle = "$versionName (Build ${versionCode})",
         icon = Icons.TwoTone.Info,
-        onClick = { }
+        onClick = onVersionClick
     )
 }
 
@@ -184,7 +200,8 @@ fun SettingsPhoneLayout(
             onLanguageClick = { navController.navigate(ZenDoRoutes.LanguageSetting.route) },
             onThemeClick = { navController.navigate(ZenDoRoutes.ThemeSetting.route) },
             onFocusTimerClick = { navController.navigate(ZenDoRoutes.FocusTimerSetting.route) },
-            onBreakTimerClick = { navController.navigate(ZenDoRoutes.BreakTimerSetting.route) }
+            onBreakTimerClick = { navController.navigate(ZenDoRoutes.BreakTimerSetting.route) },
+            onVersionClick = { navController.navigate(ZenDoRoutes.VersionSetting.route) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -232,7 +249,8 @@ fun SettingsTabletLayout(
                 onLanguageClick = { activePane = SettingsPane.LANGUAGE },
                 onThemeClick = { activePane = SettingsPane.THEME },
                 onFocusTimerClick = { activePane = SettingsPane.FOCUS_TIMER },
-                onBreakTimerClick = { activePane = SettingsPane.BREAK_TIMER }
+                onBreakTimerClick = { activePane = SettingsPane.BREAK_TIMER },
+                onVersionClick = { activePane = SettingsPane.VERSION }
             )
         }
 
@@ -300,6 +318,12 @@ fun SettingsTabletLayout(
                     BreakTimerSettingScreen(
                         currentBreakTime = currentBreakTime,
                         onBreakTimeSelected = onBreakTimeChange,
+                        hideBackButton = true
+                    )
+                }
+
+                SettingsPane.VERSION -> {
+                    VersionSettingScreen(
                         hideBackButton = true
                     )
                 }
