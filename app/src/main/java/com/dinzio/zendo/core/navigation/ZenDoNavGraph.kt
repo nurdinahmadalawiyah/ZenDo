@@ -101,9 +101,14 @@ fun ZenDoNavGraph(
         }
 
         composable(ZenDoRoutes.Categories.route) {
-            CategoryScreen()
+            CategoryScreen(
+                navController = navController,
+            )
         }
-        composable(ZenDoRoutes.DetailCategory.route) {
+        composable(
+            route = ZenDoRoutes.DetailCategory.route,
+            arguments = listOf(navArgument("categoryId") { type = NavType.IntType })
+        ) {
             DetailCategoryScreen(
                 navController = navController,
             )

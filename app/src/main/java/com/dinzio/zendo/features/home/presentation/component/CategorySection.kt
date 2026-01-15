@@ -145,7 +145,7 @@ fun CategorySection(
                             selectedCategory = category
                             showActionSheet = true
                         },
-                        onClick = { navController.navigate(ZenDoRoutes.DetailCategory.route) }
+                        onClick = { navController.navigate(ZenDoRoutes.DetailCategory.passId(category.id)) }
                     )
                 }
             }

@@ -36,7 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.R
+import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoCategoryCard
@@ -54,6 +57,7 @@ import com.dinzio.zendo.features.home.presentation.screen.CategoryUiModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
+    navController: NavController,
     viewModel: CategoryListViewModel = hiltViewModel(),
     actionViewModel: CategoryActionViewModel = hiltViewModel(),
 ) {
@@ -140,6 +144,7 @@ fun CategoryScreen(
 
     if (isLandscapeMode) {
         CategoryTabletLayout(
+            navController = navController,
             categories = filteredCategory,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
@@ -152,6 +157,7 @@ fun CategoryScreen(
         )
     } else {
         CategoryPhoneLayout(
+            navController = navController,
             categories = filteredCategory,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
@@ -167,6 +173,7 @@ fun CategoryScreen(
 
 @Composable
 fun CategoryPhoneLayout(
+    navController: NavController,
     categories: List<CategoryModel>,
     isLoading: Boolean,
     searchQuery: String,
@@ -221,7 +228,7 @@ fun CategoryPhoneLayout(
                         taskCount = category.taskCount,
                         icon = category.icon,
                         onLongItemClick = { onLongItemClick(category) },
-                        onClick = { /* Navigate to Category Detail */ }
+                        onClick = { navController.navigate(ZenDoRoutes.DetailCategory.passId(category.id)) }
                     )
                 }
             }
@@ -231,6 +238,7 @@ fun CategoryPhoneLayout(
 
 @Composable
 fun CategoryTabletLayout(
+    navController: NavController,
     categories: List<CategoryModel>,
     isLoading: Boolean,
     searchQuery: String,
@@ -288,7 +296,7 @@ fun CategoryTabletLayout(
                         taskCount = category.taskCount,
                         icon = category.icon,
                         onLongItemClick = { onLongItemClick(category) },
-                        onClick = { /* Navigate to Category Detail */ }
+                        onClick = { navController.navigate(ZenDoRoutes.DetailCategory.passId(category.id)) }
                     )
                 }
             }
@@ -315,11 +323,15 @@ val dummyCategoriesList = listOf(
 @Preview(name = "Phone", showBackground = true, device = Devices.PIXEL_4)
 @Composable
 fun PreviewCategoryPhone() {
-    CategoryScreen()
+    CategoryScreen(
+        navController = rememberNavController(),
+    )
 }
 
 @Preview(name = "Tablet", showBackground = true, device = Devices.PIXEL_C)
 @Composable
 fun PreviewCategoryTablet() {
-    CategoryScreen()
+    CategoryScreen(
+        navController = rememberNavController(),
+    )
 }

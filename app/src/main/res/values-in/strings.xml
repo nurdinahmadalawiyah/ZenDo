@@ -79,4 +79,9 @@
     <string name="minutes">%1$d Menit</string>
     <string name="this_setting_determines_the_duration_for_the_quick_timer_feature_and_will_serve_as_the_default_value_when_you_create_a_new_task">Pengaturan ini digunakan untuk menentukan durasi pada fitur Quick Timer dan akan menjadi nilai default saat kamu membuat tugas baru.</string>
     <string name="select_break_time">Pilih Waktu Istirahat</string>
+    <string name="zendo_version">Versi ZenDo</string>
+    <string name="version">Versi</string>
+    <string name="pending">Pending</string>
+    <string name="completed">Selesai</string>
+    <string name="no_tasks_yet">Tidak ada tugas %1$s yang ditemukan</string>
 </resources>

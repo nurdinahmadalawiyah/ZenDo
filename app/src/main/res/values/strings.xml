@@ -80,4 +80,7 @@
     <string name="select_break_time">Select Break Time</string>
     <string name="zendo_version">ZenDo Version</string>
     <string name="version">Version</string>
+    <string name="pending">Pending</string>
+    <string name="completed">Completed</string>
+    <string name="no_tasks_yet">No %1$s tasks yet</string>
 </resources>

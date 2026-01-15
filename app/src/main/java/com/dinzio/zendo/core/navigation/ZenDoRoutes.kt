@@ -6,7 +6,9 @@ sealed class ZenDoRoutes(val route: String) {
     object Stats : ZenDoRoutes("stats")
     object Profile : ZenDoRoutes("profile")
     object Categories : ZenDoRoutes("categories")
-    object DetailCategory : ZenDoRoutes("detail_category")
+    object DetailCategory : ZenDoRoutes("detail_category/{categoryId}") {
+        fun passId(id: Int) = "detail_category/$id"
+    }
     object Tasks : ZenDoRoutes("tasks")
     object AddTask : ZenDoRoutes("add_task")
     object EditTask : ZenDoRoutes("edit_task/{taskId}") {
