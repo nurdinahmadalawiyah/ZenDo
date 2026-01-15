@@ -78,4 +78,9 @@
     <string name="minutes">%1$d Minutes</string>
     <string name="this_setting_determines_the_duration_for_the_quick_timer_feature_and_will_serve_as_the_default_value_when_you_create_a_new_task">This setting determines the duration for the Quick Timer feature and will serve as the default value when you create a new task.</string>
     <string name="select_break_time">Select Break Time</string>
+    <string name="zendo_version">ZenDo Version</string>
+    <string name="version">Version</string>
+    <string name="pending">Pending</string>
+    <string name="completed">Completed</string>
+    <string name="no_tasks_yet">No %1$s tasks yet</string>
 </resources>

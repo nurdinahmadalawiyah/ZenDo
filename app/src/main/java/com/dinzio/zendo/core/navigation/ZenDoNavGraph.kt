@@ -20,10 +20,12 @@ import androidx.navigation.navArgument
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
+import com.dinzio.zendo.features.settings.presentation.screen.BreakTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.FocusTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.LanguageSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.SettingsScreen
 import com.dinzio.zendo.features.settings.presentation.screen.ThemeSettingScreen
+import com.dinzio.zendo.features.settings.presentation.screen.VersionSettingScreen
 import com.dinzio.zendo.features.task.presentation.screen.AddTaskScreen
 import com.dinzio.zendo.features.task.presentation.screen.EditTaskScreen
 import com.dinzio.zendo.features.task.presentation.screen.TaskScreen
@@ -99,9 +101,14 @@ fun ZenDoNavGraph(
         }
 
         composable(ZenDoRoutes.Categories.route) {
-            CategoryScreen()
+            CategoryScreen(
+                navController = navController,
+            )
         }
-        composable(ZenDoRoutes.DetailCategory.route) {
+        composable(
+            route = ZenDoRoutes.DetailCategory.route,
+            arguments = listOf(navArgument("categoryId") { type = NavType.IntType })
+        ) {
             DetailCategoryScreen(
                 navController = navController,
             )
@@ -160,6 +167,17 @@ fun ZenDoNavGraph(
                     onFocusTimeChange(newFocusTime)
                 }
             )
+        }
+        composable(ZenDoRoutes.BreakTimerSetting.route) {
+            BreakTimerSettingScreen(
+                currentBreakTime = currentBreakTime,
+                onBreakTimeSelected = { newBreakTime ->
+                    onBreakTimeChange(newBreakTime)
+                }
+            )
+        }
+        composable(ZenDoRoutes.VersionSetting.route) {
+            VersionSettingScreen()
         }
     }
 }

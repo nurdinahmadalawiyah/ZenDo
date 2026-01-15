@@ -1,5 +1,6 @@
 package com.dinzio.zendo.features.category.presentation.screen
 
+import ZenDoEmptyState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,60 +15,94 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.twotone.Task
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dinzio.zendo.R
 import com.dinzio.zendo.core.theme.White
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoSectionHeader
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
+import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
+import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryDetail.CategoryDetailState
+import com.dinzio.zendo.features.category.presentation.viewModel.categoryDetail.CategoryDetailViewModel
 import com.dinzio.zendo.features.home.presentation.screen.TaskUiModel
+import com.dinzio.zendo.features.task.domain.model.TaskModel
+import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
+import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionState
+import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun DetailCategoryScreen(
-    categoryName: String = "Productivity",
     navController: NavController,
+    viewModel: CategoryDetailViewModel = hiltViewModel(),
+    taskActionViewModel: TaskActionViewModel = hiltViewModel(),
 ) {
-    val isLandscapeMode = isLandscape()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val taskActionState by taskActionViewModel.state.collectAsStateWithLifecycle()
 
-    val onAddTaskClick = {
-        navController.navigate(ZenDoRoutes.AddTask.route)
-    }
+    val isLandscapeMode = isLandscape()
 
     if (isLandscapeMode) {
         DetailCategoryTabletLayout(
-            categoryName = categoryName,
-            onAddTaskClick = onAddTaskClick
+            navController = navController,
+            state = state,
+            taskActionViewModel = taskActionViewModel,
+            taskActionState = taskActionState,
         )
     } else {
         DetailCategoryPhoneLayout(
-            categoryName = categoryName,
-            onAddTaskClick = onAddTaskClick
+            navController = navController,
+            state = state,
+            taskActionViewModel = taskActionViewModel,
+            taskActionState = taskActionState,
         )
     }
 }
 
 @Composable
 fun DetailCategoryPhoneLayout(
-    categoryName: String,
-    onAddTaskClick: () -> Unit
+    navController: NavController,
+    state: CategoryDetailState,
+    taskActionViewModel: TaskActionViewModel,
+    taskActionState: TaskActionState,
 ) {
     Column(
         modifier = Modifier
@@ -76,37 +111,41 @@ fun DetailCategoryPhoneLayout(
     ) {
         Box(modifier = Modifier.padding(16.dp)) {
             ZenDoTopBar(
-                title = categoryName,
+                title = state.categoryDetail?.category?.name ?: "Title",
                 actionIcon = Icons.Default.Add,
-                onActionClick = onAddTaskClick,
+                onActionClick = { navController.navigate(ZenDoRoutes.AddTask.route) },
                 isOnPrimaryBackground = false
             )
         }
 
         Box(modifier = Modifier.padding(16.dp)) {
-            CategoryInfoCard()
+            CategoryInfoCard(state = state)
         }
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .weight(1f)
                 .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .background(MaterialTheme.colorScheme.background)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
-            ZenDoSectionHeader(title = "Task List", showActionText = false, onActionClick = {})
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TaskList(onItemClick = onAddTaskClick)
+            TaskList(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                state = state,
+                taskActionViewModel = taskActionViewModel,
+                taskActionState = taskActionState,
+            )
         }
     }
 }
 
 @Composable
 fun DetailCategoryTabletLayout(
-    categoryName: String,
-    onAddTaskClick: () -> Unit
+    navController: NavController,
+    state: CategoryDetailState,
+    taskActionViewModel: TaskActionViewModel,
+    taskActionState: TaskActionState,
 ) {
     Row(
         modifier = Modifier.fillMaxSize()
@@ -121,15 +160,18 @@ fun DetailCategoryTabletLayout(
                 .padding(24.dp)
         ) {
             ZenDoTopBar(
-                title = categoryName,
+                title = state.categoryDetail?.category?.name ?: "Title",
                 actionIcon = Icons.Default.Add,
-                onActionClick = onAddTaskClick,
+                onActionClick = { navController.navigate(ZenDoRoutes.AddTask.route) },
                 isOnPrimaryBackground = false
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            CategoryInfoCard(tabletMode = true)
+            CategoryInfoCard(
+                state = state,
+                tabletMode = true
+            )
         }
 
         Column(
@@ -141,37 +183,158 @@ fun DetailCategoryTabletLayout(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            ZenDoSectionHeader(title = "Task List", showActionText = false, onActionClick = {})
+            ZenDoSectionHeader(title = stringResource(id = R.string.task_list), showActionText = false, onActionClick = {})
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TaskList(onItemClick = onAddTaskClick)
+            TaskList(
+                navController = navController,
+                state = state,
+                taskActionViewModel = taskActionViewModel,
+                taskActionState = taskActionState,
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskList(onItemClick: () -> Unit) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 16.dp)
-    ) {
-        items(dummyDetailTasks) { task ->
-            ZenDoTaskItemCard(
-                title = task.title,
-                sessionCount = task.sessionCount,
-                sessionDone = task.sessionDone,
-                categoryIcon = task.icon,
-                onItemClick = onItemClick,
-                onLongItemClick = { },
-                onPlayClick = onItemClick
+fun TaskList(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    state: CategoryDetailState,
+    taskActionViewModel: TaskActionViewModel,
+    taskActionState: TaskActionState,
+) {
+    var selectedTask by remember { mutableStateOf<TaskModel?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showActionSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    LaunchedEffect(taskActionState.isSuccess) {
+        if (taskActionState.isSuccess) {
+            showActionSheet = false
+            showDeleteDialog = false
+            selectedTask = null
+            taskActionViewModel.onEvent(TaskActionEvent.OnResetTask)
+        }
+    }
+
+    if (showActionSheet && selectedTask != null) {
+        ZenDoActionSheet(
+            title = selectedTask?.title ?: "",
+            icon = selectedTask?.icon ?: "",
+            sheetState = sheetState,
+            onDismiss = { showActionSheet = false },
+            onEditClick = {
+                showActionSheet = false
+                navController.navigate(ZenDoRoutes.EditTask.passId(selectedTask!!.id))
+            },
+            onDeleteClick = { showDeleteDialog = true }
+        )
+    }
+
+    if (showDeleteDialog && selectedTask != null) {
+        selectedTask?.title?.let {
+            ZenDoConfirmDialog(
+                title = stringResource(R.string.delete_task),
+                message = stringResource(
+                    R.string.are_you_sure_you_want_to_delete_this_action_cannot_be_undone,
+                    it
+                ),
+                confirmText = stringResource(R.string.delete),
+                dismissText = stringResource(R.string.cancel),
+                onConfirm = {
+                    taskActionViewModel.onEvent(TaskActionEvent.OnDeleteTask(selectedTask!!))
+                },
+                onDismiss = {
+                    showDeleteDialog = false
+                },
+                isLoading = taskActionState.isDeleting
             )
+        }
+    }
+
+    val tabs = listOf(stringResource(R.string.pending), stringResource(R.string.completed))
+
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(modifier = modifier.fillMaxSize()) {
+        PrimaryTabRow(
+            selectedTabIndex = pagerState.currentPage,
+            containerColor = Color.Transparent,
+            divider = {},
+            indicator = {
+                TabRowDefaults.PrimaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(pagerState.currentPage),
+                    width = 60.dp,
+                )
+            }
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = if (pagerState.currentPage == index) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.Top
+        ) { pageIndex ->
+            val currentTasks = if (pageIndex == 0) state.pendingTasks else state.completedTasks
+
+            if (currentTasks.isEmpty()) {
+                ZenDoEmptyState(
+                    text = stringResource(R.string.no_tasks_yet, tabs[pageIndex].lowercase()),
+                    icon = Icons.TwoTone.Task,
+                    onActionClick = { navController.navigate(ZenDoRoutes.AddTask.route) }
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    items(currentTasks) { task ->
+                        ZenDoTaskItemCard(
+                            title = task.title,
+                            sessionCount = task.sessionCount.toString(),
+                            sessionDone = task.sessionDone.toString(),
+                            categoryIcon = task.icon,
+                            onItemClick = { },
+                            onLongItemClick = {
+                                selectedTask = task
+                                showActionSheet = true
+                            },
+                            onPlayClick = { }
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
 fun CategoryInfoCard(
+    state: CategoryDetailState,
     tabletMode: Boolean = false
 ) {
     Card(
@@ -200,7 +363,7 @@ fun CategoryInfoCard(
                 horizontalAlignment = if (tabletMode) Alignment.CenterHorizontally else Alignment.Start
             ) {
                 Text(
-                    text = "Productivity",
+                    text = state.categoryDetail?.category?.name ?: "Title",
                     style = if (tabletMode) MaterialTheme.typography.displayMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ) else MaterialTheme.typography.headlineSmall.copy(
@@ -210,7 +373,10 @@ fun CategoryInfoCard(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "🚀 3 Task",
+                    text = stringResource(
+                        id = R.string.task,
+                        state.categoryDetail?.totalTasks ?: 0
+                    ),
                     style = if (tabletMode) MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Medium) else MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Medium
                     ),
@@ -220,7 +386,7 @@ fun CategoryInfoCard(
                 if (tabletMode) {
                     Spacer(modifier = Modifier.height(64.dp))
                     Text(
-                        text = "\uD83D\uDCDA\uFE0F",
+                        text = state.categoryDetail?.category?.icon ?: "\uD83D\uDCDA\uFE0F",
                         fontSize = 200.sp,
                     )
                 }
@@ -228,7 +394,7 @@ fun CategoryInfoCard(
 
             if (!tabletMode) {
                 Text(
-                    text = "\uD83D\uDCDA\uFE0F",
+                    text = state.categoryDetail?.category?.icon ?: "\uD83D\uDCDA\uFE0F",
                     fontSize = 64.sp,
                 )
             }
