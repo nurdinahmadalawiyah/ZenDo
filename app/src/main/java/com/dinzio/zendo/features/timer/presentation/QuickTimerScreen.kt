@@ -35,12 +35,11 @@ fun QuickTimerScreen(
     val isLandscapeMode = isLandscape()
 
     val isFocusMode = state.mode == TimerMode.FOCUS
-
     val modeColor = if (isFocusMode) MaterialTheme.colorScheme.primary else Color(0xFFFF9800)
     val modeLightColor = modeColor.copy(alpha = 0.2f)
 
     val headerText = if (isFocusMode) stringResource(R.string.let_s_focus_for) else stringResource(R.string.take_a_break)
-    val taskText = if (isFocusMode) "Learn React" else stringResource(R.string.relaxing)
+    val taskText = if (state.isRunning) "Focusing..." else "Ready to Focus"
     val taskEmoji = if (isFocusMode) "🔥" else "☕"
 
     val uiData = TimerUiData(
@@ -56,7 +55,7 @@ fun QuickTimerScreen(
             state = state,
             uiData = uiData,
             onToggle = viewModel::toggleTimer,
-            onReset = viewModel::resetTimer,
+            onReset = viewModel::stopTimer,
             onPause = viewModel::pauseTimer,
             onSkip = viewModel::skipPhase,
         )
@@ -65,9 +64,9 @@ fun QuickTimerScreen(
             state = state,
             uiData = uiData,
             onToggle = viewModel::toggleTimer,
-            onReset = viewModel::resetTimer,
+            onReset = viewModel::stopTimer,
             onPause = viewModel::pauseTimer,
-            onSkip = viewModel::skipPhase
+            onSkip = viewModel::skipPhase,
         )
     }
 }
@@ -82,7 +81,7 @@ data class TimerUiData(
 
 @Composable
 fun TimerPhoneLayout(
-    state: TimerState,
+    state: QuickTimerState,
     uiData: TimerUiData,
     onToggle: () -> Unit,
     onReset: () -> Unit,
@@ -116,8 +115,8 @@ fun TimerPhoneLayout(
         Spacer(modifier = Modifier.height(60.dp))
 
         ZenDoCircularTimer(
-            totalTime = state.totalTime,
-            currentTime = state.currentTime,
+            totalTime = state.totalTime * 1000L,
+            currentTime = state.currentTime * 1000L,
             radius = 140.dp,
             activeColor = uiData.modeColor,
             inactiveColor = uiData.modeLightColor
@@ -147,7 +146,7 @@ fun TimerPhoneLayout(
 
 @Composable
 fun TimerTabletLayout(
-    state: TimerState,
+    state: QuickTimerState,
     uiData: TimerUiData,
     onToggle: () -> Unit,
     onReset: () -> Unit,
@@ -182,12 +181,12 @@ fun TimerTabletLayout(
             )
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = stringResource(R.string.of_sessions, state.currentSession, state.totalSessions),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+//                Text(
+//                    text = stringResource(R.string.of_sessions, state.currentSession, state.totalSessions),
+//                    style = MaterialTheme.typography.titleMedium,
+//                    color = Color.Gray
+//                )
+//                Spacer(modifier = Modifier.height(16.dp))
 
                 TimerControls(
                     isRunning = state.isRunning,
@@ -213,8 +212,8 @@ fun TimerTabletLayout(
             val dynamicStroke = if (minDimension < 360.dp) 12.dp else 24.dp
 
             ZenDoCircularTimer(
-                totalTime = state.totalTime,
-                currentTime = state.currentTime,
+                totalTime = state.totalTime * 1000L,
+                currentTime = state.currentTime * 1000L,
                 radius = dynamicRadius,
                 strokeWidth = dynamicStroke,
                 activeColor = uiData.modeColor,
@@ -287,7 +286,6 @@ fun TimerControls(
             TimerControlButton(
                 icon = Icons.Default.PlayArrow,
                 backgroundColor = mainColor,
-                size = 80.dp,
                 onClick = onToggle
             )
         }
@@ -316,28 +314,3 @@ fun TimerControlButton(
         )
     }
 }
-
-//@Preview(name = "Phone Portrait", showBackground = true, device = Devices.PIXEL_4)
-//@Composable
-//fun PreviewTimerPhone() {
-//    TimerPhoneLayout(
-//        navController = rememberNavController(),
-//        state = TimerState(),
-//        uiData = TimerUiData,
-//        onToggle = {}, onReset = {}, onPause = {}, onSkip = {}
-//    )
-//}
-//
-//@Preview(
-//    name = "Tablet Landscape",
-//    showBackground = true,
-//    device = "spec:width=1280dp,height=800dp,dpi=240,orientation=landscape"
-//)
-//@Composable
-//fun PreviewTimerTablet() {
-//    TimerTabletLayout(
-//        navController = rememberNavController(),
-//        state = TimerState(),
-//        onToggle = {}, onReset = {}, onPause = {}
-//    )
-//}

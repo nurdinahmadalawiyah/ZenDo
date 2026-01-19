@@ -1,113 +1,113 @@
 package com.dinzio.zendo.features.timer.presentation
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dinzio.zendo.features.timer.domain.usecase.GetTimerSettingsUseCase
+import com.dinzio.zendo.core.data.local.BreakTimerManager
+import com.dinzio.zendo.core.data.local.FocusTimerManager
+import com.dinzio.zendo.core.service.TimerService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class QuickTimerViewModel @Inject constructor(
-    private val getTimerSettingsUseCase: GetTimerSettingsUseCase // Inject UseCase
+    private val application: Application,
+    private val focusTimerManager: FocusTimerManager,
+    private val breakTimerManager: BreakTimerManager
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(TimerState())
-    val state: StateFlow<TimerState> = _state.asStateFlow()
-
-    private var timerJob: Job? = null
-    private var endTime: Long = 0L
-
-    // Variable ini sekarang akan diisi oleh UseCase
-    private var focusTimeSettings = 25 * 60 * 1000L
-    private var breakTimeSettings = 5 * 60 * 1000L
+    private val _selectedMinutes = MutableStateFlow(25)
+    private val _currentMode = MutableStateFlow(TimerMode.FOCUS)
 
     init {
-        loadSettings()
-    }
-
-    private fun loadSettings() {
         viewModelScope.launch {
-            getTimerSettingsUseCase().collect { settings ->
-                focusTimeSettings = settings.focusDuration
-                breakTimeSettings = settings.breakDuration
-
-                // Update State Awal sesuai Data dari Repository
-                _state.update {
-                    it.copy(
-                        totalTime = focusTimeSettings,
-                        currentTime = focusTimeSettings,
-                        totalSessions = settings.totalSessions
-                    )
-                }
+            combine(
+                focusTimerManager.focusTime,
+                breakTimerManager.breakTime,
+                _currentMode
+            ) { focus, breakTime, mode ->
+                if (mode == TimerMode.FOCUS) focus else breakTime
+            }.collect { time ->
+                _selectedMinutes.value = time
             }
         }
+    }
+
+    val state = combine(
+        _selectedMinutes,
+        _currentMode,
+        TimerService.timerState,
+    ) { selectedMinutes, mode, serviceState ->
+
+        val totalSeconds = (selectedMinutes * 60).toLong()
+
+        val displayTime = if (serviceState.secondsLeft > 0) {
+            serviceState.secondsLeft
+        } else {
+            totalSeconds
+        }
+
+        QuickTimerState(
+            selectedMinutes = selectedMinutes,
+            timerServiceState = serviceState,
+            isSettingTimer = !serviceState.isRunning && serviceState.secondsLeft <= 0L,
+            mode = mode,
+            currentTime = displayTime,
+            totalTime = totalSeconds,
+            isRunning = serviceState.isRunning,
+            currentSession = 1,
+            totalSessions = 4
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = QuickTimerState()
+    )
+
+    fun onDurationChange(minutes: Int) {
+        _selectedMinutes.update { minutes }
     }
 
     fun toggleTimer() {
-        if (_state.value.isRunning) pauseTimer() else startTimer()
+        if (state.value.isRunning) pauseTimer() else startTimer()
     }
 
-    private fun startTimer() {
-        if (timerJob?.isActive == true) return
+    fun startTimer() {
+        val serviceState = state.value.timerServiceState
+        val timeLeft = serviceState.secondsLeft
 
-        // Logika Anti-Drift (Best Practice)
-        endTime = System.currentTimeMillis() + _state.value.currentTime
-        _state.update { it.copy(isRunning = true) }
-
-        timerJob = viewModelScope.launch {
-            while (_state.value.isRunning && _state.value.currentTime > 0) {
-                val remainingTime = endTime - System.currentTimeMillis()
-                if (remainingTime <= 0) {
-                    _state.update { it.copy(currentTime = 0) }
-                    handleTimerFinished()
-                    break
-                } else {
-                    _state.update { it.copy(currentTime = remainingTime) }
-                }
-                delay(50)
-            }
+        val duration = if (timeLeft > 0) {
+            timeLeft
+        } else {
+            (_selectedMinutes.value * 60).toLong()
         }
-    }
 
-    private fun handleTimerFinished() {
-        _state.update { currentState ->
-            val nextMode = if (currentState.mode == TimerMode.FOCUS) TimerMode.SHORT_BREAK else TimerMode.FOCUS
-
-            // Menggunakan durasi dari variable settings yang diambil dari Repo
-            val nextTime = if (nextMode == TimerMode.FOCUS) focusTimeSettings else breakTimeSettings
-
-            val nextSession = if (nextMode == TimerMode.FOCUS) currentState.currentSession else currentState.currentSession + 1
-
-            currentState.copy(
-                isRunning = false,
-                mode = nextMode,
-                totalTime = nextTime,
-                currentTime = nextTime,
-                currentSession = nextSession
-            )
-        }
+        TimerService.sendAction(application, TimerService.ACTION_START, duration)
     }
 
     fun pauseTimer() {
-        timerJob?.cancel()
-        _state.update { it.copy(isRunning = false) }
+        TimerService.sendAction(application, TimerService.ACTION_PAUSE)
     }
 
-    fun resetTimer() {
-        timerJob?.cancel()
-        // Reset ke totalTime saat ini (entah itu Focus atau Break)
-        _state.update { it.copy(currentTime = it.totalTime, isRunning = false) }
+    fun stopTimer() {
+        TimerService.sendAction(application, TimerService.ACTION_STOP)
     }
 
     fun skipPhase() {
-        timerJob?.cancel()
-        handleTimerFinished()
+        stopTimer()
+
+        val nextMode = if (_currentMode.value == TimerMode.FOCUS) {
+            TimerMode.BREAK
+        } else {
+            TimerMode.FOCUS
+        }
+
+        _currentMode.value = nextMode
     }
 }

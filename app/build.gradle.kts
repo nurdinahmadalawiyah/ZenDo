@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.lifecycle.service)
     ksp(libs.androidx.room.compiler)
 
     /// --- NAVIGATION ---
