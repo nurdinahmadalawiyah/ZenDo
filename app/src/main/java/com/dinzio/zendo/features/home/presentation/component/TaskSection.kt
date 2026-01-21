@@ -121,7 +121,11 @@ fun TaskSection(
                         sessionCount = task.sessionCount.toString(),
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
-                        onItemClick = { },
+                        onItemClick = {
+                            task.id?.let { id ->
+                                navController.navigate(ZenDoRoutes.PomodoroTask.passId(id))
+                            }
+                        },
                         onLongItemClick = {
                             selectedTask = task
                             showActionSheet = true

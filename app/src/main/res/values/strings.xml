@@ -20,7 +20,7 @@
     <string name="search_task">Search Task...</string>
     <string name="let_s_focus_for">Let\'s focus for</string>
     <string name="relaxing">Relaxing</string>
-    <string name="take_a_break">Take a break</string>
+    <string name="take_a_break">Let\'s take a break in</string>
     <string name="pomodoro_timer">Pomodoro Timer</string>
     <string name="break_timer">Break Timer</string>
     <string name="of_sessions">🎯 %1$d of %2$d sessions</string>
@@ -62,6 +62,7 @@
     <string name="create_new">Create New</string>
     <string name="new_task">New Task</string>
     <string name="new_category">New Category</string>
+    <string name="_1_minutes">1 minutes</string>
     <string name="_5_minutes">5 minutes</string>
     <string name="_10_minutes">10 minutes</string>
     <string name="_15_minutes">15 minutes</string>
@@ -83,4 +84,10 @@
     <string name="pending">Pending</string>
     <string name="completed">Completed</string>
     <string name="no_tasks_yet">No %1$s tasks yet</string>
+    <string name="timer_may_not_be_visible_in_the_background_without_notification_permission">Timer may not be visible in the background without notification permission.</string>
+    <string name="timer_starts">Timer starts...</string>
+    <string name="remaining">%1$s remaining</string>
+    <string name="done">Done!</string>
+    <string name="paused">Paused</string>
+    <string name="session_over_time_to_rest_focus">Session over! Time to rest/focus..</string>
 </resources>

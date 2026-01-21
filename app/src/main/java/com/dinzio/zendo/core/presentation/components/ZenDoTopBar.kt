@@ -3,7 +3,6 @@ package com.dinzio.zendo.core.presentation.components
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,28 +44,29 @@ fun ZenDoTopBar(
     val iconColor = White
     val titleColor = if (isOnPrimaryBackground) MaterialTheme.colorScheme.onBackground else White
 
+    val hasAction = actionIcon != null && onActionClick != null
+
     Row(
         modifier = modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (!hideBackButton) {
-            IconButton(
-                onClick = { onBackPressedDispatcher?.onBackPressed() },
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(buttonBackgroundColor)
-                    .height(36.dp)
-                    .width(36.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.back),
-                    tint = iconColor,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
+        IconButton(
+            onClick = { onBackPressedDispatcher?.onBackPressed() },
+            enabled = !hideBackButton,
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(if (!hideBackButton) buttonBackgroundColor else Color.Transparent)
+                .height(40.dp)
+                .width(40.dp)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                contentDescription = stringResource(R.string.back),
+                tint = if (!hideBackButton) iconColor else Color.Transparent,
+                modifier = Modifier.padding(4.dp)
+            )
         }
 
         Text(
@@ -76,17 +77,18 @@ fun ZenDoTopBar(
             modifier = Modifier.weight(1f)
         )
 
-        if (actionIcon != null && onActionClick != null) {
-            IconButton(
-                onClick = { onActionClick() },
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(buttonBackgroundColor)
-                    .height(36.dp)
-                    .width(36.dp)
-            ) {
+        IconButton(
+            onClick = { onActionClick?.let { it() } },
+            enabled = hasAction,
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(if (hasAction) buttonBackgroundColor else Color.Transparent)
+                .height(40.dp)
+                .width(40.dp)
+        ) {
+            actionIcon?.let {
                 Icon(
-                    imageVector = actionIcon,
+                    imageVector = it,
                     contentDescription = stringResource(R.string.action),
                     tint = iconColor,
                     modifier = Modifier.padding(4.dp),

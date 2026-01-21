@@ -29,6 +29,9 @@ data class TaskEntity(
     val sessionCount: Int,
     val focusTime: Int,
     val breakTime: Int,
+    val lastSecondsLeft: Long = 0,
+    val lastMode: String = "FOCUS",
+    val isInIntermediaryState: Boolean = false,
     val createdAt: String,
     val updatedAt: String
 )

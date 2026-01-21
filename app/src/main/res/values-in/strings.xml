@@ -63,6 +63,7 @@
     <string name="create_new">Buat Baru</string>
     <string name="new_task">Tugas Baru</string>
     <string name="new_category">Kategori Baru</string>
+    <string name="_1_minutes">1 menit</string>
     <string name="_5_minutes">5 menit</string>
     <string name="_10_minutes">10 menit</string>
     <string name="_15_minutes">15 menit</string>
@@ -84,4 +85,10 @@
     <string name="pending">Pending</string>
     <string name="completed">Selesai</string>
     <string name="no_tasks_yet">Tidak ada tugas %1$s yang ditemukan</string>
+    <string name="timer_may_not_be_visible_in_the_background_without_notification_permission">Timer mungkin tidak terlihat di background tanpa izin notifikasi</string>
+    <string name="timer_starts">Timer dimulai...</string>
+    <string name="remaining">%1$s tersisa</string>
+    <string name="done">Selesai!</string>
+    <string name="paused">Dijeda</string>
+    <string name="session_over_time_to_rest_focus">Sesi selesai! Waktunya istirahat/fokus.</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.dinzio.zendo.features.timer.presentation
+package com.dinzio.zendo.features.timer.presentation.viewModel
 
 import com.dinzio.zendo.core.service.TimerState as ServiceState
 

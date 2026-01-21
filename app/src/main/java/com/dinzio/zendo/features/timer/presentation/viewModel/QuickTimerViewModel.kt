@@ -1,4 +1,4 @@
-package com.dinzio.zendo.features.timer.presentation
+package com.dinzio.zendo.features.timer.presentation.viewModel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
@@ -24,6 +24,10 @@ class QuickTimerViewModel @Inject constructor(
 
     private val _selectedMinutes = MutableStateFlow(25)
     private val _currentMode = MutableStateFlow(TimerMode.FOCUS)
+    private val focusTimeState = focusTimerManager.focusTime
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 25)
+    private val breakTimeState = breakTimerManager.breakTime
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 5)
 
     init {
         viewModelScope.launch {
@@ -37,30 +41,58 @@ class QuickTimerViewModel @Inject constructor(
                 _selectedMinutes.value = time
             }
         }
+
+        viewModelScope.launch {
+            TimerService.timerState.collect { serviceState ->
+                if (serviceState.isFinished && serviceState.currentTaskId == null) {
+                    handleTimerFinished()
+                }
+            }
+        }
+    }
+
+    private fun handleTimerFinished() {
+        TimerService.sendAction(application, TimerService.ACTION_STOP)
+
+        val nextMode = if (_currentMode.value == TimerMode.FOCUS) TimerMode.BREAK else TimerMode.FOCUS
+        _currentMode.value = nextMode
+
+        val nextMinutes = if (nextMode == TimerMode.FOCUS) {
+            focusTimeState.value
+        } else {
+            breakTimeState.value
+        }
+
+        TimerService.sendAction(
+            context = application,
+            action = TimerService.ACTION_START,
+            duration = (nextMinutes * 60).toLong(),
+            taskId = null
+        )
     }
 
     val state = combine(
         _selectedMinutes,
         _currentMode,
         TimerService.timerState,
-    ) { selectedMinutes, mode, serviceState ->
+    ) { minutes, mode, serviceState ->
 
-        val totalSeconds = (selectedMinutes * 60).toLong()
-
-        val displayTime = if (serviceState.secondsLeft > 0) {
+        val isMine = serviceState.currentTaskId == null
+        val totalSeconds = (minutes * 60).toLong()
+        val displayTime = if (isMine && serviceState.secondsLeft > 0) {
             serviceState.secondsLeft
         } else {
             totalSeconds
         }
 
         QuickTimerState(
-            selectedMinutes = selectedMinutes,
+            selectedMinutes = minutes,
             timerServiceState = serviceState,
-            isSettingTimer = !serviceState.isRunning && serviceState.secondsLeft <= 0L,
+            isSettingTimer = !isMine || (!serviceState.isRunning && serviceState.secondsLeft <= 0L),
             mode = mode,
             currentTime = displayTime,
             totalTime = totalSeconds,
-            isRunning = serviceState.isRunning,
+            isRunning = serviceState.isRunning && isMine,
             currentSession = 1,
             totalSessions = 4
         )
@@ -70,44 +102,42 @@ class QuickTimerViewModel @Inject constructor(
         initialValue = QuickTimerState()
     )
 
-    fun onDurationChange(minutes: Int) {
-        _selectedMinutes.update { minutes }
-    }
-
     fun toggleTimer() {
         if (state.value.isRunning) pauseTimer() else startTimer()
     }
 
     fun startTimer() {
-        val serviceState = state.value.timerServiceState
-        val timeLeft = serviceState.secondsLeft
+        val serviceState = TimerService.timerState.value
+        val isSameTimer = serviceState.currentTaskId == null
 
-        val duration = if (timeLeft > 0) {
-            timeLeft
+        val duration = if (isSameTimer && serviceState.secondsLeft > 0) {
+            serviceState.secondsLeft
         } else {
             (_selectedMinutes.value * 60).toLong()
         }
 
-        TimerService.sendAction(application, TimerService.ACTION_START, duration)
+        TimerService.sendAction(
+            context = application,
+            action = TimerService.ACTION_START,
+            duration = duration,
+            taskId = null
+        )
     }
 
     fun pauseTimer() {
         TimerService.sendAction(application, TimerService.ACTION_PAUSE)
     }
 
-    fun stopTimer() {
+    fun resetTimer() {
         TimerService.sendAction(application, TimerService.ACTION_STOP)
+        _currentMode.value = TimerMode.FOCUS
     }
 
     fun skipPhase() {
-        stopTimer()
-
-        val nextMode = if (_currentMode.value == TimerMode.FOCUS) {
-            TimerMode.BREAK
-        } else {
-            TimerMode.FOCUS
+        resetTimer()
+        _currentMode.update {
+            if (it == TimerMode.FOCUS) TimerMode.BREAK else TimerMode.FOCUS
         }
-
-        _currentMode.value = nextMode
+        startTimer()
     }
 }

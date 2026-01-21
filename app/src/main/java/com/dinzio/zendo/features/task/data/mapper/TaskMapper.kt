@@ -13,6 +13,9 @@ fun TaskEntity.toDomain() = TaskModel(
     sessionDone = sessionsDone,
     focusTime = focusTime,
     breakTime = breakTime,
+    lastSecondsLeft = lastSecondsLeft,
+    lastMode = lastMode,
+    isInIntermediaryState = isInIntermediaryState,
     createdAt = createdAt,
     updatedAt = updatedAt
 )
@@ -27,6 +30,9 @@ fun TaskModel.toEntity() = TaskEntity(
     sessionsDone = sessionDone,
     focusTime = focusTime,
     breakTime = breakTime,
+    lastSecondsLeft = lastSecondsLeft,
+    lastMode = lastMode,
+    isInIntermediaryState = isInIntermediaryState,
     createdAt = createdAt,
     updatedAt = updatedAt
 )

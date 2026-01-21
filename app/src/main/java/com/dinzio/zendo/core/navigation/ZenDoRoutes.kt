@@ -14,6 +14,9 @@ sealed class ZenDoRoutes(val route: String) {
     object EditTask : ZenDoRoutes("edit_task/{taskId}") {
         fun passId(id: Int) = "edit_task/$id"
     }
+    object PomodoroTask : ZenDoRoutes("pomodoro_task/{taskId}") {
+        fun passId(id: Int) = "pomodoro_task/$id"
+    }
     object Settings : ZenDoRoutes("settings")
     object LanguageSetting : ZenDoRoutes("settings_language")
     object ThemeSetting : ZenDoRoutes("settings_theme")

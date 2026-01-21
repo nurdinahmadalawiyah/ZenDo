@@ -111,6 +111,9 @@ class TaskActionViewModel @Inject constructor(
                     sessionDone = 0,
                     focusTime = currentState.focusTimeInput,
                     breakTime = currentState.breakTimeInput,
+                    lastSecondsLeft = 0,
+                    lastMode = "FOCUS",
+                    isInIntermediaryState = false,
                     createdAt = System.currentTimeMillis().toString(),
                     updatedAt = System.currentTimeMillis().toString()
                 )
