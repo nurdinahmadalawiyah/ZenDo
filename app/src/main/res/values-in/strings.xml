@@ -91,4 +91,11 @@
     <string name="done">Selesai!</string>
     <string name="paused">Dijeda</string>
     <string name="session_over_time_to_rest_focus">Sesi selesai! Waktunya istirahat/fokus.</string>
+    <string name="data_sync"><![CDATA[Data & Sinkronisasi]]></string>
+    <string name="cloud_sync">Sinkronisasi Cloud</string>
+    <string name="sync_your_timer_settings_with_google_drive">Sinkronkan pengaturan timer kamu dengan Google Drive.</string>
+    <string name="create_backup">Buat Backup</string>
+    <string name="export_your_data_as_a_json_backup_file">Ekspor data kamu sebagai file cadangan JSON.</string>
+    <string name="restore_backup">Pulihkan Backup</string>
+    <string name="import_a_backup_to_recover_your_settings">Impor cadangan untuk mengembalikan pengaturan kamu.</string>
 </resources>

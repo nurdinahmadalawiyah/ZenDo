@@ -17,11 +17,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AutoMode
+import androidx.compose.material.icons.twotone.Backup
 import androidx.compose.material.icons.twotone.BrightnessAuto
 import androidx.compose.material.icons.twotone.DarkMode
 import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material.icons.twotone.Language
 import androidx.compose.material.icons.twotone.LightMode
+import androidx.compose.material.icons.twotone.Restore
+import androidx.compose.material.icons.twotone.Sync
 import androidx.compose.material.icons.twotone.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -133,6 +136,38 @@ private fun SettingsListContent(
         else Icons.TwoTone.BrightnessAuto,
         roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
         onClick = onThemeClick
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    SettingsCategoryTitle(title = stringResource(R.string.data_sync))
+
+    SettingsItem(
+        title = stringResource(R.string.cloud_sync),
+        subtitle = stringResource(R.string.sync_your_timer_settings_with_google_drive),
+        icon = Icons.TwoTone.Sync,
+        roundedCornerShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        onClick = { }
+    )
+
+    Spacer(modifier = Modifier.height(2.dp))
+
+    SettingsItem(
+        title = stringResource(R.string.create_backup),
+        subtitle = stringResource(R.string.export_your_data_as_a_json_backup_file),
+        icon = Icons.TwoTone.Backup,
+        roundedCornerShape = RoundedCornerShape(0.dp),
+        onClick = { }
+    )
+
+    Spacer(modifier = Modifier.height(2.dp))
+
+    SettingsItem(
+        title = stringResource(R.string.restore_backup),
+        subtitle = stringResource(R.string.import_a_backup_to_recover_your_settings),
+        icon = Icons.TwoTone.Restore,
+        roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
+        onClick = { }
     )
 
     Spacer(modifier = Modifier.height(24.dp))

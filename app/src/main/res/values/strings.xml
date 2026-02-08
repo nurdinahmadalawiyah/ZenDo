@@ -90,4 +90,11 @@
     <string name="done">Done!</string>
     <string name="paused">Paused</string>
     <string name="session_over_time_to_rest_focus">Session over! Time to rest/focus..</string>
+    <string name="data_sync"><![CDATA[Data & Sync]]></string>
+    <string name="cloud_sync">Cloud Sync</string>
+    <string name="sync_your_timer_settings_with_google_drive">Sync your timer settings with Google Drive.</string>
+    <string name="create_backup">Create Backup</string>
+    <string name="export_your_data_as_a_json_backup_file">Export your data as a JSON backup file.</string>
+    <string name="restore_backup">Restore Backup</string>
+    <string name="import_a_backup_to_recover_your_settings">Import a backup to recover your settings.</string>
 </resources>
