@@ -1,7 +1,6 @@
 package com.dinzio.zendo.features.task.presentation.viewModel.pomodoroTask
 
 import android.app.Application
-import android.content.Intent
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,7 +25,7 @@ class PomodoroTaskViewModel @Inject constructor(
 ) : ViewModel() {
     private val taskId: Int = checkNotNull(savedStateHandle["taskId"])
 
-    private val _taskData = MutableStateFlow<com.dinzio.zendo.features.task.domain.model.TaskModel?>(null)
+    private val _taskData = MutableStateFlow<TaskModel?>(null)
     private val _currentMode = MutableStateFlow(TimerMode.FOCUS)
 
     init {

@@ -10,7 +10,6 @@ data class QuickTimerState(
     val selectedMinutes: Int = 25,
     val timerServiceState: ServiceState = ServiceState(),
     val isSettingTimer: Boolean = true,
-
     val mode: TimerMode = TimerMode.FOCUS,
     val currentSession: Int = 1,
     val totalSessions: Int = 4,
