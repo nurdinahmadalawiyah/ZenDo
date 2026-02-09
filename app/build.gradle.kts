@@ -66,7 +66,9 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.lifecycle.service)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.gson)
 
     /// --- NAVIGATION ---
     implementation(libs.androidx.navigation.compose)
@@ -90,7 +92,6 @@ dependencies {
     /// --- MEDIA & UI TOOLS ---
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.coil.compose)
-    implementation("androidx.emoji2:emoji2-emojipicker:1.5.0-alpha01")
 
     /// --- TESTING ---
     testImplementation(libs.junit)

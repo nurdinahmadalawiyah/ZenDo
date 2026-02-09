@@ -9,7 +9,7 @@ import com.dinzio.zendo.features.task.data.local.entity.TaskEntity
 
 @Database(
     entities = [CategoryEntity::class, TaskEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class ZenDoDatabase : RoomDatabase() {

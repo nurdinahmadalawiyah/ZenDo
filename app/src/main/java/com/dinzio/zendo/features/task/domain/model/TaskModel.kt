@@ -6,10 +6,13 @@ data class TaskModel(
     val icon: String,
     val categoryId: Int?,
     val isCompleted: Boolean,
-    val sessionCount: Int,
     val sessionDone: Int,
+    val sessionCount: Int,
     val focusTime: Int,
     val breakTime: Int,
+    val lastSecondsLeft: Long,
+    val lastMode: String,
+    val isInIntermediaryState: Boolean,
     val createdAt: String,
     val updatedAt: String
 )

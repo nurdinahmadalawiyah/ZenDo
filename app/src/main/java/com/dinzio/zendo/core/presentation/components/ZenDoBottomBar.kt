@@ -15,11 +15,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Add
-import androidx.compose.material.icons.twotone.Home
-import androidx.compose.material.icons.twotone.InsertChart
-import androidx.compose.material.icons.twotone.Settings
-import androidx.compose.material.icons.twotone.Timer
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.InsertChart
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,10 +47,10 @@ data class BottomNavItem(
 )
 
 val navItems = listOf(
-    BottomNavItem("Home", Icons.TwoTone.Home, ZenDoRoutes.Home.route),
-    BottomNavItem("Focus", Icons.TwoTone.Timer, ZenDoRoutes.Focus.route),
-    BottomNavItem("Stats", Icons.TwoTone.InsertChart, ZenDoRoutes.Stats.route),
-    BottomNavItem("Settings", Icons.TwoTone.Settings, ZenDoRoutes.Settings.route)
+    BottomNavItem("Home", Icons.Rounded.Home, ZenDoRoutes.Home.route),
+    BottomNavItem("Focus", Icons.Rounded.Timer, ZenDoRoutes.Focus.route),
+    BottomNavItem("Stats", Icons.Rounded.InsertChart, ZenDoRoutes.Stats.route),
+    BottomNavItem("Settings", Icons.Rounded.Settings, ZenDoRoutes.Settings.route)
 )
 
 @Composable
@@ -89,7 +89,7 @@ fun ZenDoBottomBar(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector = Icons.TwoTone.Add,
+                            imageVector = Icons.Rounded.Add,
                             contentDescription = "Add",
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(28.dp)
@@ -136,7 +136,7 @@ fun ZenDoNavigationRail(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                Icon(Icons.TwoTone.Add, contentDescription = "Add")
+                Icon(Icons.Rounded.Add, contentDescription = "Add")
             }
         }
     ) {

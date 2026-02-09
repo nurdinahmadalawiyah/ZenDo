@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.R
@@ -120,6 +121,7 @@ fun TaskScreen(
 
     if (isLandscapeMode) {
         TaskTabletLayout(
+            navController = navController,
             tasks = filteredTasks,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
@@ -132,6 +134,7 @@ fun TaskScreen(
         )
     } else {
         TaskPhoneLayout(
+            navController = navController,
             tasks = filteredTasks,
             isLoading = state.isLoading,
             searchQuery = searchQuery,
@@ -147,6 +150,7 @@ fun TaskScreen(
 
 @Composable
 fun TaskPhoneLayout(
+    navController: NavController,
     tasks: List<TaskModel>,
     isLoading: Boolean,
     searchQuery: String,
@@ -201,7 +205,11 @@ fun TaskPhoneLayout(
                         sessionCount = task.sessionCount.toString(),
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
-                        onItemClick = { },
+                        onItemClick = {
+                            task.id?.let { id ->
+                                navController.navigate(ZenDoRoutes.PomodoroTask.passId(id))
+                            }
+                        },
                         onLongItemClick = { onLongItemClick(task) },
                         onPlayClick = { }
                     )
@@ -213,6 +221,7 @@ fun TaskPhoneLayout(
 
 @Composable
 fun TaskTabletLayout(
+    navController: NavController,
     tasks: List<TaskModel>,
     isLoading: Boolean,
     searchQuery: String,
@@ -270,7 +279,11 @@ fun TaskTabletLayout(
                         sessionCount = task.sessionCount.toString(),
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
-                        onItemClick = { },
+                        onItemClick = {
+                            task.id?.let { id ->
+                                navController.navigate(ZenDoRoutes.PomodoroTask.passId(id))
+                            }
+                        },
                         onLongItemClick = { onLongItemClick(task) },
                         onPlayClick = { }
                     )

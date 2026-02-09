@@ -14,9 +14,13 @@ sealed class ZenDoRoutes(val route: String) {
     object EditTask : ZenDoRoutes("edit_task/{taskId}") {
         fun passId(id: Int) = "edit_task/$id"
     }
+    object PomodoroTask : ZenDoRoutes("pomodoro_task/{taskId}") {
+        fun passId(id: Int) = "pomodoro_task/$id"
+    }
     object Settings : ZenDoRoutes("settings")
     object LanguageSetting : ZenDoRoutes("settings_language")
     object ThemeSetting : ZenDoRoutes("settings_theme")
+    object BackupRestoreSetting : ZenDoRoutes("backup_restore")
     object FocusTimerSetting : ZenDoRoutes("settings_focus_timer")
     object BreakTimerSetting : ZenDoRoutes("settings_break_timer")
     object VersionSetting : ZenDoRoutes("settings_version")

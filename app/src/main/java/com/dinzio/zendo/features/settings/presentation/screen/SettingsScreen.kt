@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AutoMode
+import androidx.compose.material.icons.twotone.Backup
 import androidx.compose.material.icons.twotone.BrightnessAuto
 import androidx.compose.material.icons.twotone.DarkMode
 import androidx.compose.material.icons.twotone.Info
@@ -45,7 +46,7 @@ import com.dinzio.zendo.features.settings.presentation.component.SettingsCategor
 import com.dinzio.zendo.features.settings.presentation.component.SettingsItem
 
 enum class SettingsPane {
-    DEFAULT, LANGUAGE, THEME, FOCUS_TIMER, BREAK_TIMER, VERSION
+    DEFAULT, LANGUAGE, THEME, DATA_SYNC, FOCUS_TIMER, BREAK_TIMER, VERSION
 }
 
 @Composable
@@ -58,7 +59,7 @@ fun SettingsScreen(
     currentFocusTime: Int,
     onFocusTimeChange: (Int) -> Unit,
     currentBreakTime: Int,
-    onBreakTimeChange: (Int) -> Unit,
+    onBreakTimeChange: (Int) -> Unit
 ) {
     val isLandscapeMode = isLandscape()
 
@@ -71,7 +72,7 @@ fun SettingsScreen(
             onThemeChange = onThemeChange,
             onLanguageChange = onLanguageChange,
             onFocusTimeChange = onFocusTimeChange,
-            onBreakTimeChange = onBreakTimeChange
+            onBreakTimeChange = onBreakTimeChange,
         )
     } else {
         SettingsPhoneLayout(
@@ -79,7 +80,7 @@ fun SettingsScreen(
             currentThemeMode = currentThemeMode,
             currentLanguageCode = currentLanguageCode,
             currentFocusTime = currentFocusTime,
-            currentBreakTime = currentBreakTime
+            currentBreakTime = currentBreakTime,
         )
     }
 }
@@ -95,6 +96,7 @@ private fun SettingsListContent(
     onFocusTimerClick: () -> Unit,
     onBreakTimerClick: () -> Unit,
     onVersionClick: () -> Unit,
+    onDataSyncClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val packageInfo = remember(context) {
@@ -131,8 +133,18 @@ private fun SettingsListContent(
         icon = if (currentThemeMode == "dark") Icons.TwoTone.DarkMode
         else if (currentThemeMode == "light") Icons.TwoTone.LightMode
         else Icons.TwoTone.BrightnessAuto,
-        roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
+        roundedCornerShape = RoundedCornerShape(0.dp),
         onClick = onThemeClick
+    )
+
+    Spacer(modifier = Modifier.height(2.dp))
+
+    SettingsItem(
+        title = stringResource(R.string.data_sync),
+        subtitle = stringResource(R.string.don_t_lose_your_focus_progress_backup_or_sync_anytime),
+        icon = Icons.TwoTone.Backup,
+        roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
+        onClick = onDataSyncClick
     )
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -175,7 +187,7 @@ fun SettingsPhoneLayout(
     currentThemeMode: String,
     currentLanguageCode: String,
     currentFocusTime: Int,
-    currentBreakTime: Int
+    currentBreakTime: Int,
 ) {
     Column(
         modifier = Modifier
@@ -201,7 +213,8 @@ fun SettingsPhoneLayout(
             onThemeClick = { navController.navigate(ZenDoRoutes.ThemeSetting.route) },
             onFocusTimerClick = { navController.navigate(ZenDoRoutes.FocusTimerSetting.route) },
             onBreakTimerClick = { navController.navigate(ZenDoRoutes.BreakTimerSetting.route) },
-            onVersionClick = { navController.navigate(ZenDoRoutes.VersionSetting.route) }
+            onVersionClick = { navController.navigate(ZenDoRoutes.VersionSetting.route) },
+            onDataSyncClick = {  navController.navigate(ZenDoRoutes.BackupRestoreSetting.route) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -250,7 +263,8 @@ fun SettingsTabletLayout(
                 onThemeClick = { activePane = SettingsPane.THEME },
                 onFocusTimerClick = { activePane = SettingsPane.FOCUS_TIMER },
                 onBreakTimerClick = { activePane = SettingsPane.BREAK_TIMER },
-                onVersionClick = { activePane = SettingsPane.VERSION }
+                onVersionClick = { activePane = SettingsPane.VERSION },
+                onDataSyncClick = { activePane = SettingsPane.DATA_SYNC },
             )
         }
 
@@ -302,6 +316,12 @@ fun SettingsTabletLayout(
                     ThemeSettingScreen(
                         currentTheme = currentThemeMode,
                         onThemeSelected = onThemeChange,
+                        hideBackButton = true
+                    )
+                }
+
+                SettingsPane.DATA_SYNC -> {
+                    BackupRestoreSettingScreen(
                         hideBackButton = true
                     )
                 }

@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
+import com.dinzio.zendo.features.settings.presentation.screen.BackupRestoreSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.BreakTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.FocusTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.LanguageSettingScreen
@@ -28,8 +29,9 @@ import com.dinzio.zendo.features.settings.presentation.screen.ThemeSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.VersionSettingScreen
 import com.dinzio.zendo.features.task.presentation.screen.AddTaskScreen
 import com.dinzio.zendo.features.task.presentation.screen.EditTaskScreen
+import com.dinzio.zendo.features.task.presentation.screen.PomodoroTaskScreen
 import com.dinzio.zendo.features.task.presentation.screen.TaskScreen
-import com.dinzio.zendo.features.timer.presentation.QuickTimerScreen
+import com.dinzio.zendo.features.timer.presentation.screen.QuickTimerScreen
 
 @Composable
 fun ZenDoNavGraph(
@@ -131,6 +133,12 @@ fun ZenDoNavGraph(
                 navController = navController,
             )
         }
+        composable(
+            route = ZenDoRoutes.PomodoroTask.route,
+            arguments = listOf(navArgument("taskId") { type = NavType.IntType })
+        ) {
+            PomodoroTaskScreen()
+        }
         composable(ZenDoRoutes.Settings.route) {
             SettingsScreen(
                 navController = navController,
@@ -159,6 +167,9 @@ fun ZenDoNavGraph(
                     onLanguageChange(newLanguage)
                 },
             )
+        }
+        composable(ZenDoRoutes.BackupRestoreSetting.route) {
+            BackupRestoreSettingScreen()
         }
         composable(ZenDoRoutes.FocusTimerSetting.route) {
             FocusTimerSettingScreen(

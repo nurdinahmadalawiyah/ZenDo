@@ -36,10 +36,10 @@ fun ZenDoEmptyState(
 
     Box(
         modifier = Modifier
+            .clip(shape = RoundedCornerShape(16.dp))
             .clickable(onClick = onActionClick)
             .fillMaxWidth()
             .height(160.dp)
-            .clip(shape = RoundedCornerShape(16.dp))
             .background(color = backgroundColor)
             .drawWithContent {
                 drawRoundRect(
