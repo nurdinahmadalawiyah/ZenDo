@@ -41,8 +41,7 @@ fun SettingsItem(
             .background(
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .heightIn(min = 56.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

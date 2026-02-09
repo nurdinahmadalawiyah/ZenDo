@@ -1,6 +1,9 @@
 package com.dinzio.zendo.features.settings.presentation.screen
 
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.twotone.Sync
 import androidx.compose.material.icons.twotone.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.dinzio.zendo.R
@@ -46,6 +51,7 @@ import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.features.settings.presentation.component.SettingsCategoryTitle
 import com.dinzio.zendo.features.settings.presentation.component.SettingsItem
+import com.dinzio.zendo.features.settings.presentation.viewModel.SettingsViewModel
 
 enum class SettingsPane {
     DEFAULT, LANGUAGE, THEME, FOCUS_TIMER, BREAK_TIMER, VERSION
@@ -62,8 +68,37 @@ fun SettingsScreen(
     onFocusTimeChange: (Int) -> Unit,
     currentBreakTime: Int,
     onBreakTimeChange: (Int) -> Unit,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val isLandscapeMode = isLandscape()
+
+    val createBackupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri?.let { settingsViewModel.performBackup(it) }
+    }
+
+    val restoreBackupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { settingsViewModel.performRestore(it) }
+    }
+
+    LaunchedEffect(Unit) {
+        settingsViewModel.uiEvent.collect { message ->
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    val onBackupClick = {
+        val fileName = "zendo_backup_${System.currentTimeMillis()}.json"
+        createBackupLauncher.launch(fileName)
+    }
+
+    val onRestoreClick = {
+        restoreBackupLauncher.launch(arrayOf("application/json"))
+    }
 
     if (isLandscapeMode) {
         SettingsTabletLayout(
@@ -74,7 +109,9 @@ fun SettingsScreen(
             onThemeChange = onThemeChange,
             onLanguageChange = onLanguageChange,
             onFocusTimeChange = onFocusTimeChange,
-            onBreakTimeChange = onBreakTimeChange
+            onBreakTimeChange = onBreakTimeChange,
+            onBackupClick = onBackupClick,
+            onRestoreClick = onRestoreClick
         )
     } else {
         SettingsPhoneLayout(
@@ -82,7 +119,9 @@ fun SettingsScreen(
             currentThemeMode = currentThemeMode,
             currentLanguageCode = currentLanguageCode,
             currentFocusTime = currentFocusTime,
-            currentBreakTime = currentBreakTime
+            currentBreakTime = currentBreakTime,
+            onBackupClick = onBackupClick,
+            onRestoreClick = onRestoreClick
         )
     }
 }
@@ -98,6 +137,8 @@ private fun SettingsListContent(
     onFocusTimerClick: () -> Unit,
     onBreakTimerClick: () -> Unit,
     onVersionClick: () -> Unit,
+    onBackupClick: () -> Unit,
+    onRestoreClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val packageInfo = remember(context) {
@@ -157,7 +198,7 @@ private fun SettingsListContent(
         subtitle = stringResource(R.string.export_your_data_as_a_json_backup_file),
         icon = Icons.TwoTone.Backup,
         roundedCornerShape = RoundedCornerShape(0.dp),
-        onClick = { }
+        onClick = onBackupClick
     )
 
     Spacer(modifier = Modifier.height(2.dp))
@@ -167,7 +208,7 @@ private fun SettingsListContent(
         subtitle = stringResource(R.string.import_a_backup_to_recover_your_settings),
         icon = Icons.TwoTone.Restore,
         roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
-        onClick = { }
+        onClick = onRestoreClick
     )
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -210,7 +251,9 @@ fun SettingsPhoneLayout(
     currentThemeMode: String,
     currentLanguageCode: String,
     currentFocusTime: Int,
-    currentBreakTime: Int
+    currentBreakTime: Int,
+    onBackupClick: () -> Unit,
+    onRestoreClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -236,7 +279,9 @@ fun SettingsPhoneLayout(
             onThemeClick = { navController.navigate(ZenDoRoutes.ThemeSetting.route) },
             onFocusTimerClick = { navController.navigate(ZenDoRoutes.FocusTimerSetting.route) },
             onBreakTimerClick = { navController.navigate(ZenDoRoutes.BreakTimerSetting.route) },
-            onVersionClick = { navController.navigate(ZenDoRoutes.VersionSetting.route) }
+            onVersionClick = { navController.navigate(ZenDoRoutes.VersionSetting.route) },
+            onBackupClick = onBackupClick,
+            onRestoreClick = onRestoreClick
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -253,6 +298,8 @@ fun SettingsTabletLayout(
     currentBreakTime: Int,
     onBreakTimeChange: (Int) -> Unit,
     onFocusTimeChange: (Int) -> Unit,
+    onBackupClick: () -> Unit,
+    onRestoreClick: () -> Unit,
 ) {
     var activePane by remember { mutableStateOf(SettingsPane.DEFAULT) }
 
@@ -285,7 +332,9 @@ fun SettingsTabletLayout(
                 onThemeClick = { activePane = SettingsPane.THEME },
                 onFocusTimerClick = { activePane = SettingsPane.FOCUS_TIMER },
                 onBreakTimerClick = { activePane = SettingsPane.BREAK_TIMER },
-                onVersionClick = { activePane = SettingsPane.VERSION }
+                onVersionClick = { activePane = SettingsPane.VERSION },
+                onBackupClick = onBackupClick,
+                onRestoreClick = onRestoreClick
             )
         }
 
