@@ -97,4 +97,9 @@
     <string name="export_your_data_as_a_json_backup_file">Export your data as a JSON backup file.</string>
     <string name="restore_backup">Restore Backup</string>
     <string name="import_a_backup_to_recover_your_settings">Import a backup to recover your settings.</string>
+    <string name="don_t_lose_your_focus_progress_backup_or_sync_anytime">Don’t lose your focus progress, backup or sync anytime.</string>
+    <string name="backup_saved_successfully">Backup saved successfully!</string>
+    <string name="failed_create_backup">Failed to create backup.</string>
+    <string name="data_recovered_successfully">Data recovered successfully!</string>
+    <string name="the_backup_file_is_corrupted_or_invalid">The backup file is corrupted or invalid.</string>
 </resources>

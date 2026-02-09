@@ -1,5 +1,6 @@
 package com.dinzio.zendo.features.settings.presentation.component
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,7 +31,8 @@ fun SettingsItem(
     subtitle: String? = null,
     icon: ImageVector,
     onClick: () -> Unit,
-    roundedCornerShape: RoundedCornerShape = RoundedCornerShape(16.dp)
+    roundedCornerShape: RoundedCornerShape = RoundedCornerShape(16.dp),
+    hideTrailing: Boolean = false,
 ) {
     Row(
         modifier = Modifier
@@ -73,11 +74,13 @@ fun SettingsItem(
             }
         }
 
-        Icon(
-            imageVector = Icons.TwoTone.ChevronRight,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        if (!hideTrailing) {
+            Icon(
+                imageVector = Icons.TwoTone.ChevronRight,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }

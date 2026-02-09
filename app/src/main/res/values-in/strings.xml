@@ -98,4 +98,9 @@
     <string name="export_your_data_as_a_json_backup_file">Ekspor data kamu sebagai file cadangan JSON.</string>
     <string name="restore_backup">Pulihkan Backup</string>
     <string name="import_a_backup_to_recover_your_settings">Impor cadangan untuk mengembalikan pengaturan kamu.</string>
+    <string name="don_t_lose_your_focus_progress_backup_or_sync_anytime">Jangan sampai progres fokusmu hilang, cadangkan atau sinkronkan kapan saja.</string>
+    <string name="backup_saved_successfully">Backup berhasil disimpan!</string>
+    <string name="failed_create_backup">Gagal membuat backup.</string>
+    <string name="data_recovered_successfully">Data berhasil dipulihkan!</string>
+    <string name="the_backup_file_is_corrupted_or_invalid">File backup rusak atau tidak valid.</string>
 </resources>

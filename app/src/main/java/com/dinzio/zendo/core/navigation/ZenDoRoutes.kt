@@ -20,6 +20,7 @@ sealed class ZenDoRoutes(val route: String) {
     object Settings : ZenDoRoutes("settings")
     object LanguageSetting : ZenDoRoutes("settings_language")
     object ThemeSetting : ZenDoRoutes("settings_theme")
+    object BackupRestoreSetting : ZenDoRoutes("backup_restore")
     object FocusTimerSetting : ZenDoRoutes("settings_focus_timer")
     object BreakTimerSetting : ZenDoRoutes("settings_break_timer")
     object VersionSetting : ZenDoRoutes("settings_version")

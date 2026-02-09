@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
+import com.dinzio.zendo.features.settings.presentation.screen.BackupRestoreSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.BreakTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.FocusTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.LanguageSettingScreen
@@ -166,6 +167,9 @@ fun ZenDoNavGraph(
                     onLanguageChange(newLanguage)
                 },
             )
+        }
+        composable(ZenDoRoutes.BackupRestoreSetting.route) {
+            BackupRestoreSettingScreen()
         }
         composable(ZenDoRoutes.FocusTimerSetting.route) {
             FocusTimerSettingScreen(
