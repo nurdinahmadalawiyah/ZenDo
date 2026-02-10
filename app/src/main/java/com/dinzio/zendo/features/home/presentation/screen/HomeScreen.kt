@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -30,7 +30,6 @@ import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListState
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryList.CategoryListViewModel
-import com.dinzio.zendo.features.home.presentation.component.BannerSection
 import com.dinzio.zendo.features.home.presentation.component.CategorySection
 import com.dinzio.zendo.features.home.presentation.component.HeaderSection
 import com.dinzio.zendo.features.home.presentation.component.TaskSection
@@ -95,23 +94,20 @@ fun HomePhoneLayout(
     taskListState: TaskListState,
     taskActionState: TaskActionState,
 ) {
-    Scaffold(
-        topBar = {
-            Box(modifier = Modifier.padding(PaddingValues(16.dp))) {
-                HeaderSection(navController)
-            }
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(modifier = Modifier.padding(16.dp)) {
+            HeaderSection(navController)
         }
-    ) { innerPadding ->
+
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+                .weight(1f)
+                .fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),
         ) {
             item {
-                BannerSection()
-                Spacer(modifier = Modifier.height(24.dp))
-
                 CategorySection(
                     navController = navController,
                     categoryListViewModel = categoryListViewModel,
@@ -119,7 +115,6 @@ fun HomePhoneLayout(
                     categoryListState = categoryListState,
                     categoryActionState = categoryActionState,
                 )
-
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
@@ -165,8 +160,12 @@ fun HomeTabletLayout(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            BannerSection()
-            Spacer(modifier = Modifier.height(24.dp))
+//            BannerSection(
+//                navController = navController,
+//                currentTask = currentTask,
+//                roundedCornerShape = RoundedCornerShape(24.dp),
+//            )
+//            Spacer(modifier = Modifier.height(24.dp))
 
             CategorySection(
                 navController = navController,
