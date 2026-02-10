@@ -103,4 +103,7 @@
     <string name="failed_create_backup">Gagal membuat backup.</string>
     <string name="data_recovered_successfully">Data berhasil dipulihkan!</string>
     <string name="the_backup_file_is_corrupted_or_invalid">File backup rusak atau tidak valid.</string>
+    <string name="well_done">Luar Biasa!</string>
+    <string name="you_have_completed_all_sessions_now_take_a_well_deserved_break">Semua sesi tugas telah selesai.\\nSaatnya menikmati waktu istirahat!</string>
+    <string name="close">Tutup</string>
 </resources>

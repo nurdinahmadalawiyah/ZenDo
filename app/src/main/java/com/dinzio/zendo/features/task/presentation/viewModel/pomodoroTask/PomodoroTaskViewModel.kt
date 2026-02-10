@@ -11,6 +11,7 @@ import com.dinzio.zendo.features.task.domain.usecase.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -27,6 +28,9 @@ class PomodoroTaskViewModel @Inject constructor(
 
     private val _taskData = MutableStateFlow<TaskModel?>(null)
     private val _currentMode = MutableStateFlow(TimerMode.FOCUS)
+
+    private val _showCelebration = MutableStateFlow(false)
+    val showCelebration = _showCelebration.asStateFlow()
 
     init {
         loadTaskData()
@@ -90,6 +94,7 @@ class PomodoroTaskViewModel @Inject constructor(
             _taskData.value = updatedTask
 
             if (isAllDone) {
+                _showCelebration.value = true
                 _currentMode.value = TimerMode.FOCUS
             } else {
                 _currentMode.value = TimerMode.FOCUS
@@ -233,6 +238,10 @@ class PomodoroTaskViewModel @Inject constructor(
 
                 TimerService.sendAction(application, TimerService.ACTION_STOP)
                 _currentMode.value = TimerMode.FOCUS
+
+                if (isAllDone) {
+                    _showCelebration.value = true
+                }
             } else {
                 _currentMode.value = TimerMode.BREAK
 
