@@ -47,9 +47,11 @@ class PomodoroTaskViewModel @Inject constructor(
                 val serviceState = TimerService.timerState.value
                 val isServiceRunningThisTask = serviceState.isRunning && serviceState.currentTaskId == taskId
 
-                if (!isServiceRunningThisTask) {
+                if (isServiceRunningThisTask) {
                     _currentMode.value = if (it.lastMode == "BREAK") TimerMode.BREAK else TimerMode.FOCUS
-                } else { }
+                } else {
+                    _currentMode.value = if (it.lastMode == "BREAK") TimerMode.BREAK else TimerMode.FOCUS
+                }
             }
         }
     }
