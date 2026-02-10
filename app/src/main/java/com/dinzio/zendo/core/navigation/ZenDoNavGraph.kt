@@ -137,7 +137,9 @@ fun ZenDoNavGraph(
             route = ZenDoRoutes.PomodoroTask.route,
             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
         ) {
-            PomodoroTaskScreen()
+            PomodoroTaskScreen(
+                navController = navController
+            )
         }
         composable(ZenDoRoutes.Settings.route) {
             SettingsScreen(

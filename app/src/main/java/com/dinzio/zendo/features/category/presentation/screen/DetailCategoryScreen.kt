@@ -72,6 +72,7 @@ import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
+import com.dinzio.zendo.core.presentation.components.ZenDoLockedTaskDialog
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryDetail.CategoryDetailState
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryDetail.CategoryDetailViewModel
 import com.dinzio.zendo.features.home.presentation.screen.TaskUiModel
@@ -79,6 +80,7 @@ import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionState
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionViewModel
+import com.dinzio.zendo.features.task.util.TaskInteractionHandler.navigateToTaskSafely
 import kotlinx.coroutines.launch
 
 @Composable
@@ -90,7 +92,15 @@ fun DetailCategoryScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val taskActionState by taskActionViewModel.state.collectAsStateWithLifecycle()
 
+    var showLockedDialog by remember { mutableStateOf(false) }
+
     val isLandscapeMode = isLandscape()
+
+    if (showLockedDialog) {
+        ZenDoLockedTaskDialog(
+            onDismiss = { showLockedDialog = false }
+        )
+    }
 
     if (isLandscapeMode) {
         DetailCategoryTabletLayout(
@@ -98,6 +108,7 @@ fun DetailCategoryScreen(
             state = state,
             taskActionViewModel = taskActionViewModel,
             taskActionState = taskActionState,
+            onLocked = { showLockedDialog = true }
         )
     } else {
         DetailCategoryPhoneLayout(
@@ -105,6 +116,7 @@ fun DetailCategoryScreen(
             state = state,
             taskActionViewModel = taskActionViewModel,
             taskActionState = taskActionState,
+            onLocked = { showLockedDialog = true }
         )
     }
 }
@@ -115,23 +127,18 @@ fun DetailCategoryPhoneLayout(
     state: CategoryDetailState,
     taskActionViewModel: TaskActionViewModel,
     taskActionState: TaskActionState,
+    onLocked: () -> Unit
 ) {
     val view = LocalView.current
     val context = LocalContext.current
-    val isDarkTheme = isSystemInDarkTheme() // Cek apakah HP sedang mode gelap
+    val isDarkTheme = isSystemInDarkTheme()
 
-    // Gunakan DisposableEffect agar saat navigasi BACK, status bar kembali ke settingan awal (Theme.kt)
     DisposableEffect(key1 = isDarkTheme) {
         val window = (context as Activity).window
         val insetsController = WindowCompat.getInsetsController(window, view)
-
-        // SAAT MASUK KE HALAMAN INI:
-        // Karena background atas hijau (Gelap), kita paksa icon jadi putih (isAppearanceLightStatusBars = false)
         insetsController.isAppearanceLightStatusBars = false
 
         onDispose {
-            // SAAT KELUAR DARI HALAMAN INI:
-            // Kembalikan ke settingan asli aplikasi (jika gelap = putih, jika terang = hitam)
             insetsController.isAppearanceLightStatusBars = !isDarkTheme
         }
     }
@@ -168,6 +175,7 @@ fun DetailCategoryPhoneLayout(
                 state = state,
                 taskActionViewModel = taskActionViewModel,
                 taskActionState = taskActionState,
+                onLocked = onLocked
             )
         }
     }
@@ -179,6 +187,7 @@ fun DetailCategoryTabletLayout(
     state: CategoryDetailState,
     taskActionViewModel: TaskActionViewModel,
     taskActionState: TaskActionState,
+    onLocked: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxSize().statusBarsPadding()
@@ -225,6 +234,7 @@ fun DetailCategoryTabletLayout(
                 state = state,
                 taskActionViewModel = taskActionViewModel,
                 taskActionState = taskActionState,
+                onLocked = onLocked
             )
         }
     }
@@ -238,6 +248,7 @@ fun TaskList(
     state: CategoryDetailState,
     taskActionViewModel: TaskActionViewModel,
     taskActionState: TaskActionState,
+    onLocked: () -> Unit
 ) {
     var selectedTask by remember { mutableStateOf<TaskModel?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -354,8 +365,8 @@ fun TaskList(
                             sessionDone = task.sessionDone.toString(),
                             categoryIcon = task.icon,
                             onItemClick = {
-                                task.id?.let { id ->
-                                    navController.navigate(ZenDoRoutes.PomodoroTask.passId(id))
+                                navController.navigateToTaskSafely(task) {
+                                    onLocked()
                                 }
                             },
                             onLongItemClick = {

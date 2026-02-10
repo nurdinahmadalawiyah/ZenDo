@@ -102,4 +102,9 @@
     <string name="failed_create_backup">Failed to create backup.</string>
     <string name="data_recovered_successfully">Data recovered successfully!</string>
     <string name="the_backup_file_is_corrupted_or_invalid">The backup file is corrupted or invalid.</string>
+    <string name="well_done">Well Done!</string>
+    <string name="you_have_completed_all_sessions_now_take_a_well_deserved_break">You have completed all sessions.\nNow take a well-deserved break!</string>
+    <string name="close">Close</string>
+    <string name="task_archived">Task Archived</string>
+    <string name="this_mission_is_already_complete_you_ve_reached_the_goal_for_this_task">This mission is already complete! You’ve reached the goal for this task.</string>
 </resources>

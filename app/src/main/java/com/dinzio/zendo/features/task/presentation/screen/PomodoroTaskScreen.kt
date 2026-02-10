@@ -4,6 +4,7 @@ package com.dinzio.zendo.features.task.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,10 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoCircularTimer
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.core.util.isLandscape
+import com.dinzio.zendo.features.task.presentation.component.CelebrationDialog
+import com.dinzio.zendo.features.task.presentation.component.CelebrationOverlay
 import com.dinzio.zendo.features.task.presentation.viewModel.pomodoroTask.PomodoroTaskState
 import com.dinzio.zendo.features.task.presentation.viewModel.pomodoroTask.PomodoroTaskViewModel
 import com.dinzio.zendo.features.task.presentation.viewModel.pomodoroTask.TimerMode
@@ -43,9 +48,11 @@ data class PomodoroUiData(
 
 @Composable
 fun PomodoroTaskScreen(
+    navController: NavController,
     viewModel: PomodoroTaskViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val showCelebration by viewModel.showCelebration.collectAsState()
     val isLandscapeMode = isLandscape()
 
     val isFocusMode = state.mode == TimerMode.FOCUS
@@ -62,24 +69,42 @@ fun PomodoroTaskScreen(
         taskEmoji = taskEmoji
     )
 
-    if (isLandscapeMode) {
-        TimerTabletLayout(
-            state = state,
-            uiData = uiData,
-            onToggle = viewModel::toggleTimer,
-            onReset = viewModel::resetTimer,
-            onPause = viewModel::pauseTimer,
-            onSkip = viewModel::skipPhase,
-        )
-    } else {
-        TimerPhoneLayout(
-            state = state,
-            uiData = uiData,
-            onToggle = viewModel::toggleTimer,
-            onReset = viewModel::resetTimer,
-            onPause = viewModel::pauseTimer,
-            onSkip = viewModel::skipPhase,
-        )
+    LaunchedEffect(showCelebration) {
+        if (showCelebration) {
+            kotlinx.coroutines.delay(4000)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isLandscapeMode) {
+            TimerTabletLayout(
+                state = state,
+                uiData = uiData,
+                onToggle = viewModel::toggleTimer,
+                onReset = viewModel::resetTimer,
+                onPause = viewModel::pauseTimer,
+                onSkip = viewModel::skipPhase,
+            )
+        } else {
+            TimerPhoneLayout(
+                state = state,
+                uiData = uiData,
+                onToggle = viewModel::toggleTimer,
+                onReset = viewModel::resetTimer,
+                onPause = viewModel::pauseTimer,
+                onSkip = viewModel::skipPhase,
+            )
+        }
+
+        if (showCelebration) {
+            CelebrationOverlay(isVisible = true)
+
+            CelebrationDialog(
+                onConfirm = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
 
