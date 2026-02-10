@@ -17,12 +17,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -51,6 +53,7 @@ fun PomodoroTaskScreen(
     navController: NavController,
     viewModel: PomodoroTaskViewModel = hiltViewModel(),
 ) {
+    KeepScreenOn()
     val state by viewModel.state.collectAsState()
     val showCelebration by viewModel.showCelebration.collectAsState()
     val isLandscapeMode = isLandscape()
@@ -233,6 +236,17 @@ fun TimerTabletLayout(
                 currentSession = state.currentSession,
                 totalSession = state.totalSession
             )
+        }
+    }
+}
+
+@Composable
+fun KeepScreenOn() {
+    val currentView = LocalView.current
+    DisposableEffect(Unit) {
+        currentView.keepScreenOn = true
+        onDispose {
+            currentView.keepScreenOn = false
         }
     }
 }
