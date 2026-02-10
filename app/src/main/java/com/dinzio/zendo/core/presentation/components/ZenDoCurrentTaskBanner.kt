@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,13 +35,17 @@ fun ZenDoCurrentTaskBanner(
     taskEmoji: String,
     sessionCount: String,
     sessionDone: String,
+    remainingTime: String,
+    isRunning: Boolean,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onToggleClick: () -> Unit,
+    onClick: () -> Unit,
+    roundedCornerShape: RoundedCornerShape = RoundedCornerShape(24.dp),
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .clip(roundedCornerShape)
             .background(MaterialTheme.colorScheme.primary)
             .clickable { onClick() }
             .padding(20.dp)
@@ -66,26 +71,34 @@ fun ZenDoCurrentTaskBanner(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = stringResource(R.string.current_task),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = White.copy(alpha = 0.7f)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(R.string.current_task),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = White.copy(alpha = 0.7f)
+                    )
+                    Text(text = " • ", color = White.copy(alpha = 0.5f))
+                    Text(
+                        text = remainingTime,
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = White.copy(alpha = 0.7f)
+                    )
+                }
                 Text(
                     text = taskName,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = White
                 )
                 Text(
-                    text = "$sessionCount • $sessionDone",
+                    text = stringResource(R.string.sessions_done, sessionCount, sessionDone),
                     style = MaterialTheme.typography.bodySmall,
                     color = White.copy(alpha = 0.9f)
                 )
             }
             
             CircleButton(
-                icon = Icons.Default.PlayArrow,
-                onClick = { /* Start Timer Directly */ },
+                icon = if (isRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                onClick = onToggleClick,
                 backgroundColor = OrangeAccent,
                 iconColor = White,
                 size = 40.dp
@@ -102,6 +115,9 @@ private fun ZenDoCurrentTaskBannerPreview() {
         taskEmoji = "\uD83E\uDDD1\u200D\uD83D\uDCBB",
         sessionCount = "\uD83C\uDFAF 4 Sessions",
         sessionDone = "\uD83D\uDD25 2 Done",
+        remainingTime = "23:00",
+        isRunning = true,
+        onToggleClick = { },
         onClick = {}
     )
 }

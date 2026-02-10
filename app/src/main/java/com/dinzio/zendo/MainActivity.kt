@@ -12,10 +12,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,24 +33,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.dinzio.zendo.core.theme.ZendoTheme
-import com.dinzio.zendo.core.presentation.components.ZenDoBottomBar
-import com.dinzio.zendo.core.presentation.components.ZenDoNavigationRail
 import com.dinzio.zendo.core.navigation.ZenDoNavGraph
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
+import com.dinzio.zendo.core.presentation.components.ZenDoBottomBar
+import com.dinzio.zendo.core.presentation.components.ZenDoNavigationRail
 import com.dinzio.zendo.core.presentation.components.ZenDoSelectionSheet
+import com.dinzio.zendo.core.theme.ZendoTheme
 import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
+import com.dinzio.zendo.features.home.presentation.component.BannerSection
+import com.dinzio.zendo.features.task.domain.model.TaskModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -61,6 +69,7 @@ class MainActivity : AppCompatActivity() {
             val langCode by mainViewModel.languageCode.collectAsState()
             val focusTime by mainViewModel.focusTime.collectAsState()
             val breakTime by mainViewModel.breakTime.collectAsState()
+            val currentTask by mainViewModel.currentTaskBannerState.collectAsState()
 
             LaunchedEffect(langCode) {
                 val appLocale: LocaleListCompat = if (langCode == "system") {
@@ -90,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                     onFocusTimeChange = { mainViewModel.setFocusTime(it) },
                     currentBreakTime = breakTime,
                     onBreakTimeChange = { mainViewModel.setBreakTime(it) },
+                    currentTask = currentTask,
                 )
             }
         }
@@ -136,6 +146,7 @@ fun MainScreen(
     onFocusTimeChange: (Int) -> Unit,
     currentBreakTime: Int,
     onBreakTimeChange: (Int) -> Unit,
+    currentTask: TaskModel?,
     actionViewModel: CategoryActionViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
@@ -143,10 +154,16 @@ fun MainScreen(
     val currentRoute = navBackStackEntry?.destination?.route ?: ZenDoRoutes.Home.route
 
     val isFullScreenRoute = currentRoute.contains(ZenDoRoutes.DetailCategory.route)
-
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    val showBottomNav = currentRoute in listOf(ZenDoRoutes.Home.route, ZenDoRoutes.Focus.route, ZenDoRoutes.Stats.route, ZenDoRoutes.Settings.route)
+    val showBottomNav = currentRoute in listOf(
+        ZenDoRoutes.Home.route,
+        ZenDoRoutes.Focus.route,
+        ZenDoRoutes.Stats.route,
+        ZenDoRoutes.Settings.route
+    )
+
+    var showLandscapeBanner by remember { mutableStateOf(false) }
 
     var showSelectionSheet by remember { mutableStateOf(false) }
     val selectionSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -180,37 +197,63 @@ fun MainScreen(
             contentWindowInsets = if (isFullScreenRoute) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
             bottomBar = {
                 if (!isLandscape && showBottomNav) {
-                    ZenDoBottomBar(
-                        currentRoute = currentRoute,
-                        onPlusClick = { showSelectionSheet = true },
-                        onNavigate = { route -> navController.navigate(route) }
-                    )
+                    Column {
+                        BannerSection(
+                            navController = navController,
+                            currentTask = currentTask,
+                            roundedCornerShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                        )
+                        ZenDoBottomBar(
+                            currentRoute = currentRoute,
+                            onPlusClick = { showSelectionSheet = true },
+                            onNavigate = { route -> navController.navigate(route) }
+                        )
+                    }
                 }
             }
         ) { paddingValues ->
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                if (isLandscape && showBottomNav) {
-                    ZenDoNavigationRail(
-                        currentRoute = currentRoute,
-                        onPlusClick = { showSelectionSheet = true },
-                        onNavigate = { route -> navController.navigate(route) }
+                Row(modifier = Modifier.fillMaxSize()) {
+                    if (isLandscape && showBottomNav) {
+                        ZenDoNavigationRail(
+                            currentRoute = currentRoute,
+                            onPlusClick = { showSelectionSheet = true },
+                            onNavigate = { route -> navController.navigate(route) },
+                            currentTask = currentTask,
+                            onTaskIconClick = { showLandscapeBanner = !showLandscapeBanner }
+                        )
+                    }
+                    ZenDoNavGraph(
+                        navController = navController,
+                        currentTheme = currentThemeMode,
+                        onThemeChange = onThemeChange,
+                        currentLanguage = currentLanguage,
+                        onLanguageChange = onLanguageChange,
+                        currentFocusTime = currentFocusTime,
+                        onFocusTimeChange = onFocusTimeChange,
+                        currentBreakTime = currentBreakTime,
+                        onBreakTimeChange = onBreakTimeChange
                     )
                 }
-                ZenDoNavGraph(
-                    navController = navController,
-                    currentTheme = currentThemeMode,
-                    onThemeChange = onThemeChange,
-                    currentLanguage = currentLanguage,
-                    onLanguageChange = onLanguageChange,
-                    currentFocusTime = currentFocusTime,
-                    onFocusTimeChange = onFocusTimeChange,
-                    currentBreakTime = currentBreakTime,
-                    onBreakTimeChange = onBreakTimeChange
-                )
+
+                if (isLandscape && showBottomNav && currentTask != null && showLandscapeBanner) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(start = 80.dp, bottom = 16.dp)
+                            .fillMaxWidth(0.5f)
+                    ) {
+                        BannerSection(
+                            navController = navController,
+                            currentTask = currentTask,
+                            roundedCornerShape = RoundedCornerShape(24.dp)
+                        )
+                    }
+                }
             }
         }
     }

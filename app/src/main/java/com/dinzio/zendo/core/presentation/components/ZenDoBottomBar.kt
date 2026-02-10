@@ -1,6 +1,12 @@
 package com.dinzio.zendo.core.presentation.components
 
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,13 +38,17 @@ import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
+import com.dinzio.zendo.features.task.domain.model.TaskModel
 
 data class BottomNavItem(
     val label: String,
@@ -61,7 +71,12 @@ fun ZenDoBottomBar(
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = 0.5.dp,
+                color = MaterialTheme.colorScheme.surfaceVariant
+            ),
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         navItems.take(2).forEach { item ->
@@ -123,20 +138,67 @@ fun ZenDoNavigationRail(
     currentRoute: String,
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onPlusClick: () -> Unit
+    onPlusClick: () -> Unit,
+    currentTask: TaskModel?,
+    onTaskIconClick: () -> Unit
 ) {
+    val timerState by com.dinzio.zendo.core.service.TimerService.timerState.collectAsState()
+
+    val minutes = (timerState.secondsLeft / 60).toString().padStart(2, '0')
+    val seconds = (timerState.secondsLeft % 60).toString().padStart(2, '0')
+
     NavigationRail(
         modifier = modifier.padding(end = 8.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         header = {
-            FloatingActionButton(
-                onClick = onPlusClick,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.padding(vertical = 8.dp)
-            ) {
-                Icon(Icons.Rounded.Add, contentDescription = "Add")
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                FloatingActionButton(
+                    onClick = onPlusClick,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Add")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = currentTask != null,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(22.dp))
+                            .clickable { onTaskIconClick() }
+                    ) {
+                        Surface(
+                            modifier = Modifier.size(48.dp),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            tonalElevation = 4.dp
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = currentTask?.icon ?: "🎯",
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "$minutes:$seconds",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     ) {
@@ -194,13 +256,15 @@ fun PreviewZenDoBottomBar() {
     }
 }
 
-@Preview(name = "Navigation Rail - Tablet Mode", showBackground = true, heightDp = 600, widthDp = 100)
-@Composable
-fun PreviewZenDoNavigationRail() {
-    ZenDoNavigationRail(
-        currentRoute = "focus",
-        onNavigate = {},
-        onPlusClick = {},
-        modifier = Modifier.fillMaxHeight()
-    )
-}
+//@Preview(name = "Navigation Rail - Tablet Mode", showBackground = true, heightDp = 600, widthDp = 100)
+//@Composable
+//fun PreviewZenDoNavigationRail() {
+//    ZenDoNavigationRail(
+//        currentRoute = "focus",
+//        onNavigate = {},
+//        onPlusClick = {},
+//        modifier = Modifier.fillMaxHeight(),
+//        currentTask = TaskModel,
+//        onTaskIconClick = { }
+//    )
+//}
