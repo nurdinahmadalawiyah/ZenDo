@@ -25,6 +25,7 @@ import com.dinzio.zendo.R
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
+import com.dinzio.zendo.core.presentation.components.ZenDoLockedTaskDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoSectionHeader
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.features.task.domain.model.TaskModel
@@ -33,6 +34,7 @@ import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActi
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionViewModel
 import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListState
 import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListViewModel
+import com.dinzio.zendo.features.task.util.TaskInteractionHandler.navigateToTaskSafely
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +51,8 @@ fun TaskSection(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showActionSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    var showLockedDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(taskActionState.isSuccess) {
         if (taskActionState.isSuccess) {
@@ -94,6 +98,12 @@ fun TaskSection(
         }
     }
 
+    if (showLockedDialog) {
+        ZenDoLockedTaskDialog(
+            onDismiss = { showLockedDialog = false }
+        )
+    }
+
     Column(
         modifier = modifier
     ) {
@@ -122,8 +132,8 @@ fun TaskSection(
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
                         onItemClick = {
-                            task.id?.let { id ->
-                                navController.navigate(ZenDoRoutes.PomodoroTask.passId(id))
+                            navController.navigateToTaskSafely(task) {
+                                showLockedDialog = true
                             }
                         },
                         onLongItemClick = {

@@ -8,7 +8,7 @@
     <string name="search_category">Cari Kategori...</string>
     <string name="add_task">Tambah Tugas</string>
     <string name="title">Judul</string>
-    <string name="task_title">Judu Tugas</string>
+    <string name="task_title">Judul Tugas</string>
     <string name="focus_time">Fokus</string>
     <string name="break_time">Istirahat</string>
     <string name="category">Kategori</string>
@@ -106,4 +106,6 @@
     <string name="well_done">Luar Biasa!</string>
     <string name="you_have_completed_all_sessions_now_take_a_well_deserved_break">Semua sesi tugas telah selesai.\\nSaatnya menikmati waktu istirahat!</string>
     <string name="close">Tutup</string>
+    <string name="task_archived">Tugas Diarsipkan</string>
+    <string name="this_mission_is_already_complete_you_ve_reached_the_goal_for_this_task">Tugas ini sudah selesai. Kamu telah mencapai targetmu!</string>
 </resources>

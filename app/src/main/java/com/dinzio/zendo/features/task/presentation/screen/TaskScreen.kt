@@ -45,12 +45,14 @@ import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.util.isLandscape
 import com.dinzio.zendo.core.presentation.components.ZenDoInput
+import com.dinzio.zendo.core.presentation.components.ZenDoLockedTaskDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionViewModel
 import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListViewModel
+import com.dinzio.zendo.features.task.util.TaskInteractionHandler.navigateToTaskSafely
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +70,8 @@ fun TaskScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showActionSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    var showLockedDialog by remember { mutableStateOf(false) }
 
     var searchQuery by remember { mutableStateOf("") }
 
@@ -119,6 +123,12 @@ fun TaskScreen(
         }
     }
 
+    if (showLockedDialog) {
+        ZenDoLockedTaskDialog(
+            onDismiss = { showLockedDialog = false }
+        )
+    }
+
     if (isLandscapeMode) {
         TaskTabletLayout(
             navController = navController,
@@ -130,7 +140,8 @@ fun TaskScreen(
                 selectedTask = task
                 showActionSheet = true
             },
-            onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) }
+            onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) },
+            onLocked = { showLockedDialog = true }
         )
     } else {
         TaskPhoneLayout(
@@ -143,7 +154,8 @@ fun TaskScreen(
                 selectedTask = task
                 showActionSheet = true
             },
-            onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) }
+            onNavigateToAdd = { navController.navigate(ZenDoRoutes.AddTask.route) },
+            onLocked = { showLockedDialog = true }
         )
     }
 }
@@ -156,7 +168,8 @@ fun TaskPhoneLayout(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onLongItemClick: (TaskModel) -> Unit,
-    onNavigateToAdd: () -> Unit
+    onNavigateToAdd: () -> Unit,
+    onLocked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -206,8 +219,8 @@ fun TaskPhoneLayout(
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
                         onItemClick = {
-                            task.id?.let { id ->
-                                navController.navigate(ZenDoRoutes.PomodoroTask.passId(id))
+                            navController.navigateToTaskSafely(task) {
+                                onLocked()
                             }
                         },
                         onLongItemClick = { onLongItemClick(task) },
@@ -227,7 +240,8 @@ fun TaskTabletLayout(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onLongItemClick: (TaskModel) -> Unit,
-    onNavigateToAdd: () -> Unit
+    onNavigateToAdd: () -> Unit,
+    onLocked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -280,8 +294,8 @@ fun TaskTabletLayout(
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
                         onItemClick = {
-                            task.id?.let { id ->
-                                navController.navigate(ZenDoRoutes.PomodoroTask.passId(id))
+                            navController.navigateToTaskSafely(task) {
+                                onLocked()
                             }
                         },
                         onLongItemClick = { onLongItemClick(task) },
