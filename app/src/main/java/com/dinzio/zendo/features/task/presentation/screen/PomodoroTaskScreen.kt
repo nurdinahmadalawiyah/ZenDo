@@ -55,7 +55,6 @@ fun PomodoroTaskScreen(
 ) {
     KeepScreenOn()
     val state by viewModel.state.collectAsState()
-    val showCelebration by viewModel.showCelebration.collectAsState()
     val isLandscapeMode = isLandscape()
 
     val isFocusMode = state.mode == TimerMode.FOCUS
@@ -71,12 +70,6 @@ fun PomodoroTaskScreen(
         headerText = headerText,
         taskEmoji = taskEmoji
     )
-
-    LaunchedEffect(showCelebration) {
-        if (showCelebration) {
-            kotlinx.coroutines.delay(4000)
-        }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (isLandscapeMode) {
@@ -96,16 +89,6 @@ fun PomodoroTaskScreen(
                 onReset = viewModel::resetTimer,
                 onPause = viewModel::pauseTimer,
                 onSkip = viewModel::skipPhase,
-            )
-        }
-
-        if (showCelebration) {
-            CelebrationOverlay(isVisible = true)
-
-            CelebrationDialog(
-                onConfirm = {
-                    navController.popBackStack()
-                }
             )
         }
     }

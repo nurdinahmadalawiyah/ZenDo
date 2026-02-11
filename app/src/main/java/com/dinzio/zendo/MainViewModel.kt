@@ -7,13 +7,16 @@ import com.dinzio.zendo.core.data.local.FocusTimerManager
 import com.dinzio.zendo.core.data.local.LanguageManager
 import com.dinzio.zendo.core.data.local.ThemeManager
 import com.dinzio.zendo.core.service.TimerService
+import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.domain.usecase.GetTaskByIdUseCase
+import com.dinzio.zendo.features.task.domain.usecase.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,8 +27,12 @@ class MainViewModel @Inject constructor(
     private val languageManager: LanguageManager,
     private val focusTimerManager: FocusTimerManager,
     private val breakTimerManager: BreakTimerManager,
-    private val getTaskByIdUseCase: GetTaskByIdUseCase
+    private val getTaskByIdUseCase: GetTaskByIdUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
 ) : ViewModel() {
+
+    val isTaskFinishedGlobal = TimerService.timerState.map { it.isFinished }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     val themeMode: StateFlow<String> = themeManager.themeMode.stateIn(
             scope = viewModelScope,
@@ -86,4 +93,18 @@ class MainViewModel @Inject constructor(
             }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun completeAndResetTask(context: android.content.Context, task: TaskModel?) {
+        viewModelScope.launch {
+            task?.let {
+                val completedTask = it.copy(
+                    isCompleted = true,
+                    sessionDone = it.sessionCount,
+                    lastSecondsLeft = 0L
+                )
+                updateTaskUseCase(completedTask)
+            }
+            TimerService.sendAction(context, TimerService.ACTION_STOP)
+        }
+    }
 }

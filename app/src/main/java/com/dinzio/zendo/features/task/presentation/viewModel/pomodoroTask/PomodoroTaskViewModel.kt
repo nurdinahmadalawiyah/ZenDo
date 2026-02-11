@@ -29,9 +29,6 @@ class PomodoroTaskViewModel @Inject constructor(
     private val _taskData = MutableStateFlow<TaskModel?>(null)
     private val _currentMode = MutableStateFlow(TimerMode.FOCUS)
 
-    private val _showCelebration = MutableStateFlow(false)
-    val showCelebration = _showCelebration.asStateFlow()
-
     init {
         loadTaskData()
         observeTimerFinish()
@@ -96,7 +93,6 @@ class PomodoroTaskViewModel @Inject constructor(
             _taskData.value = updatedTask
 
             if (isAllDone) {
-                _showCelebration.value = true
                 _currentMode.value = TimerMode.FOCUS
             } else {
                 _currentMode.value = TimerMode.FOCUS
@@ -228,21 +224,26 @@ class PomodoroTaskViewModel @Inject constructor(
                 val newSessionDone = currentTask.sessionDone + 1
                 val isAllDone = newSessionDone >= currentTask.sessionCount
 
-                val updatedTask = currentTask.copy(
-                    sessionDone = if (isAllDone) currentTask.sessionCount else newSessionDone,
-                    isCompleted = isAllDone,
-                    lastSecondsLeft = 0L,
-                    lastMode = "FOCUS"
-                )
-
-                updateTaskUseCase(updatedTask)
-                _taskData.value = updatedTask
-
-                TimerService.sendAction(application, TimerService.ACTION_STOP)
-                _currentMode.value = TimerMode.FOCUS
-
                 if (isAllDone) {
-                    _showCelebration.value = true
+                    val updatedTask = currentTask.copy(
+                        sessionDone = currentTask.sessionCount,
+                        isCompleted = true,
+                        lastSecondsLeft = 0L,
+                        lastMode = "FOCUS"
+                    )
+                    updateTaskUseCase(updatedTask)
+
+                    TimerService.sendAction(application, TimerService.ACTION_FORCE_FINISHED)
+                } else {
+                    val updatedTask = currentTask.copy(
+                        sessionDone = newSessionDone,
+                        lastSecondsLeft = 0L,
+                        lastMode = "FOCUS"
+                    )
+                    updateTaskUseCase(updatedTask)
+                    _taskData.value = updatedTask
+                    TimerService.sendAction(application, TimerService.ACTION_STOP)
+                    _currentMode.value = TimerMode.FOCUS
                 }
             } else {
                 _currentMode.value = TimerMode.BREAK
