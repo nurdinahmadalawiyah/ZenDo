@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +49,7 @@ import com.dinzio.zendo.core.presentation.components.ZenDoInput
 import com.dinzio.zendo.core.presentation.components.ZenDoLockedTaskDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
+import com.dinzio.zendo.core.util.startTimer
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionViewModel
@@ -206,6 +208,8 @@ fun TaskPhoneLayout(
                 onActionClick = { onNavigateToAdd() }
             )
         } else {
+            val context = LocalContext.current
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -225,7 +229,9 @@ fun TaskPhoneLayout(
                             }
                         },
                         onLongItemClick = { onLongItemClick(task) },
-                        onPlayClick = { }
+                        onPlayClick = {
+                            task.startTimer(context)
+                        }
                     )
                 }
             }
