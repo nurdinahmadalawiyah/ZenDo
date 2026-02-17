@@ -56,7 +56,7 @@ class PomodoroTaskViewModel @Inject constructor(
     private fun observeTimerFinish() {
         viewModelScope.launch {
             TimerService.timerState.collect { serviceState ->
-                if (serviceState.isFinished && serviceState.currentTaskId == taskId) {
+                if (serviceState.isTimerEnded && serviceState.currentTaskId == taskId) {
                     handleTimerFinished()
                 }
             }
@@ -67,8 +67,6 @@ class PomodoroTaskViewModel @Inject constructor(
         val currentTask = _taskData.value ?: return
         val currentMode = _currentMode.value
 
-        TimerService.sendAction(application, TimerService.ACTION_STOP)
-
         if (currentMode == TimerMode.FOCUS) {
             _currentMode.value = TimerMode.BREAK
 
@@ -78,6 +76,8 @@ class PomodoroTaskViewModel @Inject constructor(
             )
             updateTaskUseCase(updatedTask)
             _taskData.value = updatedTask
+
+            TimerService.sendAction(application, TimerService.ACTION_STOP)
         } else {
             val newSessionDone = currentTask.sessionDone + 1
             val isAllDone = newSessionDone >= currentTask.sessionCount
@@ -94,8 +94,10 @@ class PomodoroTaskViewModel @Inject constructor(
 
             if (isAllDone) {
                 _currentMode.value = TimerMode.FOCUS
+                TimerService.sendAction(application, TimerService.ACTION_FORCE_FINISHED)
             } else {
                 _currentMode.value = TimerMode.FOCUS
+                TimerService.sendAction(application, TimerService.ACTION_STOP)
             }
         }
     }

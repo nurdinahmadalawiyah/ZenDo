@@ -20,6 +20,7 @@ data class TimerState(
     val secondsLeft: Long = 0,
     val isRunning: Boolean = false,
     val isFinished: Boolean = false,
+    val isTimerEnded: Boolean = false,
     val currentTaskId: Int? = null
 )
 
@@ -116,7 +117,8 @@ class TimerService : LifecycleService() {
                 _timerState.update { it.copy(
                     secondsLeft = 0,
                     isRunning = false,
-                    isFinished = true
+                    isFinished = false,
+                    isTimerEnded = true
                 ) }
                 updateNotification(getString(R.string.session_over_time_to_rest_focus))
             }
