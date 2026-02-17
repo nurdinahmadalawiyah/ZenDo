@@ -364,6 +364,7 @@ fun TaskList(
                             sessionCount = task.sessionCount.toString(),
                             sessionDone = task.sessionDone.toString(),
                             categoryIcon = task.icon,
+                            isCompleted = task.isCompleted,
                             onItemClick = {
                                 navController.navigateToTaskSafely(task) {
                                     onLocked()
