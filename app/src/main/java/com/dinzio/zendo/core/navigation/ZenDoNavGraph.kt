@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
+import com.dinzio.zendo.features.profile.presentation.screen.ProfileScreen
 import com.dinzio.zendo.features.settings.presentation.screen.BackupRestoreSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.BreakTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.FocusTimerSettingScreen
@@ -99,7 +100,7 @@ fun ZenDoNavGraph(
             PlaceholderScreen("Stats Screen")
         }
         composable(ZenDoRoutes.Profile.route) {
-            PlaceholderScreen("Profile Screen")
+            ProfileScreen(navController = navController)
         }
 
         composable(ZenDoRoutes.Categories.route) {
@@ -170,6 +171,7 @@ fun ZenDoNavGraph(
                 },
             )
         }
+        // Removed account_settings route
         composable(ZenDoRoutes.BackupRestoreSetting.route) {
             BackupRestoreSettingScreen()
         }

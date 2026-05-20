@@ -36,6 +36,7 @@ fun ZenDoTopBar(
     modifier: Modifier = Modifier,
     actionIcon: ImageVector? = null,
     onActionClick: (() -> Unit)? = null,
+    onBackClick: (() -> Unit)? = null,
     isOnPrimaryBackground: Boolean = false,
     hideBackButton: Boolean = false,
 ) {
@@ -53,7 +54,7 @@ fun ZenDoTopBar(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
-            onClick = { onBackPressedDispatcher?.onBackPressed() },
+            onClick = { onBackClick?.invoke() ?: onBackPressedDispatcher?.onBackPressed() },
             enabled = !hideBackButton,
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))

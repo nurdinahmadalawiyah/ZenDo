@@ -108,4 +108,13 @@
     <string name="close">Tutup</string>
     <string name="task_archived">Tugas Selesai</string>
     <string name="this_mission_is_already_complete_you_ve_reached_the_goal_for_this_task">Tugas ini sudah selesai. Kamu telah mencapai targetmu!</string>
+    <string name="logout_from_account">Keluar dari Akun</string>
+    <string name="are_you_sure_you_want_to_log_out_you_ll_need_to_login_back_in_later_to_back_up_your_profile_data">Apakah kamu yakin ingin keluar? Kamu perlu masuk kembali nanti untuk melakukan backup data profil.</string>
+    <string name="logout">Keluar</string>
+    <string name="join_with_zendo">Bergabung dengan ZenDo</string>
+    <string name="leave_the_guest_account_behind_sign_in_with_your_google_account_now_to_start_building_better_focus_habits">Tinggalkan akun tamu! Masuk menggunakan akun Google kamu sekarang untuk mulai membangun kebiasaan fokus yang lebih baik.</string>
+    <string name="continue_with_google">Lanjutkan dengan Google</string>
+    <string name="profile_picture">Foto Profil</string>
+    <string name="linked_google_account">Akun Google Tertaut</string>
+    <string name="log_out_of_account">Keluar dari Akun</string>
 </resources>
