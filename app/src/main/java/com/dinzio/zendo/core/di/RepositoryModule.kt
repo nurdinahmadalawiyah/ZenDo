@@ -1,5 +1,7 @@
 package com.dinzio.zendo.core.di
 
+import com.dinzio.zendo.features.auth.data.repository.AuthRepositoryImpl
+import com.dinzio.zendo.features.auth.domain.repository.AuthRepository
 import com.dinzio.zendo.features.category.data.repository.CategoryRepositoryImpl
 import com.dinzio.zendo.features.category.domain.repository.CategoryRepository
 import com.dinzio.zendo.features.task.data.repository.TaskRepositoryImpl
@@ -15,6 +17,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        impl: AuthRepositoryImpl
+    ): AuthRepository
 
     @Binds
     @Singleton

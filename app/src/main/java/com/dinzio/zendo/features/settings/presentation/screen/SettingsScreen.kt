@@ -23,6 +23,7 @@ import androidx.compose.material.icons.twotone.DarkMode
 import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material.icons.twotone.Language
 import androidx.compose.material.icons.twotone.LightMode
+import androidx.compose.material.icons.twotone.Person
 import androidx.compose.material.icons.twotone.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable

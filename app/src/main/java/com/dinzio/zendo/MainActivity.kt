@@ -55,6 +55,8 @@ import com.dinzio.zendo.features.category.presentation.component.AddCategoryBott
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
 import com.dinzio.zendo.features.home.presentation.component.BannerSection
 import com.dinzio.zendo.features.task.domain.model.TaskModel
+import com.dinzio.zendo.features.task.presentation.component.CelebrationDialog
+import com.dinzio.zendo.features.task.presentation.component.CelebrationOverlay
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -148,8 +150,10 @@ fun MainScreen(
     onBreakTimeChange: (Int) -> Unit,
     currentTask: TaskModel?,
     actionViewModel: CategoryActionViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ZenDoRoutes.Home.route
 
@@ -170,6 +174,9 @@ fun MainScreen(
     var showAddCategorySheet by remember { mutableStateOf(false) }
     val addCategorySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    val isFinished by mainViewModel.isTaskFinishedGlobal.collectAsState()
+    var showGlobalCelebration by remember { mutableStateOf(false) }
+
     if (showSelectionSheet) {
         ZenDoSelectionSheet(
             onDismiss = { showSelectionSheet = false },
@@ -185,6 +192,12 @@ fun MainScreen(
             onDismiss = { showAddCategorySheet = false },
             sheetState = addCategorySheetState
         )
+    }
+
+    LaunchedEffect(isFinished) {
+        if (isFinished) {
+            showGlobalCelebration = true
+        }
     }
 
     Surface(
@@ -254,6 +267,25 @@ fun MainScreen(
                         )
                     }
                 }
+            }
+        }
+
+        if (showGlobalCelebration) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CelebrationOverlay(isVisible = true)
+                CelebrationDialog(
+                    onConfirm = {
+                        showGlobalCelebration = false
+
+                        mainViewModel.completeAndResetTask(context, currentTask)
+
+                        if (currentRoute != ZenDoRoutes.Home.route) {
+                            navController.navigate(ZenDoRoutes.Home.route) {
+                                popUpTo(ZenDoRoutes.Home.route) { inclusive = true }
+                            }
+                        }
+                    }
+                )
             }
         }
     }

@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -28,6 +29,7 @@ import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoLockedTaskDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoSectionHeader
 import com.dinzio.zendo.core.presentation.components.ZenDoTaskItemCard
+import com.dinzio.zendo.core.util.startTimer
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionEvent
 import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActionState
@@ -35,7 +37,6 @@ import com.dinzio.zendo.features.task.presentation.viewModel.taskAction.TaskActi
 import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListState
 import com.dinzio.zendo.features.task.presentation.viewModel.taskList.TaskListViewModel
 import com.dinzio.zendo.features.task.util.TaskInteractionHandler.navigateToTaskSafely
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,6 +123,8 @@ fun TaskSection(
                 onActionClick = { navController.navigate(ZenDoRoutes.AddTask.route) }
             )
         } else {
+            val context = LocalContext.current
+
             Column (
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -131,6 +134,7 @@ fun TaskSection(
                         sessionCount = task.sessionCount.toString(),
                         sessionDone = task.sessionDone.toString(),
                         categoryIcon = task.icon,
+                        isCompleted = task.isCompleted,
                         onItemClick = {
                             navController.navigateToTaskSafely(task) {
                                 showLockedDialog = true
@@ -140,7 +144,9 @@ fun TaskSection(
                             selectedTask = task
                             showActionSheet = true
                         },
-                        onPlayClick = { }
+                        onPlayClick = {
+                            task.startTimer(context)
+                        },
                     )
                 }
             }

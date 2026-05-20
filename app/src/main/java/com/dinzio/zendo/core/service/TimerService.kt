@@ -20,6 +20,7 @@ data class TimerState(
     val secondsLeft: Long = 0,
     val isRunning: Boolean = false,
     val isFinished: Boolean = false,
+    val isTimerEnded: Boolean = false,
     val currentTaskId: Int? = null
 )
 
@@ -38,6 +39,7 @@ class TimerService : LifecycleService() {
         const val ACTION_START = "ACTION_START"
         const val ACTION_PAUSE = "ACTION_PAUSE"
         const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_FORCE_FINISHED = "ACTION_FORCE_FINISHED"
 
         const val EXTRA_TASK_NAME = "EXTRA_TASK_NAME"
         const val EXTRA_DURATION = "EXTRA_DURATION"
@@ -51,10 +53,14 @@ class TimerService : LifecycleService() {
                 putExtra(EXTRA_TASK_NAME, taskName)
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
+            if (action == ACTION_STOP || action == ACTION_FORCE_FINISHED) {
                 context.startService(intent)
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
             }
         }
     }
@@ -83,6 +89,9 @@ class TimerService : LifecycleService() {
             }
             ACTION_PAUSE -> pauseTimer()
             ACTION_STOP -> stopTimer()
+            ACTION_FORCE_FINISHED -> {
+                _timerState.update { it.copy(isFinished = true, isRunning = false) }
+            }
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -108,7 +117,8 @@ class TimerService : LifecycleService() {
                 _timerState.update { it.copy(
                     secondsLeft = 0,
                     isRunning = false,
-                    isFinished = true
+                    isFinished = false,
+                    isTimerEnded = true
                 ) }
                 updateNotification(getString(R.string.session_over_time_to_rest_focus))
             }

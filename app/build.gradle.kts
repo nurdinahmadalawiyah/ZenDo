@@ -86,6 +86,13 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.analytics)
 
+    /// --- ANDROIDX CREDENTIAL MANAGER ---
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+
+    /// --- GOOGLE ID FOR CREDENTIAL MANAGER ---
+    implementation(libs.googleid)
+
     /// --- ASYNC ---
     implementation(libs.kotlinx.coroutines.android)
 

@@ -1,6 +1,5 @@
 package com.dinzio.zendo.core.presentation.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -38,8 +38,11 @@ fun ZenDoTaskItemCard(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit,
     onLongItemClick: () -> Unit,
-    onPlayClick: () -> Unit
+    onPlayClick: () -> Unit,
+    isCompleted: Boolean = false
 ) {
+    val actionIcon = if (isCompleted) Icons.Rounded.Check else Icons.Rounded.PlayArrow
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -88,7 +91,7 @@ fun ZenDoTaskItemCard(
             }
 
             CircleButton(
-                icon = Icons.Default.PlayArrow,
+                icon = actionIcon,
                 onClick = onPlayClick,
                 size = 36.dp
             )

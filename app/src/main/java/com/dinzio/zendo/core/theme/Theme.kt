@@ -29,14 +29,20 @@ private val DarkColorScheme = darkColorScheme(
     surfaceVariant = BlackText,
     onSurfaceVariant = GrayText,
     error = RedDelete,
-    onError = White
+    onError = White,
+    primaryContainer = GreenPrimary,
+    onPrimaryContainer = White,
+    secondaryContainer = GreenAccent,
+    onSecondaryContainer = BlackText,
+    tertiaryContainer = OrangeAccent,
+    onTertiaryContainer = BlackText
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = GreenPrimary,
     onPrimary = White,
-    secondary = GreenSecondary,
-    onSecondary = BlackText,
+    secondary = GreenAccent,
+    onSecondary = White,
     tertiary = OrangeAccent,
     onTertiary = White,
     background = White,
@@ -46,7 +52,13 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = BackgroundGray,
     onSurfaceVariant = GrayText,
     error = RedDelete,
-    onError = White
+    onError = White,
+    primaryContainer = GreenSecondary,
+    onPrimaryContainer = GreenPrimary,
+    secondaryContainer = GreenAccent,
+    onSecondaryContainer = White,
+    tertiaryContainer = OrangeAccent,
+    onTertiaryContainer = White
 )
 
 @Composable

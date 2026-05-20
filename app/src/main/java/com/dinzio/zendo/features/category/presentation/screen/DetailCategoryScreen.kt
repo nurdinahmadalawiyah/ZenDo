@@ -39,7 +39,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -73,6 +71,7 @@ import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoActionSheet
 import com.dinzio.zendo.core.presentation.components.ZenDoConfirmDialog
 import com.dinzio.zendo.core.presentation.components.ZenDoLockedTaskDialog
+import com.dinzio.zendo.core.util.startTimer
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryDetail.CategoryDetailState
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryDetail.CategoryDetailViewModel
 import com.dinzio.zendo.features.home.presentation.screen.TaskUiModel
@@ -353,6 +352,8 @@ fun TaskList(
                     )
                 }
             } else {
+                val context = LocalContext.current
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -364,6 +365,7 @@ fun TaskList(
                             sessionCount = task.sessionCount.toString(),
                             sessionDone = task.sessionDone.toString(),
                             categoryIcon = task.icon,
+                            isCompleted = task.isCompleted,
                             onItemClick = {
                                 navController.navigateToTaskSafely(task) {
                                     onLocked()
@@ -373,7 +375,9 @@ fun TaskList(
                                 selectedTask = task
                                 showActionSheet = true
                             },
-                            onPlayClick = { }
+                            onPlayClick = {
+                                task.startTimer(context)
+                            }
                         )
                     }
                 }
