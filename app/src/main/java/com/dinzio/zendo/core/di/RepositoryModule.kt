@@ -12,8 +12,7 @@ import com.dinzio.zendo.features.task.data.repository.TaskRepositoryImpl
 import com.dinzio.zendo.features.task.domain.repository.TaskRepository
 import com.dinzio.zendo.features.theme.data.repository.ThemeRepositoryImpl
 import com.dinzio.zendo.features.theme.domain.repository.ThemeRepository
-import com.dinzio.zendo.features.timer.data.repository.QuickTimerRepositoryImpl
-import com.dinzio.zendo.features.timer.domain.repository.QuickTimerRepository
+
 import com.dinzio.zendo.features.timer_settings.data.repository.TimerSettingsRepositoryImpl
 import com.dinzio.zendo.features.timer_settings.domain.repository.TimerSettingsRepository
 import dagger.Binds
@@ -67,9 +66,4 @@ abstract class RepositoryModule {
         impl: TaskRepositoryImpl
     ): TaskRepository
 
-    @Binds
-    @Singleton
-    abstract fun bindQuickTimerRepository(
-        impl: QuickTimerRepositoryImpl
-    ): QuickTimerRepository
 }
