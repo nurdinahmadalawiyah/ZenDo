@@ -171,7 +171,6 @@ fun ZenDoNavGraph(
                 },
             )
         }
-        // Removed account_settings route
         composable(ZenDoRoutes.BackupRestoreSetting.route) {
             BackupRestoreSettingScreen()
         }

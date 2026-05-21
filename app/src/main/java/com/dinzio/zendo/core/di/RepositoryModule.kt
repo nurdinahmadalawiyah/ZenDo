@@ -4,6 +4,8 @@ import com.dinzio.zendo.features.auth.data.repository.AuthRepositoryImpl
 import com.dinzio.zendo.features.auth.domain.repository.AuthRepository
 import com.dinzio.zendo.features.category.data.repository.CategoryRepositoryImpl
 import com.dinzio.zendo.features.category.domain.repository.CategoryRepository
+import com.dinzio.zendo.features.settings.data.repository.DriveSyncRepositoryImpl
+import com.dinzio.zendo.features.settings.domain.repository.DriveSyncRepository
 import com.dinzio.zendo.features.task.data.repository.TaskRepositoryImpl
 import com.dinzio.zendo.features.task.domain.repository.TaskRepository
 import com.dinzio.zendo.features.timer.data.repository.QuickTimerRepositoryImpl
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindQuickTimerRepository(
         impl: QuickTimerRepositoryImpl
     ): QuickTimerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDriveSyncRepository(
+        impl: DriveSyncRepositoryImpl
+    ): DriveSyncRepository
 }

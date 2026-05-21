@@ -40,6 +40,12 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 kotlin {
@@ -92,6 +98,11 @@ dependencies {
 
     /// --- GOOGLE ID FOR CREDENTIAL MANAGER ---
     implementation(libs.googleid)
+
+    // --- GOOGLE DRIVE & OAUTH ---
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.services.drive)
+    implementation(libs.google.auth.library.oauth2.http)
 
     /// --- ASYNC ---
     implementation(libs.kotlinx.coroutines.android)

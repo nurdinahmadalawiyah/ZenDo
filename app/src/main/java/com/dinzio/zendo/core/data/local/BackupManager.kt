@@ -77,4 +77,38 @@ class BackupManager @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun exportDataCloud(): String = withContext(Dispatchers.IO) {
+        val tasks = taskDao.getAllTasksSync()
+        val categories = categoryDao.getAllCategoriesSync()
+
+        val backupData = BackupData(
+            tasks = tasks,
+            categories = categories
+        )
+
+        gson.toJson(backupData)
+    }
+
+    suspend fun importDataCloud(jsonString: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            if (jsonString.isEmpty()) {
+                return@withContext Result.failure(Exception("Data Cloud kosong"))
+            }
+
+            val backupData = gson.fromJson(jsonString, BackupData::class.java)
+                ?: return@withContext Result.failure(Exception("Format JSON dari Cloud tidak valid"))
+
+            taskDao.deleteAll()
+            categoryDao.deleteAll()
+
+            categoryDao.insertAll(backupData.categories)
+            taskDao.insertAll(backupData.tasks)
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
 }
