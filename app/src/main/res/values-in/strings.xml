@@ -117,4 +117,5 @@
     <string name="profile_picture">Foto Profil</string>
     <string name="linked_google_account">Akun Google Tertaut</string>
     <string name="log_out_of_account">Keluar dari Akun</string>
+    <string name="please_connect_your_google_account_in_the_profile_menu_first">Silakan hubungkan akun Google di menu Profil terlebih dahulu.</string>
 </resources>

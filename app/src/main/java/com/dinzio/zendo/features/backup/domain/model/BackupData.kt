@@ -1,4 +1,4 @@
-package com.dinzio.zendo.core.domain.model
+package com.dinzio.zendo.features.backup.domain.model
 
 import com.dinzio.zendo.features.category.data.local.entity.CategoryEntity
 import com.dinzio.zendo.features.task.data.local.entity.TaskEntity

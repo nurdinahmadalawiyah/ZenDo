@@ -1,4 +1,4 @@
-package com.dinzio.zendo.features.settings.presentation.screen
+package com.dinzio.zendo.features.backup.presentation.screen
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -9,22 +9,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Backup
-import androidx.compose.material.icons.twotone.Restore
 import androidx.compose.material.icons.twotone.CloudDownload
+import androidx.compose.material.icons.twotone.Restore
 import androidx.compose.material.icons.twotone.Sync
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -33,85 +29,85 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dinzio.zendo.R
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.features.auth.presentation.viewModel.AuthViewModel
+import com.dinzio.zendo.features.backup.presentation.viewModel.BackupEvent
+import com.dinzio.zendo.features.backup.presentation.viewModel.BackupViewModel
 import com.dinzio.zendo.features.settings.presentation.component.SettingsItem
-import com.dinzio.zendo.features.settings.presentation.viewModel.BackupRestoreViewModel
-import com.dinzio.zendo.features.settings.presentation.viewModel.SyncEvent
-import com.dinzio.zendo.features.settings.presentation.viewModel.SyncViewModel
-import com.dinzio.zendo.features.settings.presentation.viewModel.UiText
 
 @Composable
-fun BackupRestoreSettingScreen(
+fun BackupRestoreScreen(
     hideBackButton: Boolean = false,
-    backupRestoreViewModel: BackupRestoreViewModel = hiltViewModel(),
-    syncViewModel: SyncViewModel = hiltViewModel(),
+    backupViewModel: BackupViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
-    val syncState by syncViewModel.state.collectAsState()
+    val backupState by backupViewModel.state.collectAsState()
     val authState by authViewModel.state.collectAsState()
 
     val authLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
-            syncViewModel.onEvent(SyncEvent.OnAuthGranted)
+            backupViewModel.onEvent(BackupEvent.OnAuthGranted)
         } else {
-            syncViewModel.onEvent(SyncEvent.OnAuthDenied)
+            backupViewModel.onEvent(BackupEvent.OnAuthDenied)
         }
     }
 
     val createBackupLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
-        uri?.let { backupRestoreViewModel.performBackup(it) }
+        uri?.let { backupViewModel.onEvent(BackupEvent.OnExportLocal(it)) }
     }
 
     val restoreBackupLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let { backupRestoreViewModel.performRestore(it) }
+        uri?.let { backupViewModel.onEvent(BackupEvent.OnImportLocal(it)) }
     }
 
-    LaunchedEffect(syncState.authIntent) {
-        syncState.authIntent?.let { intent ->
+    LaunchedEffect(backupState.authIntent) {
+        backupState.authIntent?.let { intent ->
             authLauncher.launch(intent)
         }
     }
 
-    LaunchedEffect(syncState.isSuccess, syncState.error) {
-        if (syncState.isSuccess && syncState.successMessage != null) {
-            Toast.makeText(context, syncState.successMessage, Toast.LENGTH_LONG).show()
-            syncViewModel.onEvent(SyncEvent.ResetState)
+    LaunchedEffect(backupState.isSuccess, backupState.error) {
+        if (backupState.isSuccess && backupState.successMessage != null) {
+            Toast.makeText(context, backupState.successMessage, Toast.LENGTH_LONG).show()
+            backupViewModel.onEvent(BackupEvent.ResetState)
         }
-        if (syncState.error != null) {
-            Toast.makeText(context, syncState.error, Toast.LENGTH_LONG).show()
-            syncViewModel.onEvent(SyncEvent.ResetState)
+        if (backupState.error != null) {
+            Toast.makeText(context, backupState.error, Toast.LENGTH_LONG).show()
+            backupViewModel.onEvent(BackupEvent.ResetState)
         }
     }
 
     LaunchedEffect(Unit) {
-        backupRestoreViewModel.uiEvent.collect { uiText ->
+        backupViewModel.uiEvent.collect { uiText ->
             val message = uiText.asString(context)
             Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
     }
 
+    val connectText =
+        stringResource(R.string.please_connect_your_google_account_in_the_profile_menu_first)
+
     val checkAuthAndRun = { action: (String) -> Unit ->
         val email = authState.user?.email
         if (email.isNullOrEmpty() || authState.user?.isAnonymous == true) {
-            Toast.makeText(context, "Silakan hubungkan akun Google di menu Profil terlebih dahulu.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, connectText, Toast.LENGTH_LONG).show()
         } else {
             action(email)
         }
     }
 
-    val onBackupClick = {
+    val onLocalBackupClick = {
         val fileName = "zendo_backup_${System.currentTimeMillis()}.json"
         createBackupLauncher.launch(fileName)
     }
 
-    val onRestoreClick = {
+    val onLocalRestoreClick = {
         restoreBackupLauncher.launch(arrayOf("application/json"))
     }
 
@@ -142,7 +138,7 @@ fun BackupRestoreSettingScreen(
                 hideTrailing = true,
                 onClick = {
                     checkAuthAndRun { email ->
-                        syncViewModel.onEvent(SyncEvent.OnBackupClick(userEmail = email))
+                        backupViewModel.onEvent(BackupEvent.OnBackupCloud(userEmail = email))
                     }
                 }
             )
@@ -155,7 +151,7 @@ fun BackupRestoreSettingScreen(
                 hideTrailing = true,
                 onClick = {
                     checkAuthAndRun { email ->
-                        syncViewModel.onEvent(SyncEvent.OnRestoreClick(userEmail = email))
+                        backupViewModel.onEvent(BackupEvent.OnRestoreCloud(userEmail = email))
                     }
                 }
             )
@@ -166,7 +162,7 @@ fun BackupRestoreSettingScreen(
                 icon = Icons.TwoTone.Backup,
                 roundedCornerShape = RoundedCornerShape(0.dp),
                 hideTrailing = true,
-                onClick = onBackupClick
+                onClick = onLocalBackupClick
             )
 
             SettingsItem(
@@ -175,7 +171,7 @@ fun BackupRestoreSettingScreen(
                 icon = Icons.TwoTone.Restore,
                 roundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
                 hideTrailing = true,
-                onClick = onRestoreClick
+                onClick = onLocalRestoreClick
             )
         }
     }

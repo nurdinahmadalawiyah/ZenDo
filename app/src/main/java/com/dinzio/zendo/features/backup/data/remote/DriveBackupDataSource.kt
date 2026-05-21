@@ -1,12 +1,11 @@
-package com.dinzio.zendo.features.settings.data.repository
+package com.dinzio.zendo.features.backup.data.remote
 
 import android.content.Context
 import android.content.Intent
-import com.dinzio.zendo.features.settings.domain.repository.DriveSyncRepository
-import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.http.ByteArrayContent
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
@@ -17,10 +16,9 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-class DriveSyncRepositoryImpl @Inject constructor(
+class DriveBackupDataSource @Inject constructor(
     @ApplicationContext private val context: Context
-) : DriveSyncRepository {
-
+) {
     private val BACKUP_FILE_NAME = "zendo_backup.json"
 
     private fun getDriveService(userEmail: String): Drive {
@@ -33,7 +31,7 @@ class DriveSyncRepositoryImpl @Inject constructor(
                 context,
                 listOf(DriveScopes.DRIVE_APPDATA)
             )
-            // By explicitly creating the Account object, we bypass any bugs in the 
+            // By explicitly creating the Account object, we bypass any bugs in the
             // GoogleAccountCredential library where selectedAccountName might resolve to null
             credential.selectedAccount = android.accounts.Account(userEmail, "com.google")
 
@@ -49,7 +47,7 @@ class DriveSyncRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun backupToDrive(jsonData: String, userEmail: String): Result<Unit> {
+    suspend fun uploadToDrive(jsonData: String, userEmail: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
                 val driveService = getDriveService(userEmail)
@@ -81,7 +79,7 @@ class DriveSyncRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun restoreFromDrive(userEmail: String): Result<String> {
+    suspend fun downloadFromDrive(userEmail: String): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
                 val driveService = getDriveService(userEmail)
@@ -108,15 +106,17 @@ class DriveSyncRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAuthIntent(userEmail: String): Intent? {
-        return try {
-            val driveService = getDriveService(userEmail)
-            driveService.files().list().setSpaces("appDataFolder").execute()
-            null
-        } catch (e: UserRecoverableAuthIOException) {
-            e.intent
-        } catch (e: Exception) {
-            null
+    suspend fun getAuthIntent(userEmail: String): Intent? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val driveService = getDriveService(userEmail)
+                driveService.files().list().setSpaces("appDataFolder").execute()
+                null
+            } catch (e: UserRecoverableAuthIOException) {
+                e.intent
+            } catch (e: Exception) {
+                null
+            }
         }
     }
 }
