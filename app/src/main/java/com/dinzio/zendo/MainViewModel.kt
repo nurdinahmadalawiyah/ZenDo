@@ -10,6 +10,8 @@ import com.dinzio.zendo.core.service.TimerService
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.domain.usecase.GetTaskByIdUseCase
 import com.dinzio.zendo.features.task.domain.usecase.UpdateTaskUseCase
+import com.dinzio.zendo.features.theme.domain.usecase.GetThemeUseCase
+import com.dinzio.zendo.features.theme.domain.usecase.SetThemeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,7 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val themeManager: ThemeManager,
+    private val getThemeUseCase: GetThemeUseCase,
+    private val setThemeUseCase: SetThemeUseCase,
     private val languageManager: LanguageManager,
     private val focusTimerManager: FocusTimerManager,
     private val breakTimerManager: BreakTimerManager,
@@ -34,7 +37,7 @@ class MainViewModel @Inject constructor(
     val isTaskFinishedGlobal = TimerService.timerState.map { it.isFinished }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    val themeMode: StateFlow<String> = themeManager.themeMode.stateIn(
+    val themeMode: StateFlow<String> = getThemeUseCase().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = "system"
@@ -42,7 +45,7 @@ class MainViewModel @Inject constructor(
 
     fun setTheme(mode: String) {
         viewModelScope.launch {
-            themeManager.setThemeMode(mode)
+            setThemeUseCase(mode)
         }
     }
 
