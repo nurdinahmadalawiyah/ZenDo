@@ -6,6 +6,8 @@ import com.dinzio.zendo.features.backup.data.repository.BackupRepositoryImpl
 import com.dinzio.zendo.features.backup.domain.repository.BackupRepository
 import com.dinzio.zendo.features.category.data.repository.CategoryRepositoryImpl
 import com.dinzio.zendo.features.category.domain.repository.CategoryRepository
+import com.dinzio.zendo.features.language.data.repository.LanguageRepositoryImpl
+import com.dinzio.zendo.features.language.domain.repository.LanguageRepository
 import com.dinzio.zendo.features.task.data.repository.TaskRepositoryImpl
 import com.dinzio.zendo.features.task.domain.repository.TaskRepository
 import com.dinzio.zendo.features.theme.data.repository.ThemeRepositoryImpl
@@ -21,6 +23,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindLanguageRepository(
+        impl: LanguageRepositoryImpl
+    ): LanguageRepository
+
     @Binds
     @Singleton
     abstract fun bindThemeRepository(

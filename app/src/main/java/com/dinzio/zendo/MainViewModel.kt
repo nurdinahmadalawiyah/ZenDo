@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dinzio.zendo.core.data.local.BreakTimerManager
 import com.dinzio.zendo.core.data.local.FocusTimerManager
-import com.dinzio.zendo.core.data.local.LanguageManager
-import com.dinzio.zendo.core.data.local.ThemeManager
 import com.dinzio.zendo.core.service.TimerService
+import com.dinzio.zendo.features.language.domain.usecase.GetLanguageUseCase
+import com.dinzio.zendo.features.language.domain.usecase.SetLanguageUseCase
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.domain.usecase.GetTaskByIdUseCase
 import com.dinzio.zendo.features.task.domain.usecase.UpdateTaskUseCase
@@ -27,7 +27,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getThemeUseCase: GetThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
-    private val languageManager: LanguageManager,
+    private val getLanguageUseCase: GetLanguageUseCase,
+    private val setLanguageUseCase: SetLanguageUseCase,
     private val focusTimerManager: FocusTimerManager,
     private val breakTimerManager: BreakTimerManager,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
@@ -49,7 +50,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    val languageCode: StateFlow<String> = languageManager.languageCode.stateIn(
+    val languageCode: StateFlow<String> = getLanguageUseCase().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = "system"
@@ -57,7 +58,7 @@ class MainViewModel @Inject constructor(
 
     fun setLanguage(code: String) {
         viewModelScope.launch {
-            languageManager.setLanguage(code)
+            setLanguageUseCase(code)
         }
     }
 
