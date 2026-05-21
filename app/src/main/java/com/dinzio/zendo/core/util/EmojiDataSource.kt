@@ -1,4 +1,4 @@
-package com.dinzio.zendo.core.data.local
+package com.dinzio.zendo.core.util
 
 data class EmojiModel(
     val char: String,
