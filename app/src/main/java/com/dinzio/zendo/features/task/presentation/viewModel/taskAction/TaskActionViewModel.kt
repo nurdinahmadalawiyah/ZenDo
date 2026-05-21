@@ -2,8 +2,8 @@ package com.dinzio.zendo.features.task.presentation.viewModel.taskAction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dinzio.zendo.core.data.local.BreakTimerManager
-import com.dinzio.zendo.core.data.local.FocusTimerManager
+import com.dinzio.zendo.features.timer_settings.domain.usecase.GetBreakTimeUseCase
+import com.dinzio.zendo.features.timer_settings.domain.usecase.GetFocusTimeUseCase
 import com.dinzio.zendo.features.category.domain.model.CategoryModel
 import com.dinzio.zendo.features.category.domain.usecase.GetCategoriesUseCase
 import com.dinzio.zendo.features.task.domain.model.TaskModel
@@ -25,8 +25,8 @@ class TaskActionViewModel @Inject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
-    private val focusTimerManager: FocusTimerManager,
-    private val breakTimerManager: BreakTimerManager,
+    private val getFocusTimeUseCase: GetFocusTimeUseCase,
+    private val getBreakTimeUseCase: GetBreakTimeUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskActionState())
@@ -53,14 +53,14 @@ class TaskActionViewModel @Inject constructor(
 
     private fun loadDefaultSettings() {
         viewModelScope.launch {
-            focusTimerManager.focusTime.collect { defaultFocusTime ->
+            getFocusTimeUseCase().collect { defaultFocusTime ->
                 if (_state.value.id == null) {
                     _state.update { it.copy(focusTimeInput = defaultFocusTime) }
                 }
             }
         }
         viewModelScope.launch {
-            breakTimerManager.breakTime.collect { defaultBreakTime ->
+            getBreakTimeUseCase().collect { defaultBreakTime ->
                 if (_state.value.id == null) {
                     _state.update { it.copy(breakTimeInput = defaultBreakTime) }
                 }

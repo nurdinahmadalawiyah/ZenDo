@@ -3,8 +3,8 @@ package com.dinzio.zendo.features.timer.presentation.viewModel
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dinzio.zendo.core.data.local.BreakTimerManager
-import com.dinzio.zendo.core.data.local.FocusTimerManager
+import com.dinzio.zendo.features.timer_settings.domain.usecase.GetBreakTimeUseCase
+import com.dinzio.zendo.features.timer_settings.domain.usecase.GetFocusTimeUseCase
 import com.dinzio.zendo.core.service.TimerService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,22 +18,22 @@ import javax.inject.Inject
 @HiltViewModel
 class QuickTimerViewModel @Inject constructor(
     private val application: Application,
-    private val focusTimerManager: FocusTimerManager,
-    private val breakTimerManager: BreakTimerManager
+    private val getFocusTimeUseCase: GetFocusTimeUseCase,
+    private val getBreakTimeUseCase: GetBreakTimeUseCase
 ) : ViewModel() {
 
     private val _selectedMinutes = MutableStateFlow(25)
     private val _currentMode = MutableStateFlow(TimerMode.FOCUS)
-    private val focusTimeState = focusTimerManager.focusTime
+    private val focusTimeState = getFocusTimeUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 25)
-    private val breakTimeState = breakTimerManager.breakTime
+    private val breakTimeState = getBreakTimeUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 5)
 
     init {
         viewModelScope.launch {
             combine(
-                focusTimerManager.focusTime,
-                breakTimerManager.breakTime,
+                getFocusTimeUseCase(),
+                getBreakTimeUseCase(),
                 _currentMode
             ) { focus, breakTime, mode ->
                 if (mode == TimerMode.FOCUS) focus else breakTime
