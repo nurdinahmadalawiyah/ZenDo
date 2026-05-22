@@ -6,9 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.dinzio.zendo.core.service.TimerService
 import com.dinzio.zendo.features.language.domain.usecase.GetLanguageUseCase
 import com.dinzio.zendo.features.language.domain.usecase.SetLanguageUseCase
-import com.dinzio.zendo.features.task.domain.model.TaskModel
-import com.dinzio.zendo.features.task.domain.usecase.GetTaskByIdUseCase
-import com.dinzio.zendo.features.task.domain.usecase.UpdateTaskUseCase
+
 import com.dinzio.zendo.features.theme.domain.usecase.GetThemeUseCase
 import com.dinzio.zendo.features.theme.domain.usecase.SetThemeUseCase
 import com.dinzio.zendo.features.timer_settings.domain.usecase.GetBreakTimeUseCase
@@ -16,12 +14,8 @@ import com.dinzio.zendo.features.timer_settings.domain.usecase.GetFocusTimeUseCa
 import com.dinzio.zendo.features.timer_settings.domain.usecase.SetBreakTimeUseCase
 import com.dinzio.zendo.features.timer_settings.domain.usecase.SetFocusTimeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,13 +29,9 @@ class MainViewModel @Inject constructor(
     private val getFocusTimeUseCase: GetFocusTimeUseCase,
     private val setFocusTimeUseCase: SetFocusTimeUseCase,
     private val getBreakTimeUseCase: GetBreakTimeUseCase,
-    private val setBreakTimeUseCase: SetBreakTimeUseCase,
-    private val getTaskByIdUseCase: GetTaskByIdUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val setBreakTimeUseCase: SetBreakTimeUseCase
 ) : ViewModel() {
 
-    val isTaskFinishedGlobal = TimerService.timerState.map { it.isFinished }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     val themeMode: StateFlow<String> = getThemeUseCase().stateIn(
             scope = viewModelScope,
@@ -91,29 +81,5 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val currentTaskBannerState = TimerService.timerState.flatMapLatest { serviceState ->
-        flow {
-            if (serviceState.currentTaskId != null) {
-                val task = getTaskByIdUseCase(serviceState.currentTaskId)
-                emit(task)
-            } else {
-                emit(null)
-            }
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    fun completeAndResetTask(context: android.content.Context, task: TaskModel?) {
-        viewModelScope.launch {
-            task?.let {
-                val completedTask = it.copy(
-                    isCompleted = true,
-                    sessionDone = it.sessionCount,
-                    lastSecondsLeft = 0L
-                )
-                updateTaskUseCase(completedTask)
-            }
-            TimerService.sendAction(context, TimerService.ACTION_STOP)
-        }
-    }
 }

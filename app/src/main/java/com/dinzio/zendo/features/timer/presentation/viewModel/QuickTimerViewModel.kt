@@ -7,6 +7,7 @@ import com.dinzio.zendo.features.timer_settings.domain.usecase.GetBreakTimeUseCa
 import com.dinzio.zendo.features.timer_settings.domain.usecase.GetFocusTimeUseCase
 import com.dinzio.zendo.core.service.TimerService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.dinzio.zendo.core.util.GlobalTimerStateHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -18,12 +19,12 @@ import javax.inject.Inject
 @HiltViewModel
 class QuickTimerViewModel @Inject constructor(
     private val application: Application,
+    private val globalTimerStateHolder: GlobalTimerStateHolder,
     private val getFocusTimeUseCase: GetFocusTimeUseCase,
     private val getBreakTimeUseCase: GetBreakTimeUseCase
 ) : ViewModel() {
 
     private val _selectedMinutes = MutableStateFlow(25)
-    private val _currentMode = MutableStateFlow(TimerMode.FOCUS)
     private val focusTimeState = getFocusTimeUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 25)
     private val breakTimeState = getBreakTimeUseCase()
@@ -34,46 +35,18 @@ class QuickTimerViewModel @Inject constructor(
             combine(
                 getFocusTimeUseCase(),
                 getBreakTimeUseCase(),
-                _currentMode
+                globalTimerStateHolder.quickTimerMode
             ) { focus, breakTime, mode ->
                 if (mode == TimerMode.FOCUS) focus else breakTime
             }.collect { time ->
                 _selectedMinutes.value = time
             }
         }
-
-        viewModelScope.launch {
-            TimerService.timerState.collect { serviceState ->
-                if (serviceState.isFinished && serviceState.currentTaskId == null) {
-                    handleTimerFinished()
-                }
-            }
-        }
-    }
-
-    private fun handleTimerFinished() {
-        TimerService.sendAction(application, TimerService.ACTION_STOP)
-
-        val nextMode = if (_currentMode.value == TimerMode.FOCUS) TimerMode.BREAK else TimerMode.FOCUS
-        _currentMode.value = nextMode
-
-        val nextMinutes = if (nextMode == TimerMode.FOCUS) {
-            focusTimeState.value
-        } else {
-            breakTimeState.value
-        }
-
-        TimerService.sendAction(
-            context = application,
-            action = TimerService.ACTION_START,
-            duration = (nextMinutes * 60).toLong(),
-            taskId = null
-        )
     }
 
     val state = combine(
         _selectedMinutes,
-        _currentMode,
+        globalTimerStateHolder.quickTimerMode,
         TimerService.timerState,
     ) { minutes, mode, serviceState ->
 
@@ -130,12 +103,12 @@ class QuickTimerViewModel @Inject constructor(
 
     fun resetTimer() {
         TimerService.sendAction(application, TimerService.ACTION_STOP)
-        _currentMode.value = TimerMode.FOCUS
+        globalTimerStateHolder.quickTimerMode.value = TimerMode.FOCUS
     }
 
     fun skipPhase() {
         resetTimer()
-        _currentMode.update {
+        globalTimerStateHolder.quickTimerMode.update {
             if (it == TimerMode.FOCUS) TimerMode.BREAK else TimerMode.FOCUS
         }
         startTimer()

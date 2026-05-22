@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
@@ -50,6 +51,7 @@ import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoBottomBar
 import com.dinzio.zendo.core.presentation.components.ZenDoNavigationRail
 import com.dinzio.zendo.core.presentation.components.ZenDoSelectionSheet
+import com.dinzio.zendo.core.service.TimerService
 import com.dinzio.zendo.core.theme.ZendoTheme
 import com.dinzio.zendo.features.category.presentation.component.AddCategoryBottomSheet
 import com.dinzio.zendo.features.category.presentation.viewModel.categoryAction.CategoryActionViewModel
@@ -57,11 +59,13 @@ import com.dinzio.zendo.features.home.presentation.component.BannerSection
 import com.dinzio.zendo.features.task.domain.model.TaskModel
 import com.dinzio.zendo.features.task.presentation.component.CelebrationDialog
 import com.dinzio.zendo.features.task.presentation.component.CelebrationOverlay
+import com.dinzio.zendo.features.task.presentation.viewModel.global.GlobalTaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
+    private val globalTaskViewModel: GlobalTaskViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             val langCode by mainViewModel.languageCode.collectAsState()
             val focusTime by mainViewModel.focusTime.collectAsState()
             val breakTime by mainViewModel.breakTime.collectAsState()
-            val currentTask by mainViewModel.currentTaskBannerState.collectAsState()
+            val currentTask by globalTaskViewModel.currentTaskBannerState.collectAsState(initial = null)
 
             LaunchedEffect(langCode) {
                 val appLocale: LocaleListCompat = if (langCode == "system") {
@@ -112,13 +116,15 @@ class MainActivity : AppCompatActivity() {
 fun RequestNotificationPermission() {
     val context = LocalContext.current
 
+    var contextText = stringResource(R.string.timer_may_not_be_visible_in_the_background_without_notification_permission)
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (!isGranted) {
             android.widget.Toast.makeText(
                 context,
-                context.getString(R.string.timer_may_not_be_visible_in_the_background_without_notification_permission),
+                contextText,
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }
@@ -150,7 +156,7 @@ fun MainScreen(
     onBreakTimeChange: (Int) -> Unit,
     currentTask: TaskModel?,
     actionViewModel: CategoryActionViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    globalTaskViewModel: GlobalTaskViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -174,7 +180,7 @@ fun MainScreen(
     var showAddCategorySheet by remember { mutableStateOf(false) }
     val addCategorySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val isFinished by mainViewModel.isTaskFinishedGlobal.collectAsState()
+    val isFinished by globalTaskViewModel.isTaskFinishedGlobal.collectAsState(initial = false)
     var showGlobalCelebration by remember { mutableStateOf(false) }
 
     if (showSelectionSheet) {
@@ -276,8 +282,8 @@ fun MainScreen(
                 CelebrationDialog(
                     onConfirm = {
                         showGlobalCelebration = false
-
-                        mainViewModel.completeAndResetTask(context, currentTask)
+                        globalTaskViewModel.completeTask(currentTask)
+                        TimerService.sendAction(context, TimerService.ACTION_STOP)
 
                         if (currentRoute != ZenDoRoutes.Home.route) {
                             navController.navigate(ZenDoRoutes.Home.route) {

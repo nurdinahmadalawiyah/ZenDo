@@ -75,22 +75,30 @@ class TimerService : LifecycleService() {
             ACTION_START -> {
                 val duration = intent.getLongExtra(EXTRA_DURATION, 0L)
                 val taskId = intent.getIntExtra(EXTRA_TASK_ID, -1).takeIf { it != -1 }
-                currentTaskName = intent.getStringExtra(EXTRA_TASK_NAME)
+                val taskName = intent.getStringExtra(EXTRA_TASK_NAME)
+                currentTaskName = taskName
 
                 if (_timerState.value.currentTaskId != taskId) {
                     countDownTimer?.cancel()
                 }
 
+                _timerState.update {
+                    it.copy(
+                        isRunning = true,
+                        isTimerEnded = false,
+                        currentTaskId = taskId
+                    )
+                }
+
                 val initialNotification = createNotification(getString(R.string.timer_starts))
                 startForeground(notificationId, initialNotification)
 
-                _timerState.update { it.copy(isRunning = true, currentTaskId = taskId) }
                 startTimer(duration, taskId)
             }
             ACTION_PAUSE -> pauseTimer()
             ACTION_STOP -> stopTimer()
             ACTION_FORCE_FINISHED -> {
-                _timerState.update { it.copy(isFinished = true, isRunning = false) }
+                _timerState.update { it.copy(isFinished = true, isRunning = false, isTimerEnded = false) }
             }
         }
         return super.onStartCommand(intent, flags, startId)
@@ -103,6 +111,7 @@ class TimerService : LifecycleService() {
             secondsLeft = durationSeconds,
             isRunning = true,
             isFinished = false,
+            isTimerEnded = false,
             currentTaskId = taskId
         ) }
 
