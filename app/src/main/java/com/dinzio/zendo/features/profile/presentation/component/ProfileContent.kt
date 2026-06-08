@@ -68,14 +68,7 @@ fun ProfileContent(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(
-                                androidx.compose.ui.graphics.Brush.linearGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.secondary
-                                    )
-                                )
-                            )
+                            .background(color = MaterialTheme.colorScheme.primary,)
                             .padding(vertical = 40.dp, horizontal = 24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -128,14 +121,7 @@ fun ProfileContent(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(
-                                    androidx.compose.ui.graphics.Brush.linearGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.colorScheme.secondary
-                                        )
-                                    )
-                                )
+                                .background(color = MaterialTheme.colorScheme.primary)
                                 .padding(vertical = 40.dp, horizontal = 24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {

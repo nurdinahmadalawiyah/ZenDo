@@ -134,4 +134,9 @@
     <string name="backing_up_to_cloud">Sedang backup ke cloud...</string>
     <string name="restoring_from_cloud">Sedang memulihkan dari cloud...</string>
     <string name="processing_cloud_backup">Sedang memproses backup cloud...</string>
+    <string name="cloud_backup_hero_title">Simpan progres ZenDo kamu dengan aman di cloud.</string>
+    <string name="cloud_backup_hero_subtitle">Simpan task dan category terbaru ke Google Drive, lalu pulihkan kapan pun saat dibutuhkan.</string>
+    <string name="cloud_backup_status_badge">Google Drive siap</string>
+    <string name="cloud_backup_activity_title">Aktivitas cloud terakhir</string>
+    <string name="cloud_backup_locked_title">Backup cloud terkunci</string>
 </resources>
