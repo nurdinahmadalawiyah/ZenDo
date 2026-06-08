@@ -2,39 +2,38 @@ package com.dinzio.zendo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dinzio.zendo.core.data.local.BreakTimerManager
-import com.dinzio.zendo.core.data.local.FocusTimerManager
-import com.dinzio.zendo.core.data.local.LanguageManager
-import com.dinzio.zendo.core.data.local.ThemeManager
+
 import com.dinzio.zendo.core.service.TimerService
-import com.dinzio.zendo.features.task.domain.model.TaskModel
-import com.dinzio.zendo.features.task.domain.usecase.GetTaskByIdUseCase
-import com.dinzio.zendo.features.task.domain.usecase.UpdateTaskUseCase
+import com.dinzio.zendo.features.language.domain.usecase.GetLanguageUseCase
+import com.dinzio.zendo.features.language.domain.usecase.SetLanguageUseCase
+
+import com.dinzio.zendo.features.theme.domain.usecase.GetThemeUseCase
+import com.dinzio.zendo.features.theme.domain.usecase.SetThemeUseCase
+import com.dinzio.zendo.features.timer_settings.domain.usecase.GetBreakTimeUseCase
+import com.dinzio.zendo.features.timer_settings.domain.usecase.GetFocusTimeUseCase
+import com.dinzio.zendo.features.timer_settings.domain.usecase.SetBreakTimeUseCase
+import com.dinzio.zendo.features.timer_settings.domain.usecase.SetFocusTimeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val themeManager: ThemeManager,
-    private val languageManager: LanguageManager,
-    private val focusTimerManager: FocusTimerManager,
-    private val breakTimerManager: BreakTimerManager,
-    private val getTaskByIdUseCase: GetTaskByIdUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val getThemeUseCase: GetThemeUseCase,
+    private val setThemeUseCase: SetThemeUseCase,
+    private val getLanguageUseCase: GetLanguageUseCase,
+    private val setLanguageUseCase: SetLanguageUseCase,
+    private val getFocusTimeUseCase: GetFocusTimeUseCase,
+    private val setFocusTimeUseCase: SetFocusTimeUseCase,
+    private val getBreakTimeUseCase: GetBreakTimeUseCase,
+    private val setBreakTimeUseCase: SetBreakTimeUseCase
 ) : ViewModel() {
 
-    val isTaskFinishedGlobal = TimerService.timerState.map { it.isFinished }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    val themeMode: StateFlow<String> = themeManager.themeMode.stateIn(
+    val themeMode: StateFlow<String> = getThemeUseCase().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = "system"
@@ -42,11 +41,11 @@ class MainViewModel @Inject constructor(
 
     fun setTheme(mode: String) {
         viewModelScope.launch {
-            themeManager.setThemeMode(mode)
+            setThemeUseCase(mode)
         }
     }
 
-    val languageCode: StateFlow<String> = languageManager.languageCode.stateIn(
+    val languageCode: StateFlow<String> = getLanguageUseCase().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = "system"
@@ -54,11 +53,11 @@ class MainViewModel @Inject constructor(
 
     fun setLanguage(code: String) {
         viewModelScope.launch {
-            languageManager.setLanguage(code)
+            setLanguageUseCase(code)
         }
     }
 
-    val focusTime: StateFlow<Int> = focusTimerManager.focusTime.stateIn(
+    val focusTime: StateFlow<Int> = getFocusTimeUseCase().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = 25
@@ -66,11 +65,11 @@ class MainViewModel @Inject constructor(
 
     fun setFocusTime(time: Int) {
         viewModelScope.launch {
-            focusTimerManager.setFocusTime(time)
+            setFocusTimeUseCase(time)
         }
     }
 
-    val breakTime: StateFlow<Int> = breakTimerManager.breakTime.stateIn(
+    val breakTime: StateFlow<Int> = getBreakTimeUseCase().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = 5
@@ -78,33 +77,9 @@ class MainViewModel @Inject constructor(
 
     fun setBreakTime(time: Int) {
         viewModelScope.launch {
-            breakTimerManager.setBreakTime(time)
+            setBreakTimeUseCase(time)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val currentTaskBannerState = TimerService.timerState.flatMapLatest { serviceState ->
-        flow {
-            if (serviceState.currentTaskId != null) {
-                val task = getTaskByIdUseCase(serviceState.currentTaskId)
-                emit(task)
-            } else {
-                emit(null)
-            }
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    fun completeAndResetTask(context: android.content.Context, task: TaskModel?) {
-        viewModelScope.launch {
-            task?.let {
-                val completedTask = it.copy(
-                    isCompleted = true,
-                    sessionDone = it.sessionCount,
-                    lastSecondsLeft = 0L
-                )
-                updateTaskUseCase(completedTask)
-            }
-            TimerService.sendAction(context, TimerService.ACTION_STOP)
-        }
-    }
 }

@@ -21,7 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dinzio.zendo.R
-import com.dinzio.zendo.core.data.local.EmojiDataSource
+import com.dinzio.zendo.core.util.EmojiDataSource
+import com.dinzio.zendo.core.util.EmojiModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +108,7 @@ fun ZenDoEmojiPicker(
 
 @Composable
 fun EmojiGrid(
-    emojis: List<com.dinzio.zendo.core.data.local.EmojiModel>,
+    emojis: List<EmojiModel>,
     onEmojiSelected: (String) -> Unit
 ) {
     LazyVerticalGrid(

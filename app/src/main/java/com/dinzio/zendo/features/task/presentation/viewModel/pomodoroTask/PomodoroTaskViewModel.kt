@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,74 +33,36 @@ class PomodoroTaskViewModel @Inject constructor(
 
     init {
         loadTaskData()
-        observeTimerFinish()
+        observeTimerStarts()
         observeTimerTicks()
     }
 
     private fun loadTaskData() {
         viewModelScope.launch {
-            val task = getTaskByIdUseCase(taskId)
-            _taskData.value = task
-
-            task?.let {
-                val serviceState = TimerService.timerState.value
-                val isServiceRunningThisTask = serviceState.isRunning && serviceState.currentTaskId == taskId
-
-                if (isServiceRunningThisTask) {
-                    _currentMode.value = if (it.lastMode == "BREAK") TimerMode.BREAK else TimerMode.FOCUS
-                } else {
-                    _currentMode.value = if (it.lastMode == "BREAK") TimerMode.BREAK else TimerMode.FOCUS
-                }
-            }
+            fetchTaskAndUpdateMode()
         }
     }
 
-    private fun observeTimerFinish() {
+    private suspend fun fetchTaskAndUpdateMode() {
+        val task = getTaskByIdUseCase(taskId)
+        _taskData.value = task
+        task?.let {
+            _currentMode.value = if (it.lastMode == "BREAK") TimerMode.BREAK else TimerMode.FOCUS
+        }
+    }
+
+    private fun observeTimerStarts() {
+        // Reload task data whenever a new timer starts (isTimerEnded transitions from true to false)
+        // This ensures PomodoroTaskViewModel stays in sync when GlobalTaskViewModel automatically progresses the timer
         viewModelScope.launch {
-            TimerService.timerState.collect { serviceState ->
-                if (serviceState.isTimerEnded && serviceState.currentTaskId == taskId) {
-                    handleTimerFinished()
+            TimerService.timerState
+                .map { it.isTimerEnded }
+                .distinctUntilChanged()
+                .collect { isEnded ->
+                    if (!isEnded) {
+                        fetchTaskAndUpdateMode()
+                    }
                 }
-            }
-        }
-    }
-
-    private suspend fun handleTimerFinished() {
-        val currentTask = _taskData.value ?: return
-        val currentMode = _currentMode.value
-
-        if (currentMode == TimerMode.FOCUS) {
-            _currentMode.value = TimerMode.BREAK
-
-            val updatedTask = currentTask.copy(
-                lastMode = "BREAK",
-                lastSecondsLeft = 0L
-            )
-            updateTaskUseCase(updatedTask)
-            _taskData.value = updatedTask
-
-            TimerService.sendAction(application, TimerService.ACTION_STOP)
-        } else {
-            val newSessionDone = currentTask.sessionDone + 1
-            val isAllDone = newSessionDone >= currentTask.sessionCount
-
-            val updatedTask = currentTask.copy(
-                sessionDone = newSessionDone,
-                isCompleted = isAllDone,
-                lastMode = "FOCUS",
-                lastSecondsLeft = 0L
-            )
-
-            updateTaskUseCase(updatedTask)
-            _taskData.value = updatedTask
-
-            if (isAllDone) {
-                _currentMode.value = TimerMode.FOCUS
-                TimerService.sendAction(application, TimerService.ACTION_FORCE_FINISHED)
-            } else {
-                _currentMode.value = TimerMode.FOCUS
-                TimerService.sendAction(application, TimerService.ACTION_STOP)
-            }
         }
     }
 
@@ -112,7 +76,7 @@ class PomodoroTaskViewModel @Inject constructor(
                             currentTask.copy(
                                 lastSecondsLeft = serviceState.secondsLeft,
                                 lastMode = if (_currentMode.value == TimerMode.BREAK) "BREAK" else "FOCUS"
-                        )
+                            )
                         )
                     }
                 }
@@ -234,7 +198,6 @@ class PomodoroTaskViewModel @Inject constructor(
                         lastMode = "FOCUS"
                     )
                     updateTaskUseCase(updatedTask)
-
                     TimerService.sendAction(application, TimerService.ACTION_FORCE_FINISHED)
                 } else {
                     val updatedTask = currentTask.copy(
@@ -246,6 +209,15 @@ class PomodoroTaskViewModel @Inject constructor(
                     _taskData.value = updatedTask
                     TimerService.sendAction(application, TimerService.ACTION_STOP)
                     _currentMode.value = TimerMode.FOCUS
+                    
+                    // Otomatis mulai Focus berikutnya
+                    TimerService.sendAction(
+                        context = application,
+                        action = TimerService.ACTION_START,
+                        duration = (updatedTask.focusTime * 60).toLong(),
+                        taskId = taskId,
+                        taskName = updatedTask.title
+                    )
                 }
             } else {
                 _currentMode.value = TimerMode.BREAK
@@ -258,7 +230,15 @@ class PomodoroTaskViewModel @Inject constructor(
                 _taskData.value = updatedTask
 
                 TimerService.sendAction(application, TimerService.ACTION_STOP)
-                kotlinx.coroutines.delay(100)
+                
+                // Otomatis mulai Break
+                TimerService.sendAction(
+                    context = application,
+                    action = TimerService.ACTION_START,
+                    duration = (updatedTask.breakTime * 60).toLong(),
+                    taskId = taskId,
+                    taskName = updatedTask.title
+                )
             }
         }
     }

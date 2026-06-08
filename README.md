@@ -2,7 +2,7 @@
 
 ZenDo is a modern Android application designed to boost productivity using the **Pomodoro Technique** combined with efficient Task Management. Built with **Jetpack Compose** and **Clean Architecture**, ZenDo offers a seamless, beautiful, and focused user experience.
 
-![ZenDo Banner](path/to/your/banner-image.png)
+![ZenDo Banner](app/src/main/zendo-banner.png)
 ## ✨ Features
 
 * **Pomodoro Timer:** Custom circular timer with focus/break intervals.

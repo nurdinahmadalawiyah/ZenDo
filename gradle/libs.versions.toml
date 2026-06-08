@@ -6,6 +6,9 @@ credentials = "1.6.0"
 credentialsPlayServicesAuth = "1.6.0"
 datastorePreferences = "1.2.0"
 firebaseBom = "34.7.0"
+googleApiClientAndroid = "2.9.0"
+googleApiServicesDrive = "v3-rev20220815-2.0.0"
+googleAuthLibraryOauth2Http = "1.47.0"
 googleid = "1.2.0"
 gson = "2.13.2"
 hiltAndroidCompiler = "2.57.2"
@@ -59,6 +62,9 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+google-api-services-drive = { module = "com.google.apis:google-api-services-drive", version.ref = "googleApiServicesDrive" }
+google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroid" }
+google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuthLibraryOauth2Http" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }

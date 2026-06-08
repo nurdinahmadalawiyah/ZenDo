@@ -43,11 +43,13 @@ import com.dinzio.zendo.R
 import com.dinzio.zendo.core.navigation.ZenDoRoutes
 import com.dinzio.zendo.core.presentation.components.ZenDoTopBar
 import com.dinzio.zendo.core.util.isLandscape
+import com.dinzio.zendo.features.backup.presentation.screen.BackupScreenRoute
+import com.dinzio.zendo.features.backup.presentation.screen.BackupRestoreScreen
 import com.dinzio.zendo.features.settings.presentation.component.SettingsCategoryTitle
 import com.dinzio.zendo.features.settings.presentation.component.SettingsItem
 
 enum class SettingsPane {
-    DEFAULT, LANGUAGE, THEME, DATA_SYNC, FOCUS_TIMER, BREAK_TIMER, VERSION
+    DEFAULT, LANGUAGE, THEME, DATA_SYNC, CLOUD_BACKUP, FOCUS_TIMER, BREAK_TIMER, VERSION
 }
 
 @Composable
@@ -215,7 +217,7 @@ fun SettingsPhoneLayout(
             onFocusTimerClick = { navController.navigate(ZenDoRoutes.FocusTimerSetting.route) },
             onBreakTimerClick = { navController.navigate(ZenDoRoutes.BreakTimerSetting.route) },
             onVersionClick = { navController.navigate(ZenDoRoutes.VersionSetting.route) },
-            onDataSyncClick = {  navController.navigate(ZenDoRoutes.BackupRestoreSetting.route) }
+            onDataSyncClick = { navController.navigate(ZenDoRoutes.BackupRestoreSetting.route) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -322,7 +324,16 @@ fun SettingsTabletLayout(
                 }
 
                 SettingsPane.DATA_SYNC -> {
-                    BackupRestoreSettingScreen(
+                    BackupRestoreScreen(
+                        titleRoute = BackupScreenRoute.Local,
+                        onOpenCloudBackup = { activePane = SettingsPane.CLOUD_BACKUP },
+                        hideBackButton = true
+                    )
+                }
+
+                SettingsPane.CLOUD_BACKUP -> {
+                    BackupRestoreScreen(
+                        titleRoute = BackupScreenRoute.Cloud,
                         hideBackButton = true
                     )
                 }
