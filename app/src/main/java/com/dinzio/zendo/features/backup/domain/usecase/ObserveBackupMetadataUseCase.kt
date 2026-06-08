@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class ObserveBackupMetadataUseCase @Inject constructor(
     private val repository: BackupRepository
 ) {
-    operator fun invoke(): Flow<BackupMetadata> {
-        return repository.observeBackupMetadata()
+    operator fun invoke(userEmail: String?): Flow<BackupMetadata> {
+        return repository.observeBackupMetadata(userEmail)
     }
 }

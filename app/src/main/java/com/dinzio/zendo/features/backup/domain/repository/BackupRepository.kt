@@ -11,5 +11,5 @@ interface BackupRepository {
     suspend fun backupToDrive(userEmail: String): Result<Unit>
     suspend fun restoreFromDrive(userEmail: String): Result<Unit>
     suspend fun getAuthIntent(userEmail: String): Intent?
-    fun observeBackupMetadata(): Flow<BackupMetadata>
+    fun observeBackupMetadata(userEmail: String?): Flow<BackupMetadata>
 }

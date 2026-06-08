@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dinzio.zendo.R
 import com.dinzio.zendo.core.util.UiText
+import com.dinzio.zendo.features.auth.domain.usecase.ObserveUserUseCase
 import com.dinzio.zendo.features.backup.domain.usecase.BackupToDriveUseCase
 import com.dinzio.zendo.features.backup.domain.usecase.ExportLocalBackupUseCase
 import com.dinzio.zendo.features.backup.domain.usecase.ImportLocalBackupUseCase
@@ -12,6 +13,7 @@ import com.dinzio.zendo.features.backup.domain.usecase.ObserveBackupMetadataUseC
 import com.dinzio.zendo.features.backup.domain.usecase.RestoreFromDriveUseCase
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -22,6 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BackupViewModel @Inject constructor(
+    private val observeUserUseCase: ObserveUserUseCase,
     private val exportLocalBackupUseCase: ExportLocalBackupUseCase,
     private val importLocalBackupUseCase: ImportLocalBackupUseCase,
     private val backupToDriveUseCase: BackupToDriveUseCase,
@@ -36,9 +39,11 @@ class BackupViewModel @Inject constructor(
     val uiEvent = _uiEvent.asSharedFlow()
 
     private var tempUserEmail: String = ""
+    private var metadataJob: Job? = null
+    private var observedMetadataEmail: String? = null
 
     init {
-        observeBackupMetadata()
+        observeActiveUser()
     }
 
     fun onEvent(event: BackupEvent) {
@@ -91,9 +96,22 @@ class BackupViewModel @Inject constructor(
         }
     }
 
-    private fun observeBackupMetadata() {
+    private fun observeActiveUser() {
         viewModelScope.launch {
-            observeBackupMetadataUseCase().collect { metadata ->
+            observeUserUseCase().collect { user ->
+                val userEmail = user?.takeUnless { it.isAnonymous }?.email
+                if (observedMetadataEmail != userEmail) {
+                    observedMetadataEmail = userEmail
+                    observeBackupMetadata(userEmail)
+                }
+            }
+        }
+    }
+
+    private fun observeBackupMetadata(userEmail: String?) {
+        metadataJob?.cancel()
+        metadataJob = viewModelScope.launch {
+            observeBackupMetadataUseCase(userEmail).collect { metadata ->
                 _state.update { it.copy(metadata = metadata) }
             }
         }

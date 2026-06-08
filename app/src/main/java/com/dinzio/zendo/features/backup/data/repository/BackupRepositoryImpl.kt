@@ -37,16 +37,17 @@ class BackupRepositoryImpl @Inject constructor(
             val jsonString = serializeBackupData()
             localBackupDataSource.writeToFile(uri, jsonString).onSuccess {
                 saveSuccessfulBackupMetadata(
+                    userEmail = null,
                     operation = OPERATION_LOCAL_BACKUP,
                     sizeBytes = jsonString.toByteArray(Charsets.UTF_8).size.toLong(),
                     statusMessage = "Local backup saved successfully"
                 )
             }.onFailure { error ->
-                saveFailedOperationStatus(OPERATION_LOCAL_BACKUP, error)
+                saveFailedOperationStatus(userEmail = null, operation = OPERATION_LOCAL_BACKUP, error = error)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            saveFailedOperationStatus(OPERATION_LOCAL_BACKUP, e)
+            saveFailedOperationStatus(userEmail = null, operation = OPERATION_LOCAL_BACKUP, error = e)
             Result.failure(e)
         }
     }
@@ -58,22 +59,23 @@ class BackupRepositoryImpl @Inject constructor(
                 onSuccess = { jsonString ->
                     deserializeAndImport(jsonString).onSuccess {
                         backupMetadataDataSource.saveOperationStatus(
+                            accountEmail = null,
                             operation = OPERATION_LOCAL_RESTORE,
                             isSuccess = true,
                             statusMessage = "Local backup restored successfully"
                         )
                     }.onFailure { error ->
-                        saveFailedOperationStatus(OPERATION_LOCAL_RESTORE, error)
+                        saveFailedOperationStatus(userEmail = null, operation = OPERATION_LOCAL_RESTORE, error = error)
                     }
                 },
                 onFailure = {
-                    saveFailedOperationStatus(OPERATION_LOCAL_RESTORE, it)
+                    saveFailedOperationStatus(userEmail = null, operation = OPERATION_LOCAL_RESTORE, error = it)
                     Result.failure(it)
                 }
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            saveFailedOperationStatus(OPERATION_LOCAL_RESTORE, e)
+            saveFailedOperationStatus(userEmail = null, operation = OPERATION_LOCAL_RESTORE, error = e)
             Result.failure(e)
         }
     }
@@ -83,16 +85,17 @@ class BackupRepositoryImpl @Inject constructor(
             val jsonString = serializeBackupData()
             driveBackupDataSource.uploadToDrive(jsonString, userEmail).onSuccess {
                 saveSuccessfulBackupMetadata(
+                    userEmail = userEmail,
                     operation = OPERATION_CLOUD_BACKUP,
                     sizeBytes = jsonString.toByteArray(Charsets.UTF_8).size.toLong(),
                     statusMessage = "Cloud backup completed successfully"
                 )
             }.onFailure { error ->
-                saveFailedOperationStatus(OPERATION_CLOUD_BACKUP, error)
+                saveFailedOperationStatus(userEmail = userEmail, operation = OPERATION_CLOUD_BACKUP, error = error)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            saveFailedOperationStatus(OPERATION_CLOUD_BACKUP, e)
+            saveFailedOperationStatus(userEmail = userEmail, operation = OPERATION_CLOUD_BACKUP, error = e)
             Result.failure(e)
         }
     }
@@ -104,22 +107,23 @@ class BackupRepositoryImpl @Inject constructor(
                 onSuccess = { jsonString ->
                     deserializeAndImport(jsonString).onSuccess {
                         backupMetadataDataSource.saveOperationStatus(
+                            accountEmail = userEmail,
                             operation = OPERATION_CLOUD_RESTORE,
                             isSuccess = true,
                             statusMessage = "Cloud backup restored successfully"
                         )
                     }.onFailure { error ->
-                        saveFailedOperationStatus(OPERATION_CLOUD_RESTORE, error)
+                        saveFailedOperationStatus(userEmail = userEmail, operation = OPERATION_CLOUD_RESTORE, error = error)
                     }
                 },
                 onFailure = {
-                    saveFailedOperationStatus(OPERATION_CLOUD_RESTORE, it)
+                    saveFailedOperationStatus(userEmail = userEmail, operation = OPERATION_CLOUD_RESTORE, error = it)
                     Result.failure(it)
                 }
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            saveFailedOperationStatus(OPERATION_CLOUD_RESTORE, e)
+            saveFailedOperationStatus(userEmail = userEmail, operation = OPERATION_CLOUD_RESTORE, error = e)
             Result.failure(e)
         }
     }
@@ -128,8 +132,8 @@ class BackupRepositoryImpl @Inject constructor(
         return driveBackupDataSource.getAuthIntent(userEmail)
     }
 
-    override fun observeBackupMetadata(): Flow<BackupMetadata> {
-        return backupMetadataDataSource.metadata
+    override fun observeBackupMetadata(userEmail: String?): Flow<BackupMetadata> {
+        return backupMetadataDataSource.observeMetadata(userEmail)
     }
 
     private suspend fun serializeBackupData(): String {
@@ -204,11 +208,13 @@ class BackupRepositoryImpl @Inject constructor(
     }
 
     private suspend fun saveSuccessfulBackupMetadata(
+        userEmail: String?,
         operation: String,
         sizeBytes: Long,
         statusMessage: String
     ) {
         backupMetadataDataSource.saveSuccessfulBackupMetadata(
+            accountEmail = userEmail,
             timestamp = System.currentTimeMillis(),
             sizeBytes = sizeBytes,
             operation = operation,
@@ -216,8 +222,13 @@ class BackupRepositoryImpl @Inject constructor(
         )
     }
 
-    private suspend fun saveFailedOperationStatus(operation: String, error: Throwable) {
+    private suspend fun saveFailedOperationStatus(
+        userEmail: String?,
+        operation: String,
+        error: Throwable
+    ) {
         backupMetadataDataSource.saveOperationStatus(
+            accountEmail = userEmail,
             operation = operation,
             isSuccess = false,
             statusMessage = error.message ?: "Unknown error"

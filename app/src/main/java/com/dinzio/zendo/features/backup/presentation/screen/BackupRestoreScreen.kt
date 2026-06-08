@@ -274,6 +274,8 @@ private fun CloudBackupContent(
         enabled = !isLoading,
         onClick = onRestoreClick
     )
+
+    Spacer(modifier = Modifier.height(12.dp))
 }
 
 @Composable
@@ -282,7 +284,7 @@ private fun CloudBackupLockedCard(message: String) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .border(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
                 shape = RoundedCornerShape(24.dp)
@@ -409,7 +411,7 @@ private fun CloudActionCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .border(
                 border = BorderStroke(1.dp, accentColor.copy(alpha = 0.18f)),
                 shape = RoundedCornerShape(24.dp)
@@ -513,7 +515,7 @@ private fun BackupMetadataCard(metadata: BackupMetadata) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .border(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
                 shape = RoundedCornerShape(24.dp)

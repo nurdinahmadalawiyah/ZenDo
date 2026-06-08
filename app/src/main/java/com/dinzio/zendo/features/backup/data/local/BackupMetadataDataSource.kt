@@ -15,46 +15,66 @@ import kotlinx.coroutines.flow.map
 class BackupMetadataDataSource @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val LAST_BACKUP_TIMESTAMP = longPreferencesKey("backup_last_backup_timestamp")
-    private val LAST_BACKUP_SIZE_BYTES = longPreferencesKey("backup_last_backup_size_bytes")
-    private val LAST_STATUS_MESSAGE = stringPreferencesKey("backup_last_status_message")
-    private val LAST_STATUS_SUCCESS = booleanPreferencesKey("backup_last_status_success")
-    private val LAST_OPERATION = stringPreferencesKey("backup_last_operation")
-
-    val metadata: Flow<BackupMetadata> = context.dataStore.data.map { preferences ->
+    fun observeMetadata(accountEmail: String?): Flow<BackupMetadata> = context.dataStore.data.map { preferences ->
+        val keyPrefix = accountKeyPrefix(accountEmail)
         BackupMetadata(
-            lastBackupTimestamp = preferences[LAST_BACKUP_TIMESTAMP],
-            lastBackupSizeBytes = preferences[LAST_BACKUP_SIZE_BYTES],
-            lastStatusMessage = preferences[LAST_STATUS_MESSAGE],
-            lastStatusSuccess = preferences[LAST_STATUS_SUCCESS],
-            lastOperation = preferences[LAST_OPERATION]
+            lastBackupTimestamp = preferences[longPreferencesKey("${keyPrefix}_last_backup_timestamp")],
+            lastBackupSizeBytes = preferences[longPreferencesKey("${keyPrefix}_last_backup_size_bytes")],
+            lastStatusMessage = preferences[stringPreferencesKey("${keyPrefix}_last_status_message")],
+            lastStatusSuccess = preferences[booleanPreferencesKey("${keyPrefix}_last_status_success")],
+            lastOperation = preferences[stringPreferencesKey("${keyPrefix}_last_operation")]
         )
     }
 
     suspend fun saveSuccessfulBackupMetadata(
+        accountEmail: String?,
         timestamp: Long,
         sizeBytes: Long,
         operation: String,
         statusMessage: String
     ) {
+        val keyPrefix = accountKeyPrefix(accountEmail)
         context.dataStore.edit { preferences ->
-            preferences[LAST_BACKUP_TIMESTAMP] = timestamp
-            preferences[LAST_BACKUP_SIZE_BYTES] = sizeBytes
-            preferences[LAST_STATUS_MESSAGE] = statusMessage
-            preferences[LAST_STATUS_SUCCESS] = true
-            preferences[LAST_OPERATION] = operation
+            preferences[longPreferencesKey("${keyPrefix}_last_backup_timestamp")] = timestamp
+            preferences[longPreferencesKey("${keyPrefix}_last_backup_size_bytes")] = sizeBytes
+            preferences[stringPreferencesKey("${keyPrefix}_last_status_message")] = statusMessage
+            preferences[booleanPreferencesKey("${keyPrefix}_last_status_success")] = true
+            preferences[stringPreferencesKey("${keyPrefix}_last_operation")] = operation
         }
     }
 
     suspend fun saveOperationStatus(
+        accountEmail: String?,
         operation: String,
         isSuccess: Boolean,
         statusMessage: String
     ) {
+        val keyPrefix = accountKeyPrefix(accountEmail)
         context.dataStore.edit { preferences ->
-            preferences[LAST_STATUS_MESSAGE] = statusMessage
-            preferences[LAST_STATUS_SUCCESS] = isSuccess
-            preferences[LAST_OPERATION] = operation
+            preferences[stringPreferencesKey("${keyPrefix}_last_status_message")] = statusMessage
+            preferences[booleanPreferencesKey("${keyPrefix}_last_status_success")] = isSuccess
+            preferences[stringPreferencesKey("${keyPrefix}_last_operation")] = operation
+        }
+    }
+
+    private fun accountKeyPrefix(accountEmail: String?): String {
+        val normalizedEmail = accountEmail
+            ?.trim()
+            ?.lowercase()
+            ?.takeIf { it.isNotEmpty() }
+            ?: "guest"
+
+        return buildString("backup_metadata_".length + normalizedEmail.length) {
+            append("backup_metadata_")
+            normalizedEmail.forEach { character ->
+                append(
+                    if (character.isLetterOrDigit()) {
+                        character
+                    } else {
+                        '_'
+                    }
+                )
+            }
         }
     }
 }
