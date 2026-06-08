@@ -8,6 +8,7 @@ import com.dinzio.zendo.core.util.UiText
 import com.dinzio.zendo.features.backup.domain.usecase.BackupToDriveUseCase
 import com.dinzio.zendo.features.backup.domain.usecase.ExportLocalBackupUseCase
 import com.dinzio.zendo.features.backup.domain.usecase.ImportLocalBackupUseCase
+import com.dinzio.zendo.features.backup.domain.usecase.ObserveBackupMetadataUseCase
 import com.dinzio.zendo.features.backup.domain.usecase.RestoreFromDriveUseCase
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,8 @@ class BackupViewModel @Inject constructor(
     private val exportLocalBackupUseCase: ExportLocalBackupUseCase,
     private val importLocalBackupUseCase: ImportLocalBackupUseCase,
     private val backupToDriveUseCase: BackupToDriveUseCase,
-    private val restoreFromDriveUseCase: RestoreFromDriveUseCase
+    private val restoreFromDriveUseCase: RestoreFromDriveUseCase,
+    private val observeBackupMetadataUseCase: ObserveBackupMetadataUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BackupState())
@@ -34,6 +36,10 @@ class BackupViewModel @Inject constructor(
     val uiEvent = _uiEvent.asSharedFlow()
 
     private var tempUserEmail: String = ""
+
+    init {
+        observeBackupMetadata()
+    }
 
     fun onEvent(event: BackupEvent) {
         when (event) {
@@ -71,7 +77,24 @@ class BackupViewModel @Inject constructor(
             }
 
             is BackupEvent.ResetState -> {
-                _state.value = BackupState()
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = false,
+                        successMessage = null,
+                        error = null,
+                        authIntent = null,
+                        pendingAction = null
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeBackupMetadata() {
+        viewModelScope.launch {
+            observeBackupMetadataUseCase().collect { metadata ->
+                _state.update { it.copy(metadata = metadata) }
             }
         }
     }
@@ -100,7 +123,14 @@ class BackupViewModel @Inject constructor(
 
     private fun executeCloudBackup(email: String) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null, successMessage = null) }
+            _state.update {
+                it.copy(
+                    isLoading = true,
+                    error = null,
+                    successMessage = null,
+                    pendingAction = BackupAction.BACKUP_CLOUD
+                )
+            }
 
             try {
                 backupToDriveUseCase(email).onSuccess {
@@ -128,7 +158,13 @@ class BackupViewModel @Inject constructor(
 
     private fun executeCloudRestore(email: String) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            _state.update {
+                it.copy(
+                    isLoading = true,
+                    error = null,
+                    pendingAction = BackupAction.RESTORE_CLOUD
+                )
+            }
 
             restoreFromDriveUseCase(email).onSuccess {
                 _state.update {

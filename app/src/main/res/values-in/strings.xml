@@ -120,4 +120,18 @@
     <string name="log_out_of_account">Keluar dari Akun</string>
     <string name="please_connect_your_google_account_in_the_profile_menu_first">Silakan hubungkan akun Google di menu Profil terlebih dahulu.</string>
     <string name="restore_cloud">Pulihkan dari Cloud</string>
+    <string name="last_backup_label">Backup terakhir</string>
+    <string name="backup_size_label">Ukuran backup</string>
+    <string name="last_status_label">Status terakhir</string>
+    <string name="backup_metadata_never">Belum pernah</string>
+    <string name="backup_metadata_unknown">Tidak diketahui</string>
+    <string name="backup_status_success">Berhasil</string>
+    <string name="backup_status_failed">Gagal</string>
+    <string name="backup_operation_cloud_backup">Backup cloud</string>
+    <string name="backup_operation_cloud_restore">Restore cloud</string>
+    <string name="backup_operation_local_backup">Backup lokal</string>
+    <string name="backup_operation_local_restore">Restore lokal</string>
+    <string name="backing_up_to_cloud">Sedang backup ke cloud...</string>
+    <string name="restoring_from_cloud">Sedang memulihkan dari cloud...</string>
+    <string name="processing_cloud_backup">Sedang memproses backup cloud...</string>
 </resources>

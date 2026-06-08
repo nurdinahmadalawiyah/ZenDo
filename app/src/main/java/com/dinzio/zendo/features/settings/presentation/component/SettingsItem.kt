@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -33,12 +34,14 @@ fun SettingsItem(
     onClick: () -> Unit,
     roundedCornerShape: RoundedCornerShape = RoundedCornerShape(16.dp),
     hideTrailing: Boolean = false,
+    enabled: Boolean = true,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(roundedCornerShape)
-            .clickable { onClick() }
+            .clickable(enabled = enabled) { onClick() }
+            .alpha(if (enabled) 1f else 0.6f)
             .background(
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             )

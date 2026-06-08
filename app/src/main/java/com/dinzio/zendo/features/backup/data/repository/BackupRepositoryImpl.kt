@@ -5,8 +5,10 @@ import android.net.Uri
 import androidx.room.withTransaction
 import com.dinzio.zendo.core.data.local.ZenDoDatabase
 import com.dinzio.zendo.features.backup.data.local.LocalBackupDataSource
+import com.dinzio.zendo.features.backup.data.local.BackupMetadataDataSource
 import com.dinzio.zendo.features.backup.data.remote.DriveBackupDataSource
 import com.dinzio.zendo.features.backup.domain.model.BackupData
+import com.dinzio.zendo.features.backup.domain.model.BackupMetadata
 import com.dinzio.zendo.features.backup.domain.repository.BackupRepository
 import com.dinzio.zendo.features.category.data.local.dao.CategoryDao
 import com.dinzio.zendo.features.task.data.local.dao.TaskDao
@@ -15,6 +17,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -23,6 +26,7 @@ class BackupRepositoryImpl @Inject constructor(
     private val taskDao: TaskDao,
     private val categoryDao: CategoryDao,
     private val localBackupDataSource: LocalBackupDataSource,
+    private val backupMetadataDataSource: BackupMetadataDataSource,
     private val driveBackupDataSource: DriveBackupDataSource
 ) : BackupRepository {
 
@@ -31,9 +35,18 @@ class BackupRepositoryImpl @Inject constructor(
     override suspend fun exportToFile(uri: Uri): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val jsonString = serializeBackupData()
-            localBackupDataSource.writeToFile(uri, jsonString)
+            localBackupDataSource.writeToFile(uri, jsonString).onSuccess {
+                saveSuccessfulBackupMetadata(
+                    operation = OPERATION_LOCAL_BACKUP,
+                    sizeBytes = jsonString.toByteArray(Charsets.UTF_8).size.toLong(),
+                    statusMessage = "Local backup saved successfully"
+                )
+            }.onFailure { error ->
+                saveFailedOperationStatus(OPERATION_LOCAL_BACKUP, error)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
+            saveFailedOperationStatus(OPERATION_LOCAL_BACKUP, e)
             Result.failure(e)
         }
     }
@@ -42,11 +55,25 @@ class BackupRepositoryImpl @Inject constructor(
         try {
             val readResult = localBackupDataSource.readFromFile(uri)
             readResult.fold(
-                onSuccess = { jsonString -> deserializeAndImport(jsonString) },
-                onFailure = { Result.failure(it) }
+                onSuccess = { jsonString ->
+                    deserializeAndImport(jsonString).onSuccess {
+                        backupMetadataDataSource.saveOperationStatus(
+                            operation = OPERATION_LOCAL_RESTORE,
+                            isSuccess = true,
+                            statusMessage = "Local backup restored successfully"
+                        )
+                    }.onFailure { error ->
+                        saveFailedOperationStatus(OPERATION_LOCAL_RESTORE, error)
+                    }
+                },
+                onFailure = {
+                    saveFailedOperationStatus(OPERATION_LOCAL_RESTORE, it)
+                    Result.failure(it)
+                }
             )
         } catch (e: Exception) {
             e.printStackTrace()
+            saveFailedOperationStatus(OPERATION_LOCAL_RESTORE, e)
             Result.failure(e)
         }
     }
@@ -54,9 +81,18 @@ class BackupRepositoryImpl @Inject constructor(
     override suspend fun backupToDrive(userEmail: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val jsonString = serializeBackupData()
-            driveBackupDataSource.uploadToDrive(jsonString, userEmail)
+            driveBackupDataSource.uploadToDrive(jsonString, userEmail).onSuccess {
+                saveSuccessfulBackupMetadata(
+                    operation = OPERATION_CLOUD_BACKUP,
+                    sizeBytes = jsonString.toByteArray(Charsets.UTF_8).size.toLong(),
+                    statusMessage = "Cloud backup completed successfully"
+                )
+            }.onFailure { error ->
+                saveFailedOperationStatus(OPERATION_CLOUD_BACKUP, error)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
+            saveFailedOperationStatus(OPERATION_CLOUD_BACKUP, e)
             Result.failure(e)
         }
     }
@@ -65,17 +101,35 @@ class BackupRepositoryImpl @Inject constructor(
         try {
             val downloadResult = driveBackupDataSource.downloadFromDrive(userEmail)
             downloadResult.fold(
-                onSuccess = { jsonString -> deserializeAndImport(jsonString) },
-                onFailure = { Result.failure(it) }
+                onSuccess = { jsonString ->
+                    deserializeAndImport(jsonString).onSuccess {
+                        backupMetadataDataSource.saveOperationStatus(
+                            operation = OPERATION_CLOUD_RESTORE,
+                            isSuccess = true,
+                            statusMessage = "Cloud backup restored successfully"
+                        )
+                    }.onFailure { error ->
+                        saveFailedOperationStatus(OPERATION_CLOUD_RESTORE, error)
+                    }
+                },
+                onFailure = {
+                    saveFailedOperationStatus(OPERATION_CLOUD_RESTORE, it)
+                    Result.failure(it)
+                }
             )
         } catch (e: Exception) {
             e.printStackTrace()
+            saveFailedOperationStatus(OPERATION_CLOUD_RESTORE, e)
             Result.failure(e)
         }
     }
 
     override suspend fun getAuthIntent(userEmail: String): Intent? {
         return driveBackupDataSource.getAuthIntent(userEmail)
+    }
+
+    override fun observeBackupMetadata(): Flow<BackupMetadata> {
+        return backupMetadataDataSource.metadata
     }
 
     private suspend fun serializeBackupData(): String {
@@ -147,5 +201,33 @@ class BackupRepositoryImpl @Inject constructor(
         if (!root.has("categories") || !root.get("categories").isJsonArray) {
             throw JsonParseException("Backup tidak valid: field 'categories' tidak ditemukan")
         }
+    }
+
+    private suspend fun saveSuccessfulBackupMetadata(
+        operation: String,
+        sizeBytes: Long,
+        statusMessage: String
+    ) {
+        backupMetadataDataSource.saveSuccessfulBackupMetadata(
+            timestamp = System.currentTimeMillis(),
+            sizeBytes = sizeBytes,
+            operation = operation,
+            statusMessage = statusMessage
+        )
+    }
+
+    private suspend fun saveFailedOperationStatus(operation: String, error: Throwable) {
+        backupMetadataDataSource.saveOperationStatus(
+            operation = operation,
+            isSuccess = false,
+            statusMessage = error.message ?: "Unknown error"
+        )
+    }
+
+    companion object {
+        private const val OPERATION_LOCAL_BACKUP = "LOCAL_BACKUP"
+        private const val OPERATION_LOCAL_RESTORE = "LOCAL_RESTORE"
+        private const val OPERATION_CLOUD_BACKUP = "CLOUD_BACKUP"
+        private const val OPERATION_CLOUD_RESTORE = "CLOUD_RESTORE"
     }
 }

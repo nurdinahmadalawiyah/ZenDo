@@ -1,6 +1,7 @@
 package com.dinzio.zendo.features.backup.presentation.viewModel
 
 import android.content.Intent
+import com.dinzio.zendo.features.backup.domain.model.BackupMetadata
 
 enum class BackupAction {
     EXPORT_LOCAL,
@@ -15,5 +16,6 @@ data class BackupState(
     val successMessage: String? = null,
     val error: String? = null,
     val authIntent: Intent? = null,
-    val pendingAction: BackupAction? = null
+    val pendingAction: BackupAction? = null,
+    val metadata: BackupMetadata = BackupMetadata()
 )

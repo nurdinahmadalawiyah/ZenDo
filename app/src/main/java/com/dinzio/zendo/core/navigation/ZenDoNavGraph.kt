@@ -21,6 +21,7 @@ import com.dinzio.zendo.features.category.presentation.screen.CategoryScreen
 import com.dinzio.zendo.features.category.presentation.screen.DetailCategoryScreen
 import com.dinzio.zendo.features.home.presentation.screen.HomeScreen
 import com.dinzio.zendo.features.profile.presentation.screen.ProfileScreen
+import com.dinzio.zendo.features.backup.presentation.screen.BackupScreenRoute
 import com.dinzio.zendo.features.backup.presentation.screen.BackupRestoreScreen
 import com.dinzio.zendo.features.settings.presentation.screen.BreakTimerSettingScreen
 import com.dinzio.zendo.features.settings.presentation.screen.FocusTimerSettingScreen
@@ -172,7 +173,15 @@ fun ZenDoNavGraph(
             )
         }
         composable(ZenDoRoutes.BackupRestoreSetting.route) {
-            BackupRestoreScreen()
+            BackupRestoreScreen(
+                titleRoute = BackupScreenRoute.Local,
+                onOpenCloudBackup = { navController.navigate(ZenDoRoutes.CloudBackupSetting.route) }
+            )
+        }
+        composable(ZenDoRoutes.CloudBackupSetting.route) {
+            BackupRestoreScreen(
+                titleRoute = BackupScreenRoute.Cloud
+            )
         }
         composable(ZenDoRoutes.FocusTimerSetting.route) {
             FocusTimerSettingScreen(

@@ -120,4 +120,18 @@
     <string name="linked_google_account">Linked Google Account</string>
     <string name="log_out_of_account">Log Out of Account</string>
     <string name="please_connect_your_google_account_in_the_profile_menu_first">Please connect your Google account in the Profile menu first.</string>
+    <string name="last_backup_label">Last backup</string>
+    <string name="backup_size_label">Backup size</string>
+    <string name="last_status_label">Last status</string>
+    <string name="backup_metadata_never">Never</string>
+    <string name="backup_metadata_unknown">Unknown</string>
+    <string name="backup_status_success">Success</string>
+    <string name="backup_status_failed">Failed</string>
+    <string name="backup_operation_cloud_backup">Cloud backup</string>
+    <string name="backup_operation_cloud_restore">Cloud restore</string>
+    <string name="backup_operation_local_backup">Local backup</string>
+    <string name="backup_operation_local_restore">Local restore</string>
+    <string name="backing_up_to_cloud">Backing up to cloud...</string>
+    <string name="restoring_from_cloud">Restoring from cloud...</string>
+    <string name="processing_cloud_backup">Processing cloud backup...</string>
 </resources>
